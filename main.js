@@ -5,7 +5,9 @@ const fs = require('fs');
 
 const { Player } = require('discord-player')
 
-client.player = new Player(client, {leaveOnEnd: true, leaveOnEmpty: true, leaveOnEmptyCooldown: 10000, autoSelfDeaf: true});
+client.player = new Player(client, {leaveOnEnd: true, leaveOnEmpty: true,
+                                    leaveOnEmptyCooldown: 10000, autoSelfDeaf: true,
+                                    ytdlDownloadOptions: {filter: 'audioonly'}});
 client.config = config;
 client.commands = new Discord.Collection();
 client.queueMessages = new Discord.Collection();
