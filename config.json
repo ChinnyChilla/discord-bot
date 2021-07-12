@@ -1,5 +1,4 @@
 {
-    "token": "ODYwNjYwMjY3NTMyOTQzMzYw.YN-eVg.68f6ixSbo1lCbmIJrxDLr7Xeqpg",
-    "prefix": ".",
-    "youtubeAPI": "AIzaSyASsL59xUMbmwEvsmhC4OUIYFPbQafqe7I"
+    "token": "YOUR_DISCORD_TOKEN",
+    "prefix": "!",
 }
