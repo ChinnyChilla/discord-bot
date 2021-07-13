@@ -23,24 +23,30 @@ module.exports = {
                 line: "-"
             })
             queue = client.player.getQueue(message)
+            const {ms, s, m, h, d} = require('time-convert')
+            const time = ms.to(h, m, s)(queue.totalTime)
+
             const tracks = queue.tracks
             const Discord = require('discord.js')
             const discordEmbed = new Discord.MessageEmbed()
             .setTitle(`Now Playing: ${tracks[0].title}`)
             .setURL(tracks[0].url)
             .setImage('https://media.tenor.com/images/5eb0693c2e72e93563ed6bbec35be6a4/tenor.gif')
-            .setFooter(`Queue Length ${queue.totalTime}`, 'https://media.discordapp.net/attachments/810009113009979394/821078381419561000/Anime_Girl.gif')
+            //('0' + time).slice(-2) used to add another 0 if <10
+            .setFooter(`Queue Length ${('0' + time[0]).slice(-2)}:${('0' + time[1]).slice(-2)}:${('0' + time[2]).slice(-2)}`,
+                        'https://media.discordapp.net/attachments/810009113009979394/821078381419561000/Anime_Girl.gif')
             .setTimestamp()
             .setColor("GREEN")
             .setThumbnail(tracks[0].thumbnail)
+            .addField('\u200B', `Requested By ${tracks[0].requestedBy.tag}`)
 
-            for(let i=1; i<5; i++) {
+            for(let i=1; i<6; i++) {
                 if(!tracks[i]) {break}
                 var track = tracks[i]
                 discordEmbed.addFields(
                     {name: `${i}: ${track.title}`, value: `Requested by ${track.requestedBy.tag}`, inline: true},
-                    {name: track.duration, value: `[Link](${track.url})`, inline: true},
-                    {name: '\u200B', value: '\u200B'},
+                    {name: track.duration, value: `[${track.source}](${track.url})`, inline: true},
+                    {name: 'Author', value: track.author, inline: true},
                 )
                 
             }
@@ -53,7 +59,7 @@ module.exports = {
                         timecodes: true,
                         length: 15,
                         indicator: "🟢",
-                        line: "⬜"
+                        line: "─"
                     })
                     discordEmbed.setDescription(progressionBar)
                     EmbedID.edit(discordEmbed).catch("Something went wrong when editing")

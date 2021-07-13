@@ -1,4 +1,4 @@
 module.exports = (client, message, queue, track) => {
-    const func = client.functions.get('sendMessageTemp')
+    client.functions.get('sendMessageTemp').execute(message, `${track.title} Added!`)
     client.functions.get('sendQueue').execute(client, message)
 }

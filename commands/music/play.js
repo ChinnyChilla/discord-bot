@@ -2,7 +2,7 @@ module.exports = {
     name: 'play',
     category: 'music',
     description: 'Plays the song',
-    args: '[link/title]',
+    args: '[link/title/playlist]',
     execute(client, message, args) {
         const func = client.functions.get("sendMessageTemp")
         if (!message.member.voice.channel) {

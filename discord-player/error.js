@@ -1,4 +1,5 @@
 module.exports = (client, error, message) => {
-    console.error("An error has happened")
-    console.error(error)
+    message.channel.send(`An error has occured! Please contact the developer \n Error: ${error}`).then(function(message) {
+        message.delete({timeout: 120000});
+    })
 }
