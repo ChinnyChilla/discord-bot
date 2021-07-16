@@ -36,7 +36,6 @@ module.exports = {
             .setFooter(`Queue Length ${('0' + time[0]).slice(-2)}:${('0' + time[1]).slice(-2)}:${('0' + time[2]).slice(-2)}`,
                         'https://media.discordapp.net/attachments/810009113009979394/821078381419561000/Anime_Girl.gif')
             .setTimestamp()
-            .setColor("GREEN")
             .setThumbnail(tracks[0].thumbnail)
             .addField('\u200B', `Requested By ${tracks[0].requestedBy.tag}`)
 
@@ -49,6 +48,11 @@ module.exports = {
                     {name: 'Author', value: track.author, inline: true},
                 )
                 
+            }
+            if (client.player.isPlaying(message)) {
+                discordEmbed.setColor("GREEN")
+            } else {
+                discordEmbed.setColor("RED")
             }
             client.queueEmbeds.set(message.guild.id, discordEmbed)
             const isInterval = client.queueIntervals.get(message.guild.id)
