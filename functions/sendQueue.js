@@ -54,10 +54,14 @@ module.exports = {
             } else {
                 discordEmbed.setColor("RED")
             }
+            if (queue.loopMode) {
+                discordEmbed.addField('\u200B', "Repeating Queue!")
+            }
             client.queueEmbeds.set(message.guild.id, discordEmbed)
             const isInterval = client.queueIntervals.get(message.guild.id)
             if (!isInterval) {
                 const interval = setInterval(() => {
+                    var repeat = ''
                     const discordEmbed = client.queueEmbeds.get(message.guild.id)
                     var progressionBar = client.player.createProgressBar(message, {
                         timecodes: true,
@@ -65,7 +69,10 @@ module.exports = {
                         indicator: "🟢",
                         line: "─"
                     })
-                    discordEmbed.setDescription(progressionBar)
+                    if (queue.repeatMode) {
+                        repeat = 'Repeating song! \n'
+                    }
+                    discordEmbed.setDescription(repeat + progressionBar)
                     EmbedID.edit(discordEmbed).catch("Something went wrong when editing")
                 }, 3000);
                 client.queueIntervals.set(message.guild.id, interval)
