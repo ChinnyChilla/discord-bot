@@ -12,7 +12,7 @@
   "dependencies": {
     "@discord-player/extractor": "^3.0.2",
     "discord-player": "^4.1.2",
-    "discord.js": "^12.4.1",
+    "discord.js": "^12.5.3",
     "ffmpeg": "0.0.4",
     "ffmpeg-static": "^4.4.0",
     "node-opus": "^0.3.3",

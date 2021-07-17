@@ -2,18 +2,25 @@ module.exports = {
     name: 'help',
     category: 'core',
     description: 'DMs the user all commands',
+    args: '',
     execute(client, message, args) {
-        message.author.createDM.then(function() {
+        const fs = require('fs')
+        const path = require('path')
+        message.author.createDM().then(function() {
             const prefix = client.config.prefix;
-            fs.readdirSync('./commands').forEach(dir => {
-                var toSend = `**${dir}**`
-                dir.readdirSync(`./commands/${dir}`).forEach(file => {
+            const reqPath = path.join(__dirname, '../')
+            fs.readdirSync(reqPath).forEach(dir => {
+                var toSend = `**${dir}**\n`
+                console.log(toSend)
+                fs.readdirSync(`${reqPath}/${dir}`).forEach(file => {
                     if(file.endsWith('.js')) {
-                        toSend += `'''CSS ${prefix}${file.name} ${file.args}''' \n`
-                        toSend += file.description + '\n'
+                        var command = require(`${reqPath}/${dir}/${file}`)
+                        toSend += `\`\`\`${prefix}${command.name} ${command.args}\n\`\`\``
+                        toSend += command.description + '\n'
                     }
                 })
                 message.author.send(toSend)
+                var toSend = ''
             })
         })
 

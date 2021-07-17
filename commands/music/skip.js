@@ -1,7 +1,7 @@
 module.exports = {
     name: 'skip',
     category: 'music',
-    description: 'Skip song',
+    description: 'Skips song(s)',
     args: '[Amount of times]',
     execute(client, message, args) {
         if (!args[0]) {
