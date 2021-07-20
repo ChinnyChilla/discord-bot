@@ -11,11 +11,11 @@
   "license": "ISC",
   "dependencies": {
     "@discord-player/extractor": "^3.0.2",
+    "@discordjs/opus": "^0.5.3",
     "discord-player": "^4.1.2",
     "discord.js": "^12.5.3",
     "ffmpeg": "0.0.4",
     "ffmpeg-static": "^4.4.0",
-    "node-opus": "^0.3.3",
     "npm": "^7.5.2",
     "opusscript": "0.0.8",
     "time-convert": "^0.0.2"
