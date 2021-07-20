@@ -11,6 +11,7 @@ module.exports = {
         }
         const path = require('path');
         const Discord = require('discord.js')
+        const fs = require('fs')
         var reqPath = path.join(__dirname, '../../config.json')
         const config = require(reqPath)
 
