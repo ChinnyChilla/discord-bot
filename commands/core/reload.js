@@ -18,35 +18,14 @@ module.exports = {
         client.config = config;
         var commands = new Discord.Collection();
 
-        console.log("Loading Events")
-
-        fs.readdirSync('../../discordjs-events').forEach(file => {
-            if (file.endsWith('.js')) {
-                console.log("Loading discord.js file: " + file)
-                const name = file.substring(0, file.length - 3)
-                const event = require(`./discordjs-events/${file}`)
-                client.on(name, event.bind(null, client));
-            }
-        })
-
-        fs.readdirSync('../../discord-player').forEach(file => {
-            if (file.endsWith('.js')) {
-                console.log("Loading discord-player file: " + file)
-                const name = file.substring(0, file.length - 3)
-                const event = require(`./discord-player/${file}`)
-                client.player.on(name, event.bind(null, client));
-            }
-        })
-
-        console.log("Events Reloaded!")
-
         console.log("Loading commands")
-        fs.readdirSync('../../commands').forEach(dir => {
-            const files = fs.readdirSync(`./commands/${dir}`);
+        reqPath = path.join(__dirname, '../../commands')
+        fs.readdirSync(reqPath).forEach(dir => {
+            const files = fs.readdirSync(`${reqPath}/${dir}`);
             files.forEach(file => {
                 if (file.endsWith(".js")) {
                     console.log("Loading command: " + file)
-                    var command = require(`./commands/${dir}/${file}`)
+                    var command = require(`${reqPath}/${dir}/${file}`)
                     commands.set(command.name.toLowerCase(), command)
                 }
             })
