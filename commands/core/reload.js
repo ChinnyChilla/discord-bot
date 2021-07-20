@@ -10,6 +10,7 @@ module.exports = {
             return
         }
         const path = require('path');
+        const Discord = require('discord.js')
         var reqPath = path.join(__dirname, '../../config.json')
         const config = require(reqPath)
 
