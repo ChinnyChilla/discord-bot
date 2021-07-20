@@ -20,5 +20,6 @@ module.exports = {
                 sendMessage.execute(message, "Stopped repeating current queue!")
             }
         }
+        client.functions.get('sendQueue').execute(client, message)
     }
 }
