@@ -60,9 +60,5 @@ fs.readdirSync('./functions').forEach(file => {
     }
 })
 console.log("Functions Loaded!")
-client.on('ready', () => {
-    console.log("Bot is ready!")
-    client.user.setPresence({ activity: { name: '!help' }, status: 'idle' })
-})
 
 client.login(config.token)
