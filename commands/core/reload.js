@@ -18,7 +18,7 @@ module.exports = {
         client.config = config;
         var commands = new Discord.Collection();
 
-        console.log("Loading commands")
+        console.log("Reloading commands")
         reqPath = path.join(__dirname, '../../commands')
         fs.readdirSync(reqPath).forEach(dir => {
             const files = fs.readdirSync(`${reqPath}/${dir}`);
