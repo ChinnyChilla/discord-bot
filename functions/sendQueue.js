@@ -72,7 +72,7 @@ module.exports = {
                     if (queue.repeatMode) {
                         repeat = 'Repeating song! \n'
                     }
-                    discordEmbed.setDescription(repeat + progressionBar)
+                    discordEmbed.setDescription(`Author: ${tracks[0].author} \n` + repeat + progressionBar)
                     EmbedID.edit(discordEmbed).catch("Something went wrong when editing")
                 }, 3000);
                 client.queueIntervals.set(message.guild.id, interval)
