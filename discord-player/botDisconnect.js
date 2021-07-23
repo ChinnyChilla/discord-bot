@@ -7,6 +7,7 @@ module.exports = (client, message) => {
         })
         clearInterval(client.queueIntervals.get(message.guild.id))
         client.queueIntervals.delete(message.guild.id)
+        client.user.setPresence({ status: 'idle' })
     } catch (err) {
         console.log("Probably just in a channel for some reason")
     }

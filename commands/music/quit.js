@@ -13,6 +13,6 @@ module.exports = {
         })
         clearInterval(client.queueIntervals.get(message.guild.id))
         client.queueIntervals.delete(message.guild.id)
-
+        client.user.setPresence({ status: 'idle' })
     }
 }
