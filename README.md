@@ -8,3 +8,10 @@
 5. Run 'npm install' (or 'npm i')
 6. Make sure there is no errors
 7. After all that, run 'node main.js' and there you go!
+
+
+or
+
+https://discord.com/api/oauth2/authorize?client_id=807085572388421682&permissions=8&scope=bot
+
+and just invite it to your server
