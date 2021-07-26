@@ -5,11 +5,12 @@ module.exports = {
     args: '',
     execute(client, message, args) {
         const sendMessage = client.functions.get('sendMessageTemp')
-        if (client.player.isPlaying(message)) {
+        if (client.player.getQueue(message).paused) {
+            sendMessage.execute(message, "It is already paused!")
+        } else {
             sendMessage.execute(message, "Pausing!")
             client.player.pause(message)
-        } else {
-            sendMessage.execute(message, "It is already paused!")
         }
+        client.functions.get('sendQueue').execute(client, message)
     }
 }

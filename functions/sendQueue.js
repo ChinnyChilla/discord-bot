@@ -49,10 +49,11 @@ module.exports = {
                 )
                 
             }
-            if (client.player.isPlaying(message)) {
-                discordEmbed.setColor("GREEN")
-            } else {
+            if (queue.paused) {
                 discordEmbed.setColor("RED")
+                
+            } else {
+                discordEmbed.setColor("GREEN")
             }
             if (queue.loopMode) {
                 discordEmbed.addField('\u200B', "Repeating Queue!")
