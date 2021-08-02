@@ -1,5 +1,4 @@
 module.exports = (client, message, queue) => {
-    console.log("Queue Ended")
     message = client.queueMessages.get(message.guild.id)
     message.delete().then(message => {
         client.queueMessages.delete(message.guild.id)
