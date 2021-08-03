@@ -6,7 +6,7 @@ module.exports = {
     execute(client, message, args) {
         const sendMessage = client.functions.get('sendMessageTemp')
         if (message.author.id !== client.config.devID) {
-            sendMessage(message, "You must be the developer in order to use this!")
+            sendMessage.execute(message, `<@${message.author.id}>You must be the developer in order to use this!`)
             return
         }
         const path = require('path');
@@ -32,6 +32,7 @@ module.exports = {
         })
         client.commands = commands
         console.log("Comamnds Reloaded!")
+        sendMessage.execute(message, "Commands reloaded!")
         
     }
 }
