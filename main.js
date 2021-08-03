@@ -14,6 +14,7 @@ client.queueMessages = new Discord.Collection();
 client.queueEmbeds = new Discord.Collection();
 client.queueIntervals = new Discord.Collection();
 client.functions = new Discord.Collection();
+client.queueReactionsCollections = new Discord.Collection();
 
 console.log("Loading Events")
 
