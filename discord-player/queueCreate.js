@@ -9,7 +9,7 @@ module.exports = (client, message, queue) => {
         
 
         client.queueMessages.set(message.guild.id, message)
-        console.log(`Set message to ${message.guild.id}`)
+        console.log(`Queue created in server ${message.guild.id}`)
         await message.react('❤️')
         const filter = (reaction, user) => {return reaction.emoji.name === '❤️'}
         const collector = message.createReactionCollector(filter)
@@ -18,7 +18,7 @@ module.exports = (client, message, queue) => {
             const likedSongs = require(reqPath)
             const song = client.player.nowPlaying(message)
             const url = song.url
-            var userLikedSongs = likedSongs[message.author.id]
+            var userLikedSongs = likedSongs[user.id]
             if (!userLikedSongs) {
                 userLikedSongs = new Array();
             }
@@ -30,12 +30,13 @@ module.exports = (client, message, queue) => {
                 userLikedSongs.push(url)
                 sendMessage.execute(message, `<@${user.id}>, Added ${song.title} to your liked playlist!`)
             }
-            likedSongs[message.author.id] = userLikedSongs
+            likedSongs[user.id] = userLikedSongs
             fs.writeFile(reqPath, JSON.stringify(likedSongs), function(err) {
                 if (err) {
                     console.error(`An Error has occured! ${err}`)
                 }
             })
+            message.reactions.resolve('❤️').users.remove(user.id)
         })
     })
 }
