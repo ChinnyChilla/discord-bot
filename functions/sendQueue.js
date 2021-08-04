@@ -31,7 +31,6 @@ module.exports = {
             const discordEmbed = new Discord.MessageEmbed()
             .setTitle(`Now Playing: ${tracks[0].title}`)
             .setURL(tracks[0].url)
-            .setImage('https://media.tenor.com/images/5eb0693c2e72e93563ed6bbec35be6a4/tenor.gif')
             //('0' + time).slice(-2) used to add another 0 if <10
             .setFooter(`Queue Length ${('0' + time[0]).slice(-2)}:${('0' + time[1]).slice(-2)}:${('0' + time[2]).slice(-2)}`,
                         'https://media.discordapp.net/attachments/810009113009979394/821078381419561000/Anime_Girl.gif')
@@ -75,7 +74,7 @@ module.exports = {
                     }
                     discordEmbed.setDescription(`Author: ${tracks[0].author} \n` + repeat + progressionBar)
                     EmbedID.edit(discordEmbed).catch("Something went wrong when editing")
-                }, 3000);
+                }, 2000);
                 client.queueIntervals.set(message.guild.id, interval)
             }
 
