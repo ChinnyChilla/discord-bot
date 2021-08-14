@@ -13,23 +13,28 @@ module.exports = {
         const Discord = require('discord.js')
         const fs = require('fs')
         var reqPath = path.join(__dirname, '../../config.json')
+        delete require.cache[reqPath]
         const config = require(reqPath)
+        
 
         client.config = config;
         var commands = new Discord.Collection();
 
         console.log("Reloading commands")
         reqPath = path.join(__dirname, '../../commands')
+        delete require.cache[reqPath]
         fs.readdirSync(reqPath).forEach(dir => {
             const files = fs.readdirSync(`${reqPath}/${dir}`);
             files.forEach(file => {
                 if (file.endsWith(".js")) {
+                    delete require.cache[require.resolve(`${reqPath}/${dir}/${file}`)]
                     console.log("Loading command: " + file)
                     var command = require(`${reqPath}/${dir}/${file}`)
                     commands.set(command.name.toLowerCase(), command)
                 }
             })
         })
+        client.commands = []
         client.commands = commands
         console.log("Comamnds Reloaded!")
         sendMessage.execute(message, "Commands reloaded!")
