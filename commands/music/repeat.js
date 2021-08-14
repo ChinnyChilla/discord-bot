@@ -2,7 +2,7 @@ module.exports = {
     name: 'repeat',
     category: 'music',
     description: 'Repeats music/entire queue',
-    args: "[, stop, queue, queue stop]",
+    args: "[stop, queue, queue stop]",
     execute(client, message, args) {
         const sendMessage = client.functions.get('sendMessageTemp')
         if (!args[0]) {
