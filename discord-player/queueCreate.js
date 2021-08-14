@@ -31,6 +31,7 @@ module.exports = (client, message, queue) => {
                 sendMessage.execute(message, `<@${user.id}>, Added ${song.title} to your liked playlist!`)
             }
             likedSongs[user.id] = userLikedSongs
+            // going to save Track objects instead of just urls in the future
             fs.writeFile(reqPath, JSON.stringify(likedSongs), function(err) {
                 if (err) {
                     console.error(`An Error has occured! ${err}`)
