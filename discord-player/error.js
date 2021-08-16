@@ -1,4 +1,5 @@
-module.exports = (client, error, message) => {
+module.exports = (queue, error) => {
+    const message = queue.metadata
     const sendMessage = client.functions.get('sendMessageTemp')
     if (error = "NotPlaying") {
         sendMessage.execute(message, "The bot is currently not playing anything!")
