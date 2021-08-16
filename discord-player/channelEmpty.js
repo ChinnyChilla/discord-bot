@@ -1,10 +1,11 @@
-module.exports = (client, message, queue) => {
-    message = client.queueMessages.get(message.guild.id)
+module.exports = (queue) => {
+    const guildID = queue.metadata.guild.id
+    message = client.queueMessages.get(guildID)
     message.delete().then(message => {
-        client.queueMessages.delete(message.guild.id)
+        client.queueMessages.delete(guildID)
     })
-    clearInterval(client.queueIntervals.get(message.guild.id))
-    client.queueIntervals.delete(message.guild.id)
+    clearInterval(client.queueIntervals.get(guildID))
+    client.queueIntervals.delete(guildID)
     client.user.setPresence({ status: 'idle' })
     client.functions.get('sendMessageTemp').execute(message, "Channel empty, Leaving!")
 }
