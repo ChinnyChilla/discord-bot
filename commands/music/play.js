@@ -3,7 +3,7 @@ module.exports = {
     category: 'music',
     description: 'Plays the song',
     args: '[link/title/playlist]',
-    execute(client, message, args) {
+    async execute(client, message, args) {
         const sendMessage = client.functions.get("sendMessageTemp")
         if (!message.member.voice.channel) {
             return sendMessage.execute(message, "Please join a voice channel")
@@ -36,6 +36,18 @@ module.exports = {
             return
             
         }
-        client.player.play(message, args.join(" "), {firstResult: true})
+        const queue = client.player.createQueue(message.guild, {metadata: message});
+        const song = await client.player.search(args.join(" "), {
+            requestedBy: message.author
+        })
+        try {
+            await queue.connect(message.member.voice.channel)
+        } catch {
+            sendMessage.execute(message, "Failed to join your voice channel!")
+        }
+
+        queue.addTrack(song.tracks[0])
+        queue.play();
+
     }
 }
