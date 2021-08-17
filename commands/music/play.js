@@ -1,8 +1,16 @@
 module.exports = {
     name: 'play',
-    category: 'music',
-    description: 'Plays the song',
-    args: '[link/title/playlist]',
+    description: 'Plays a song',
+    options: [
+        {
+            type: 3,
+            name: "song",
+            description: "Song/Playlist URL/title",
+            required: true,
+            
+        }
+    ],
+    
     async execute(client, message, args) {
         const sendMessage = client.functions.get("sendMessageTemp")
         if (!message.member.voice.channel) {

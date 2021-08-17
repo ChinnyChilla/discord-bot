@@ -1,12 +1,13 @@
-module.exports = (client, message) => {
+module.exports = async (client, interaction) => {
     // Ignore if by a bot or not prefix
-    if (message.author.bot || !message.content.startsWith(client.config.prefix)) {return}
+    console.log(interaction)
+    if (!interaction.isCommand()) {return}
     // splits by spaces and removes prefix
     const args = message.content.slice(client.config.prefix.length).trim().split(' ')
     // gets the commmand from the message
     const msgCommand = args[0].toLowerCase()
     // find the command in commands collection
-    const command = client.commands.get(msgCommand)
+    const command = interaction.commandName
     // if command found then execute it
     args.shift()
     if (command) {
