@@ -10,15 +10,15 @@ const fs = require('fs');
 
 const { Player } = require('discord-player')
 
-var commands = []
+const commands = new Array();
 client.player = new Player(client);
 // client.config = config;
 // client.commands = new Discord.Collection();
-client.queueMessages = new Array();
-client.queueEmbeds = new Array();
-client.queueIntervals = new Array();
-client.functions = new Array();
-client.queueReactionsCollections = new Array();
+client.queueMessages = new Map();
+client.queueEmbeds = new Map();
+client.queueIntervals = new Map();
+client.functions = new Map();
+client.queueReactionsCollections = new Map();
 
 console.log("Loading Events")
 
@@ -48,32 +48,33 @@ fs.readdirSync('./discord-player').forEach(file => {
 console.log("Events Loaded!")
 
 
-console.log("Loading commands")
-fs.readdirSync('./commands').forEach(dir => {
-    const files = fs.readdirSync(`./commands/${dir}`);
-    files.forEach(file => {
-        if (file.endsWith(".js")) {
-            console.log("Loading command: " + file)
-            var command = require(`./commands/${dir}/${file}`)
-            commands.push(command)
-            // client.commands.set(command.name.toLowerCase(), command)
-        };
-    });
-});
+console.log("Started refreshing application (/) commands.");
 
-console.log("Comamnds Loaded!");
-async function setCommands() {
+async function refreshCommands() {
+    fs.readdirSync('./commands').forEach(dir => {
+        const files = fs.readdirSync(`./commands/${dir}`);
+        files.forEach(file => {
+            if (file.endsWith(".js")) {
+                console.log("Loading command: " + file)
+                var command = require(`./commands/${dir}/${file}`)
+                commands.push(command)
+                // client.commands.set(command.name.toLowerCase(), command)
+            };
+        });
+    });
+    console.log(commands)
     try {
-        console.log("Started refreshing application (/) commands.");
 
         await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID), 
-        {body: commands});
+        { body: commands });
         console.log("Successfully reloaded application (/) commands.");
     } catch (err) {
+        console.log("REFRESHING SLASH COMMANDS FAILED")
         console.error(err);
     };
 };
-setCommands()
+refreshCommands()
+
 
 console.log("Loading Functions");
 fs.readdirSync('./functions').forEach(file => {
