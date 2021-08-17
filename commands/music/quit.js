@@ -3,7 +3,7 @@ module.exports = {
     category: 'music',
     description: 'Quits playing',
     args: '',
-    execute(client, message, args) {
+    execute(client, interaction) {
         const func = client.functions.get('sendMessageTemp')
         client.player.stop(message)
         func.execute(message, "Quitted")

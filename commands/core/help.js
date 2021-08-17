@@ -3,7 +3,7 @@ module.exports = {
     category: 'core',
     description: 'DMs the user all commands',
     args: '',
-    execute(client, message, args) {
+    execute(client, interaction) {
         const fs = require('fs')
         const path = require('path')
         message.author.createDM().then(function() {

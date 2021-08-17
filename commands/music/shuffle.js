@@ -3,7 +3,7 @@ module.exports = {
     category: 'music',
     description: 'Shuffles the queue',
     args: '',
-    execute(client, message, args) {
+    execute(client, interaction) {
         const func = client.functions.get('sendMessageTemp')
         client.player.shuffle(message)
         func.execute(message, "Shuffled!")

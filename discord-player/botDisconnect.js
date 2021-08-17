@@ -1,4 +1,4 @@
-module.exports = (queue) => {
+module.exports = (client, queue) => {
     console.log("Bot has disconnected")
     const guildID = queue.metadata.guild.id
     try {

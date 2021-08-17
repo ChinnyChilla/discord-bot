@@ -1,4 +1,4 @@
-module.exports = (queue) => {
+module.exports = (client, queue) => {
     const guildID = queue.metadata.guild.id
     message = client.queueMessages.get(guildID)
     message.delete().then(message => {

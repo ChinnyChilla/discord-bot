@@ -3,7 +3,7 @@ module.exports = {
     category: 'music',
     description: 'Repeats music/entire queue',
     args: "[stop, queue, queue stop]",
-    execute(client, message, args) {
+    execute(client, interaction) {
         const sendMessage = client.functions.get('sendMessageTemp')
         if (!args[0]) {
             client.player.setRepeatMode(message, true)

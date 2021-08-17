@@ -3,7 +3,7 @@ module.exports = {
     category: 'core',
     description: 'Reload all the commands of the discord bot (REQUIRES DEV)',
     args: '',
-    execute(client, message, args) {
+    execute(client, interaction) {
         const sendMessage = client.functions.get('sendMessageTemp')
         if (message.author.id !== client.config.devID) {
             sendMessage.execute(message, `<@${message.author.id}>You must be the developer in order to use this!`)

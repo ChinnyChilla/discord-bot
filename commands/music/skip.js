@@ -3,7 +3,7 @@ module.exports = {
     category: 'music',
     description: 'Skips song(s)',
     args: '[Amount of times]',
-    execute(client, message, args) {
+    execute(client, interaction) {
         const sendMessage = client.functions.get('sendMessageTemp')
         if (!args[0]) {
             client.player.skip(message)
@@ -14,7 +14,7 @@ module.exports = {
                 client.player.jump(message, parseInt(args[0]))
                 sendMessage.execute(message, `Skipping ${args[0]} times!`)
             } else {
-                client.commands.get('quit').execute(client, message, args)
+                client.commands.get('quit').execute(client, interaction)
             }
         } else {
             client.player.skip(message)

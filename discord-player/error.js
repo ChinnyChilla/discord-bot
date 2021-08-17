@@ -1,4 +1,4 @@
-module.exports = (queue, error) => {
+module.exports = (client, queue, error) => {
     const message = queue.metadata
     const sendMessage = client.functions.get('sendMessageTemp')
     if (error = "NotPlaying") {

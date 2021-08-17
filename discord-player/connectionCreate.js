@@ -1,5 +1,4 @@
-module.exports = (queue, connection) => {
-    const message = queue.metadata
+module.exports = async (client, queue, connection) => {
     console.log(`Connection established in server ${queue.metadata.guild.id}`)
     message.channel.send('\u200B').then(async function (message) {
         const path = require('path');
