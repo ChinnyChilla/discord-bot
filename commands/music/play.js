@@ -29,16 +29,13 @@ module.exports = {
             const {name, value} = option
             args[name] = value
         }
-        
-        if (!client.player.getQueue(interaction.guild)) {
-            const queue = client.player.createQueue(interaction.guild, {metadata: interaction});
-            if (!client.queueMessages.get(interaction.guild.id)) {
-                const queueMessage = await interaction.channel.send('\u200B')
-                client.queueMessages.set(interaction.guild.id, queueMessage)
-            }
-        } else {
-            const queue = client.player.getQueue(interaction.guild)
+
+        const queue = client.player.createQueue(interaction.guild, {metadata: interaction});
+        if (!client.queueMessages.get(interaction.guild.id)) {
+            const queueMessage = await interaction.channel.send('\u200B')
+            client.queueMessages.set(interaction.guild.id, queueMessage)
         }
+        
         const song = await client.player.search(args['song'], {
             requestedBy: interaction.member
         })
