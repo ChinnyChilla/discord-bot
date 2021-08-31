@@ -36,6 +36,8 @@ module.exports = {
                 const queueMessage = await interaction.channel.send('\u200B')
                 client.queueMessages.set(interaction.guild.id, queueMessage)
             }
+        } else {
+            const queue = client.player.getQueue(interaction.guild)
         }
         const song = await client.player.search(args['song'], {
             requestedBy: interaction.member
