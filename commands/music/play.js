@@ -30,7 +30,7 @@ module.exports = {
             args[name] = value
         }
         const queue = client.player.getQueue(interaction.guild)
-        if (!queue) {queue = client.player.createQueue(interaction.guild, {metadata: interaction});
+        if (!queue) {queue = client.player.createQueue(interaction.guild, {metadata: interaction})}
         if (!client.queueMessages.get(interaction.guild.id)) {
             const queueMessage = await interaction.channel.send('\u200B')
             client.queueMessages.set(interaction.guild.id, queueMessage)
@@ -56,6 +56,6 @@ module.exports = {
             interaction.editReply("Track added!")
             await queue.addTrack(song.tracks[0])
         }
-        if (!queue.playing) {queue.play();}
+        if (!queue.playing) {queue.play()}
     }
 }
