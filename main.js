@@ -1,7 +1,7 @@
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('discord-api-types/v9')
 
-const { Client, Intents } = require('discord.js');
+const { Collection, Client, Intents } = require('discord.js');
 
 const rest = new REST({version: '9'}).setToken(process.env.DISCORD_TOKEN)
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_VOICE_STATES]})
@@ -10,15 +10,13 @@ const fs = require('fs');
 
 const { Player } = require('discord-player')
 
-const commands = new Array();
+client.commands = new Array();
 client.player = new Player(client);
-// client.config = config;
-// client.commands = new Discord.Collection();
-client.queueMessages = new Map();
-client.queueEmbeds = new Map();
-client.queueIntervals = new Map();
-client.functions = new Map();
-client.queueReactionsCollections = new Map();
+client.queueMessages = new Collection();
+client.queueEmbeds = new Collection();
+client.queueIntervals = new Collection();
+client.functions = new Collection();
+client.queueReactionsCollections = new Collection();
 
 console.log("Loading Events")
 
@@ -57,16 +55,19 @@ async function refreshCommands() {
             if (file.endsWith(".js")) {
                 console.log("Loading command: " + file)
                 var command = require(`./commands/${dir}/${file}`)
-                commands.push(command)
+                client.commands.push(command)
                 // client.commands.set(command.name.toLowerCase(), command)
             };
         });
     });
-    console.log(commands)
     try {
-
+        if (process.env.TEST_SERVER_GUILD_ID){
+            await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID, process.env.TEST_SERVER_GUILD_ID),
+            { body: client.commands });
+            console.log("Reloaded application (/) commands in test server")
+        }
         await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID), 
-        { body: commands });
+        { body: client.commands });
         console.log("Successfully reloaded application (/) commands.");
     } catch (err) {
         console.log("REFRESHING SLASH COMMANDS FAILED")
