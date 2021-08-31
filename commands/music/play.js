@@ -36,28 +36,28 @@ module.exports = {
                 const queueMessage = await interaction.channel.send('\u200B')
                 client.queueMessages.set(interaction.guild.id, queueMessage)
             }
-            const song = await client.player.search(args['song'], {
-                requestedBy: interaction.member
-            })
-            if (args['liked']) {
-                return interaction.editReply('will add later')
-            }
+        }
+        const song = await client.player.search(args['song'], {
+            requestedBy: interaction.member
+        })
+        if (args['liked']) {
+            return interaction.editReply('will add later')
+        }
 
-            try {
-                await queue.connect(interaction.member.voice.channel)
-            } catch {
-                console.error("Failed to join voice channel")
-                interaction.editReply("Failed to join your voice channel!")
-            }
-            if (song.playlist) {
-                interaction.editReply("Tracks added!")
-                await queue.addTracks(song.playlist.tracks)
-                queue.play();
-            } else {
-                interaction.editReply("Track added!")
-                await queue.addTrack(song.tracks[0])
-                queue.play();
-            }
-        } 
+        try {
+            await queue.connect(interaction.member.voice.channel)
+        } catch {
+            console.error("Failed to join voice channel")
+            interaction.editReply("Failed to join your voice channel!")
+        }
+        if (song.playlist) {
+            interaction.editReply("Tracks added!")
+            await queue.addTracks(song.playlist.tracks)
+            queue.play();
+        } else {
+            interaction.editReply("Track added!")
+            await queue.addTrack(song.tracks[0])
+            queue.play();
+        }
     }
 }
