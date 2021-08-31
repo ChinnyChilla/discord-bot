@@ -29,7 +29,7 @@ module.exports = {
             const {name, value} = option
             args[name] = value
         }
-        const queue = client.player.getQueue(interaction.guild)
+        var queue = client.player.getQueue(interaction.guild)
         if (!queue) {queue = client.player.createQueue(interaction.guild, {metadata: interaction})}
         if (!client.queueMessages.get(interaction.guild.id)) {
             const queueMessage = await interaction.channel.send('\u200B')
