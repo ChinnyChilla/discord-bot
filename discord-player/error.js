@@ -1,23 +1,31 @@
 module.exports = (client, queue, error) => {
-    const message = queue.metadata
-    const sendMessage = client.functions.get('sendMessageTemp')
+    function sendMessage(data) {
+        try {
+            queue.metadata.channel.send(message).then(function(message) {
+                message.delete({timeout: 30000})
+            })
+        } catch (err) {
+            console.log(`Error: ${err}`)
+            console.log("Probably no queue metadata")
+        }
+    }
     if (error = "NotPlaying") {
-        sendMessage.execute(message, "The bot is currently not playing anything!")
+        sendMessage("The bot is currently not playing anything!")
         console.error("NotPlaying Error")
     } else if (error = "UnableToJoin") {
-        sendMessage.execute(message, "Could not join the channel!")
+        sendMessage("Could not join the channel!")
         console.error("UnableToJoin Error")
     } else if (error = "NotConnected") {
-        sendMessage.execute(message, "The bot is currently not connected!")
+        sendMessage("The bot is currently not connected!")
         console.error("NotConnected Error")
     } else if (error = "ParseError") {
-        sendMessage.execute(message, "The bot could not parse. \n Please try again!")
+        sendMessage("The bot could not parse. \n Please try again!")
         console.error("ParseError Error")
     } else if (error = "LiveVideo") {
-        sendMessage.execute(message, "Something live video error")
+        sendMessage("Something live video error")
         console.error("LiveVideo Error")
     } else if (error = "VideoUnavailable") {
-        sendMessage.execute(message, "This video is currently unavailable!")
+        sendMessage("This video is currently unavailable!")
         console.error("VideoUnavailable Error")
     } else {
         message.channel.send(`An error has occured! Please contact the developer \n Error: ${error}`).then(function(message) {

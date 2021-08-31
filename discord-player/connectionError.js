@@ -1,4 +1,5 @@
 module.exports = (client, queue, error) => {
     console.error("Connection error")
-    console.error(error)
+    const interaction = queue.metadata
+    client.functions.get('interactionEdit').execute(interaction, "Connection error")
 }
