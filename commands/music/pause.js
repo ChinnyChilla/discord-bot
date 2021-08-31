@@ -1,16 +1,13 @@
 module.exports = {
     name: 'pause',
-    category: 'music',
     description: 'Pauses music',
+    category: 'music',
     args: '',
     execute(client, interaction) {
-        const sendMessage = client.functions.get('sendMessageTemp')
-        if (client.player.getQueue(message).paused) {
-            sendMessage.execute(message, "It is already paused!")
-        } else {
-            sendMessage.execute(message, "Pausing!")
-            client.player.pause(message)
-        }
-        client.functions.get('sendQueue').execute(client, message)
+        const queue = client.player.getQueue(interaction.guild)
+        if (!queue) {return interaction.editReply("There is currently no queue!")}
+        queue.setPaused(true)
+        interaction.editReply("Pausing!")
+        client.functions.get('updateQueue').execute(client, queue, true)
     }
 }

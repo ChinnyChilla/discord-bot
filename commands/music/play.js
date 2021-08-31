@@ -1,61 +1,63 @@
 module.exports = {
     name: 'play',
     description: 'Plays a song',
+    category: 'music',
     options: [
         {
             type: 3,
             name: "song",
-            description: "Song/Playlist URL/title",
+            description: "Song URL/Title or Playlist URL",
             required: true,
-            
+        },
+        {
+            type: 5,
+            name: "liked",
+            description: "Play your liked songs playlist (overrides the song query)"
         }
     ],
     
-    async execute(client, message, args) {
-        const sendMessage = client.functions.get("sendMessageTemp")
-        if (!message.member.voice.channel) {
-            return sendMessage.execute(message, "Please join a voice channel")
+    async execute(client, interaction) {
+        const interactionEdit = client.functions.get("interactionEdit")
+        if (!interaction.member.voice.channel) {
+            return interaction.editReply("Please join a voice channel")
         }
-        if (!args[0]) {
-            return sendMessage.execute(message, "Please send a link or title of song")
+        
+
+        const options = interaction.options.data
+        const args = {}
+        for (const option of options) {
+            const {name, value} = option
+            args[name] = value
         }
-        if  (args[0] == ".liked") {
-            const fs = require('fs');
-            const path = require('path');
-            const reqPath = path.join(__dirname, '../../data/likedSongs.json')
-            const data = require(reqPath)
-            if (!data[message.author.id] || data[message.author.id].length == 0) {return sendMessage.execute(message, "Please first like some songs!")}
-
-            const songs = data[message.author.id]
-
-            
-            var promises = new Array();
-            songs.forEach(async song => {
-                promises.push(new Promise((resolve, reject) => {
-                    client.player.play(message, song, {firstResult: true}).then(() => {resolve('Success')}).catch(err => {reject(err)})
-                }))
-                
-            })
-            async function checkPromises() {
-                await Promise.all(promises)
-                sendMessage.execute(message, `<@${message.author.id}>, Playing all your liked songs!>`)
+        
+        if (!client.player.getQueue(interaction.guild)) {
+            const queue = client.player.createQueue(interaction.guild, {metadata: interaction});
+            if (!client.queueMessages.get(interaction.guild.id)) {
+                const queueMessage = await interaction.channel.send('\u200B')
+                client.queueMessages.set(interaction.guild.id, queueMessage)
             }
-            checkPromises();
-            return
-            
-        }
-        const queue = client.player.createQueue(message.guild, {metadata: message});
-        const song = await client.player.search(args.join(" "), {
-            requestedBy: message.author
-        })
-        try {
-            await queue.connect(message.member.voice.channel)
-        } catch {
-            sendMessage.execute(message, "Failed to join your voice channel!")
-        }
+            const song = await client.player.search(args['song'], {
+                requestedBy: interaction.member
+            })
+            if (args['liked']) {
+                return interaction.editReply('will add later')
+            }
 
-        queue.addTrack(song.tracks[0])
-        queue.play();
-
+            try {
+                await queue.connect(interaction.member.voice.channel)
+            } catch {
+                console.error("Failed to join voice channel")
+                interaction.editReply("Failed to join your voice channel!")
+            }
+            if (song.playlist) {
+                interaction.editReply("Tracks added!")
+                await queue.addTracks(song.playlist.tracks)
+                queue.play();
+            } else {
+                interaction.editReply("Track added!")
+                await queue.addTrack(song.tracks[0])
+                queue.play();
+            }
+        } 
     }
 }

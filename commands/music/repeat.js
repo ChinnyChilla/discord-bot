@@ -1,25 +1,50 @@
 module.exports = {
     name: 'repeat',
+    description: 'Repeats current track or entire queue',
     category: 'music',
-    description: 'Repeats music/entire queue',
-    args: "[stop, queue, queue stop]",
-    execute(client, interaction) {
-        const sendMessage = client.functions.get('sendMessageTemp')
-        if (!args[0]) {
-            client.player.setRepeatMode(message, true)
-            sendMessage.execute(message, "Repeating current song!")
-        } else if (args[0].toLowerCase() == 'stop') {
-            client.player.setRepeatMode(message, false)
-            sendMessage.execute(message, "Stopped repeating current song!")
-        } else if (args[0].toLowerCase() == 'queue') {
-            if (!args[1]) {
-                client.player.setLoopMode(message, true)
-                sendMessage.execute(message, "Repeating current queue!")
-            } else if (args[1].toLowerCase() == 'stop') {
-                client.player.setLoopMode(message, false)
-                sendMessage.execute(message, "Stopped repeating current queue!")
-            }
+    options: [
+        {
+            name: "mode",
+            type: 4,
+            description: "Repeat mode",
+            required: true,
+            choices: [
+                {
+                    name: "Off",
+                    value: 0
+                   
+                },
+                {
+                    name: "Track",
+                    value: 1,
+                    description: "Repeat track"
+                },
+                {
+                    name: "Queue",
+                    value: 2,
+                    description: "Repeat queue"
+                },
+            ]
         }
-        client.functions.get('sendQueue').execute(client, message)
+    ],
+    execute(client, interaction) {
+        const args = {}
+        for (const option of interaction.options.data) {
+            const {name, value} = option
+            args[name] = value
+        }
+        const queue = client.player.getQueue(interaction.guild)
+        if (!queue) {return interaction.editReply("There is currently no queue!")}
+        if (args['mode'] == 1) {
+            queue.setRepeatMode(1)
+            interaction.editReply('Repeating song!')
+        } else if (args['mode'] == 2){
+            queue.setRepeatMode(2)
+            interaction.editReply('Repeating queue!')
+        } else {
+            queue.setRepeatMode(0)
+            interaction.editReply('Stopped repeating!')
+        }
+        client.functions.get('updateQueue').execute(client, queue)
     }
 }
