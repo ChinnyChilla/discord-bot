@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client()
 const config = require('./config.json');
 const fs = require('fs');
-
+require('dotenv').config()
 const { Player } = require('discord-player')
 
 client.player = new Player(client, {leaveOnEnd: true, leaveOnEmpty: true,
