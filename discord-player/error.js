@@ -1,7 +1,7 @@
 module.exports = (client, queue, error) => {
     function sendMessage(data) {
         try {
-            queue.metadata.channel.send(message).then(function(message) {
+            queue.metadata.channel.send(data).then(function(message) {
                 message.delete({timeout: 30000})
             })
         } catch (err) {
