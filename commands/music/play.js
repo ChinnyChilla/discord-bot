@@ -13,11 +13,15 @@ module.exports = {
             type: 5,
             name: "liked",
             description: "Play your liked songs playlist (overrides the song query)"
+        },
+        {
+            type: 5,
+            name: 'shuffle',
+            description: "Shuffle the queue when you add it."
         }
     ],
     
     async execute(client, interaction) {
-        const interactionEdit = client.functions.get("interactionEdit")
         if (!interaction.member.voice.channel) {
             return interaction.editReply("Please join a voice channel")
         }
@@ -31,8 +35,11 @@ module.exports = {
         }
         var queue = client.player.getQueue(interaction.guild)
         if (!queue) {queue = client.player.createQueue(interaction.guild, {metadata: interaction})}
+        if (interaction.channel.id != queue.metadata.channel.id) {
+            return interaction.editReply(`For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
+        }
         if (!client.queueMessages.get(interaction.guild.id)) {
-            const queueMessage = await interaction.channel.send('\u200B')
+            const queueMessage = await interaction.channel.send(`Bound to <#${interaction.channel.id}>`)
             client.queueMessages.set(interaction.guild.id, queueMessage)
         }
         
@@ -42,19 +49,21 @@ module.exports = {
         if (args['liked']) {
             return interaction.editReply('will add later')
         }
-
         try {
-            await queue.connect(interaction.member.voice.channel)
-        } catch {
-            console.error("Failed to join voice channel")
-            interaction.editReply("Failed to join your voice channel!")
-        }
+                if (!queue.connection) {await queue.connect(interaction.member.voice.channel)}
+            } catch {
+                console.error("Failed to join voice channel")
+                interaction.editReply("Failed to join your voice channel!")
+            }
         if (song.playlist) {
-            interaction.editReply("Tracks added!")
+            interaction.editReply(`Playlist ${song.playlist.title} added!`)
             await queue.addTracks(song.playlist.tracks)
         } else {
-            interaction.editReply("Track added!")
+            interaction.editReply(`Track ${song.tracks[0].title} added!`)
             await queue.addTrack(song.tracks[0])
+        }
+        if (args['shuffle']) {
+            queue.shuffle()
         }
         if (!queue.playing) {queue.play()}
     }
