@@ -54,7 +54,6 @@ module.exports = {
         if (!isInterval) {
             const interval = setInterval(() => {
                 var progressionBar = ""
-                var repeat = ''
                 const discordEmbed = client.queueEmbeds.get(guildID)
                 if (queue.tracks) {
                     progressionBar = queue.createProgressBar({
