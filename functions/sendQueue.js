@@ -45,7 +45,10 @@ module.exports = {
         } else {
             discordEmbed.setColor("GREEN")
         }
-
+        const repeatModes = ['TRACK', 'QUEUE', 'AUTOPLAY']
+        if (queue.repeatMode) {
+            discordEmbed.addField("Repeat mode:", repeatModes[queue.repeatMode - 1])
+        }
         client.queueEmbeds.set(guildID, discordEmbed)
         const isInterval = client.queueIntervals.get(guildID)
         if (!isInterval) {
@@ -61,12 +64,12 @@ module.exports = {
                         line: "─"
                     })
                 }
-                if (queue.repeatMode == 1) {
-                    repeat += "Repeating song! \n"
-                }
-                discordEmbed.setDescription(`Author: ${firstTrack.author} \n` + repeat + progressionBar)
+                discordEmbed.setDescription(`Author: ${firstTrack.author} \n ${progressionBar}`)
                 try {queueMessage.edit({embeds: [discordEmbed]}).catch("Something went wrong when editing")}
-                catch {client.functions.get('deleteQueue').execute(client, queue)}
+                catch {
+                    queue.destory()
+                    client.functions.get('deleteQueue').execute(client, queue)
+                }
             }, 2000);
             client.queueIntervals.set(guildID, interval)
         }

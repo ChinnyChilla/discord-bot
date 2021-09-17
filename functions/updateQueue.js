@@ -34,8 +34,9 @@ module.exports = {
         } else {
             discordEmbed.setColor("GREEN")
         }
-        if (queue.repeatMode == 2) {
-            discordEmbed.addField('\u200B', "Repeating Queue!")
+        if (queue.repeatMode) {
+            const repeatModes = ['TRACK', 'QUEUE', 'AUTOPLAY']
+            discordEmbed.addField("Repeat mode:", repeatModes[queue.repeatMode - 1])
         }
         client.queueEmbeds.set(guildID, discordEmbed)
     }
