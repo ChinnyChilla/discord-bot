@@ -33,8 +33,7 @@ module.exports = {
             const {name, value} = option
             args[name] = value
         }
-        var queue = client.player.getQueue(interaction.guild)
-        if (!queue) {queue = client.player.createQueue(interaction.guild, {metadata: interaction})}
+        var queue = client.player.createQueue(interaction.guild, {metadata: interaction})
         if (interaction.channel.id != queue.metadata.channel.id) {
             return interaction.editReply(`For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
         }
@@ -63,8 +62,8 @@ module.exports = {
             await queue.addTrack(song.tracks[0])
         }
         if (args['shuffle']) {
-            queue.shuffle()
+            await queue.shuffle()
         }
-        if (!queue.playing) {queue.play()}
+        if (!queue.playing) {await queue.play()}
     }
 }

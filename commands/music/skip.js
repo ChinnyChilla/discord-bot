@@ -35,6 +35,7 @@ module.exports = {
         } else {
             if (queue.tracks.length == 0) {
                 interaction.editReply('No more songs, quitting')
+                queue.destroy();
                 return client.functions.get('deleteQueue').execute(client, queue)
             }
             queue.skip()

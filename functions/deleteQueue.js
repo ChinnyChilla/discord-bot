@@ -6,11 +6,13 @@ module.exports = {
     execute(client, queue) {
         const guildID = queue.guild.id
         queueMessage = client.queueMessages.get(guildID)
-        if (!queueMessage.deleted) {
+        if(queueMessage) {
+             if (!queueMessage.deleted) {
             queueMessage.delete().then(message => {
                 client.queueMessages.delete(guildID)
             })
             .catch(err => {console.log(err)})
+            }
         }
 
         if (client.queueIntervals.get(guildID)) {

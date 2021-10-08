@@ -1,7 +1,7 @@
 module.exports = {
     name: 'sendQueue',
     category: 'functions',
-    description: 'Sends the queue',
+    description: 'Sends the queue after every song',
     args: '[client, queue]',
     execute(client, queuetemp, firstTrack) {
         const guildID = queuetemp.metadata.guild.id
@@ -64,6 +64,7 @@ module.exports = {
                     })
                 }
                 discordEmbed.setDescription(`Author: ${firstTrack.author} \n ${progressionBar}`)
+                
                 try {queueMessage.edit({embeds: [discordEmbed]}).catch("Something went wrong when editing")}
                 catch {
                     queue.destory()
