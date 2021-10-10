@@ -1,41 +1,69 @@
 module.exports = {
     name: 'play',
+    description: 'Plays a song',
     category: 'music',
-    description: 'Plays the song',
-    args: '[link/title/playlist]',
-    execute(client, message, args) {
-        const sendMessage = client.functions.get("sendMessageTemp")
-        if (!message.member.voice.channel) {
-            return sendMessage.execute(message, "Please join a voice channel")
+    options: [
+        {
+            type: 3,
+            name: "song",
+            description: "Song URL/Title or Playlist URL",
+            required: true,
+        },
+        {
+            type: 5,
+            name: "liked",
+            description: "Play your liked songs playlist (overrides the song query)"
+        },
+        {
+            type: 5,
+            name: 'shuffle',
+            description: "Shuffle the queue when you add it."
         }
-        if (!args[0]) {
-            return sendMessage.execute(message, "Please send a link or title of song")
+    ],
+    
+    async execute(client, interaction) {
+        if (!interaction.member.voice.channel) {
+            return interaction.editReply("Please join a voice channel")
         }
-        if  (args[0] == ".liked") {
-            const fs = require('fs');
-            const path = require('path');
-            const reqPath = path.join(__dirname, '../../data/likedSongs.json')
-            const data = require(reqPath)
-            if (!data[message.author.id] || data[message.author.id].length == 0) {return sendMessage.execute(message, "Please first like some songs!")}
+        
 
-            const songs = data[message.author.id]
-
-            
-            var promises = new Array();
-            songs.forEach(async song => {
-                promises.push(new Promise((resolve, reject) => {
-                    client.player.play(message, song, {firstResult: true}).then(() => {resolve('Success')}).catch(err => {reject(err)})
-                }))
-                
-            })
-            async function checkPromises() {
-                await Promise.all(promises)
-                sendMessage.execute(message, `<@${message.author.id}>, Playing all your liked songs!>`)
+        const options = interaction.options.data
+        const args = {}
+        for (const option of options) {
+            const {name, value} = option
+            args[name] = value
+        }
+        var queue = client.player.createQueue(interaction.guild, {metadata: interaction})
+        if (interaction.channel.id != queue.metadata.channel.id) {
+            return interaction.editReply(`For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
+        }
+        if (!client.queueMessages.get(interaction.guild.id)) {
+            const queueMessage = await interaction.channel.send(`Bound to <#${interaction.channel.id}>`)
+            client.queueMessages.set(interaction.guild.id, queueMessage)
+        }
+        
+        const song = await client.player.search(args['song'], {
+            requestedBy: interaction.member
+        })
+        if (args['liked']) {
+            return interaction.editReply('will add later')
+        }
+        try {
+                if (!queue.connection) {await queue.connect(interaction.member.voice.channel)}
+            } catch {
+                console.error("Failed to join voice channel")
+                interaction.editReply("Failed to join your voice channel!")
             }
-            checkPromises();
-            return
-            
+        if (song.playlist) {
+            interaction.editReply(`Playlist ${song.playlist.title} added!`)
+            await queue.addTracks(song.playlist.tracks)
+        } else {
+            interaction.editReply(`Track ${song.tracks[0].title} added!`)
+            await queue.addTrack(song.tracks[0])
         }
-        client.player.play(message, args.join(" "), {firstResult: true})
+        if (args['shuffle']) {
+            await queue.shuffle()
+        }
+        if (!queue.playing) {await queue.play()}
     }
 }

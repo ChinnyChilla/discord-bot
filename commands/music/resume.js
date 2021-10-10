@@ -2,15 +2,14 @@ module.exports = {
     name: 'resume',
     category: 'music',
     description: 'Resumes music',
-    args: '',
-    execute(client, message, args) {
-        const sendMessage = client.functions.get('sendMessageTemp')
-        if (client.player.getQueue(message).paused) {
-            sendMessage.execute(message, "Resuming!")
-            client.player.resume(message)
-        } else {
-            sendMessage.execute(message, "It isn't paused!")
+    execute(client, interaction) {
+        const queue = client.player.getQueue(interaction.guild)
+        if (!queue) {return interaction.editReply("There is currently no queue!")}
+        if (interaction.channel.id != queue.metadata.channel.id) {
+            return interaction.editReply(`For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
         }
-        client.functions.get('sendQueue').execute(client, message)
+        queue.setPaused(false)
+        interaction.editReply('Resuming!')
+        client.functions.get('updateQueue').execute(client, queue)
     }
 }

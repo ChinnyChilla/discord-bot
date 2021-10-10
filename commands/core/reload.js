@@ -3,14 +3,14 @@ module.exports = {
     category: 'core',
     description: 'Reload all the commands of the discord bot (REQUIRES DEV)',
     args: '',
-    execute(client, message, args) {
-        const sendMessage = client.functions.get('sendMessageTemp')
-        if (message.author.id !== client.config.devID) {
-            sendMessage.execute(message, `<@${message.author.id}>You must be the developer in order to use this!`)
+    execute(client, interaction) {
+
+        if (interaction.user.id !== client.config.devID) {
+            interaction.editReply(`<@${message.author.id}>You must be the developer in order to use this!`)
             return
         }
         const path = require('path');
-        const Discord = require('discord.js')
+        const {Collection} = require('discord.js')
         const fs = require('fs')
         var reqPath = path.join(__dirname, '../../config.json')
         delete require.cache[reqPath]
@@ -18,7 +18,7 @@ module.exports = {
         
 
         client.config = config;
-        var commands = new Discord.Collection();
+        var commands = new Collection();
 
         console.log("Reloading commands")
         reqPath = path.join(__dirname, '../../commands')
@@ -28,7 +28,7 @@ module.exports = {
             files.forEach(file => {
                 if (file.endsWith(".js")) {
                     delete require.cache[require.resolve(`${reqPath}/${dir}/${file}`)]
-                    console.log("Loading command: " + file)
+                    console.log("Reloading command: " + file)
                     var command = require(`${reqPath}/${dir}/${file}`)
                     commands.set(command.name.toLowerCase(), command)
                 }
@@ -37,7 +37,7 @@ module.exports = {
         client.commands = []
         client.commands = commands
         console.log("Comamnds Reloaded!")
-        sendMessage.execute(message, "Commands reloaded!")
+        interaction.editReply("Commands reloaded!")
         
     }
 }

@@ -3,10 +3,14 @@ module.exports = {
     category: 'music',
     description: 'Shuffles the queue',
     args: '',
-    execute(client, message, args) {
-        const func = client.functions.get('sendMessageTemp')
-        client.player.shuffle(message)
-        func.execute(message, "Shuffled!")
-        client.functions.get('sendQueue').execute(client, message)
+    execute(client, interaction) {
+        const queue = client.player.getQueue(interaction.guild)
+        if (!queue) {return interaction.editReply("There is currently no queue!")}
+        if (interaction.channel.id != queue.metadata.channel.id) {
+            return interaction.editReply(`For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
+        }
+        queue.shuffle()
+        interaction.editReply("Shuffled!")
+        client.functions.get('updateQueue').execute(client, queue)
     }
 }

@@ -12,6 +12,6 @@
 
 or
 
-https://discord.com/api/oauth2/authorize?client_id=807085572388421682&permissions=8&scope=bot
+https://discord.com/api/oauth2/authorize?client_id=807085572388421682&permissions=8&scope=bot%20applications.commands
 
 and just invite it to your server

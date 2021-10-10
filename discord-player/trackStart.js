@@ -1,5 +1,3 @@
-module.exports = (client, message, track, queue) => {
-    client.functions.get('sendQueue').execute(client, message)
-    client.user.setPresence({ status: 'online' })
-    
+module.exports = (client, queue, track) => {
+    client.functions.get('sendQueue').execute(client, queue, track)
 }
