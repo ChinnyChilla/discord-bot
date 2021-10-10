@@ -1,3 +1,3 @@
 module.exports = (client, queue, message) => {
-    console.debug(`DEBUG MESSAGE (${queue.guild.id}): ${message}`)
+    client.functions.get('log').execute(queue.guild.id, `Debug Message: ${message}`)
 }

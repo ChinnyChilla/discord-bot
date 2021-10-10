@@ -11,6 +11,7 @@ module.exports = {
         }
         queue.shuffle()
         interaction.editReply("Shuffled!")
+        client.functions.get('log').execute(interaction.guildId, `Player shuffled`)
         client.functions.get('updateQueue').execute(client, queue)
     }
 }

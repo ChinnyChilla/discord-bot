@@ -1,5 +1,5 @@
 module.exports = async (client, queue, connection) => {
-    console.log(`Connection established in server ${queue.metadata.guild.id}`)
+    client.functions.get('log').execute(queue.guild.id, "Connection established")
 
     const path = require('path');
     const fs = require('fs');

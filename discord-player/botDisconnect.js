@@ -1,5 +1,5 @@
 module.exports = (client, queue) => {
-    console.log("Bot has been disconnected")
+    client.functions.get('log').execute(queue.guild.id, "Bot has disconnected")
     const guildID = queue.guild.id
     try {
         message = client.queueMessages.get(guildID)

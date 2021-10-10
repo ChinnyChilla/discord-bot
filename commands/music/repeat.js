@@ -47,7 +47,7 @@ module.exports = {
         } else {
             queue.setRepeatMode(0)
             interaction.editReply('Stopped repeating!')
-        }
+        }client.functions.get('log').execute(interaction.guildId, `Player repeatMode set to ${queue.repeatMode}`)
         client.functions.get('updateQueue').execute(client, queue)
     }
 }

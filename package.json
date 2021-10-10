@@ -17,6 +17,7 @@
     "@discord-player/extractor": "^3.0.2",
     "@discordjs/opus": "^0.5.3",
     "@discordjs/rest": "^0.1.0-canary.0",
+    "date-and-time": "^2.0.1",
     "discord-api-types": "^0.22.0",
     "discord-player": "^5.0.2",
     "discord.js": "^13.2.0",

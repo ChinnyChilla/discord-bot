@@ -46,12 +46,11 @@ module.exports = {
             requestedBy: interaction.member
         })
         if (args['liked']) {
-            return interaction.editReply('will add later')
+            return interaction.editReply('WIP')
         }
         try {
                 if (!queue.connection) {await queue.connect(interaction.member.voice.channel)}
             } catch {
-                console.error("Failed to join voice channel")
                 interaction.editReply("Failed to join your voice channel!")
             }
         if (song.playlist) {
@@ -64,6 +63,7 @@ module.exports = {
         if (args['shuffle']) {
             await queue.shuffle()
         }
+        client.functions.get('log').execute(interaction.guildId, `Player added song(s)`)
         if (!queue.playing) {await queue.play()}
     }
 }

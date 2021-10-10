@@ -16,29 +16,35 @@ module.exports = {
             const {name, value} = option
             args[name] = value
         }
+        
         const queue = client.player.getQueue(interaction.guild)
         if (!queue) {return interaction.editReply("There is currently no queue!")}
         if (interaction.channel.id != queue.metadata.channel.id) {
             return interaction.editReply(`For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
         }
+
         if (args['amount']) {
             if (args['amount'] < 0) { return interaction.editReply("Invalid number!")}
             if (args['amount'] > queue.tracks.length) {
-                client.functions.get('deleteQueue').execute(client, queue)
+                queue.destroy()
+                client.functions.get('log').execute(interaction.guildId, `Skipped all tracks`)
                 return interaction.editReply('Skipped all tracks!')
             }
             for (i = 0; i < args['amount']; i++) {
                 await queue.remove(0)
             }
             queue.skip()
+            client.functions.get('log').execute(interaction.guildId, `Played skipped ${args['amount']} tracks`)
             interaction.editReply(`Skipping ${args['amount']} tracks!`)
         } else {
             if (queue.tracks.length == 0) {
+                client.functions.get('log').execute(interaction.guildId, `Skipped last track, leaving`)
                 interaction.editReply('No more songs, quitting')
-                queue.destroy();
-                return client.functions.get('deleteQueue').execute(client, queue)
+                return queue.destroy();
+
             }
             queue.skip()
+            client.functions.get('log').execute(interaction.guildId, `Player skipped`)
             interaction.editReply('Skipping!')
             
         }

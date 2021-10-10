@@ -41,6 +41,6 @@ module.exports = {
             queue.skip()
             interaction.editReply("Playing song immediately!")
         }
-
+        client.functions.get('log').execute(interaction.guildId, `Player playing immediately`)
     }
 }

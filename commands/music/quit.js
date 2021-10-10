@@ -10,5 +10,6 @@ module.exports = {
         }
         queue.destroy()
         interaction.editReply("Quitted!")
+        client.functions.get('log').execute(interaction.guildId, `Player Quitted`)
     }
 }

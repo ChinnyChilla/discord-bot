@@ -8,7 +8,8 @@ module.exports = async (client, interaction) => {
     }
     interaction.reply(`Recieved your ${command.name} command... please wait`).then(() => {
         setTimeout(() => interaction.deleteReply(), 30000)
-        command.execute(client, interaction)
+        client.functions.get('log').execute(interaction.guildId, `${interaction.member.user.tag} requested command ${command.name}`)
+        command.execute(client, interaction)  
     })
     
     

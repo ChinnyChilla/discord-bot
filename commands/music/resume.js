@@ -9,6 +9,7 @@ module.exports = {
             return interaction.editReply(`For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
         }
         queue.setPaused(false)
+        client.functions.get('log').execute(interaction.guildId, `Player resumed`)
         interaction.editReply('Resuming!')
         client.functions.get('updateQueue').execute(client, queue)
     }
