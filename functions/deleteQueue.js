@@ -19,9 +19,10 @@ module.exports = {
             clearInterval(client.queueIntervals.get(guildID))
             client.queueIntervals.delete(guildID)
         }
-        client.queueEmbeds.delete(guildID)
         client.queueReactionsCollections.get(guildID).stop()
         client.queueReactionsCollections.delete(guildID)
+        client.queueEmbeds.delete(guildID)
+
     }
 
 

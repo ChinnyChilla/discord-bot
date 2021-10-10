@@ -10,12 +10,12 @@ module.exports = async (client, queue, connection) => {
     const message = client.queueMessages.get(queue.metadata.guild.id)
     
     await message.react('❤️')
-    const filter = (reaction, user) => {return reaction.emoji.name === '❤️'}
-    const collector = message.createReactionCollector(filter)
+    const filter = (reaction, user) => reaction.emoji.name === '❤️'
+    const collector = message.createReactionCollector({filter})
     client.queueReactionsCollections.set(message.guild.id, collector)
     collector.on('collect', (reaction, user) => {
         const likedSongs = require(reqPath)
-        const song = client.player.nowPlaying(message)
+        const song = queue.nowPlaying(message)
         const url = song.url
         var userLikedSongs = likedSongs[user.id]
         if (!userLikedSongs) {
@@ -24,10 +24,14 @@ module.exports = async (client, queue, connection) => {
         const index = userLikedSongs.indexOf(url);
         if (index > -1) {
             userLikedSongs.splice(index, 1);
-            sendMessage.execute(message, `<@${user.id}>, Removed ${song.title} from your liked playlist!`)
+            message.channel.send(`<@${user.id}>, Removed ${song.title} from your liked playlist!`).then(message => {
+                setTimeout(() => message.delete(), 10000)
+            })
         } else {
             userLikedSongs.push(url)
-            sendMessage.execute(message, `<@${user.id}>, Added ${song.title} to your liked playlist!`)
+            message.channel.send(`<@${user.id}>, Added ${song.title} to your liked playlist!`).then(message => {
+                setTimeout(() => message.delete(), 10000)
+            })
         }
         likedSongs[user.id] = userLikedSongs
         // going to save Track objects instead of just urls in the future
