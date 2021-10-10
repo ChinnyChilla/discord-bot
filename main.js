@@ -12,7 +12,16 @@ const client = new Client({ intents: [
 ]})
 // const config = require('./config.json');
 const fs = require('fs');
-require('dotenv').config()
+
+// Check if the necesary directories are there
+
+if (!fs.existsSync('./logs')) {
+    fs.mkdirSync('./logs')
+}
+if (!fs.existsSync('./data')) {
+    fs.mkdirSync('./data')
+    fs.writeFileSync('./data/likedSongs.json')
+}
 const { Player } = require('discord-player')
 
 client.commands = new Array();

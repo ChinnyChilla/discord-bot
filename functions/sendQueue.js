@@ -8,7 +8,7 @@ module.exports = {
         const queue = client.player.getQueue(guildID)
 
         const queueMessage = client.queueMessages.get(guildID)
-        if (queueMessage.deleted) {return client.functions.get('deleteQueue').execute(client, queue)}
+        if (queueMessage.deleted) {return queue.destory()}
 
         const tracks = queue.tracks
 
@@ -68,7 +68,6 @@ module.exports = {
                 try {queueMessage.edit({embeds: [discordEmbed]}).catch("Something went wrong when editing")}
                 catch {
                     queue.destory()
-                    client.functions.get('deleteQueue').execute(client, queue)
                 }
             }, 2000);
             client.queueIntervals.set(guildID, interval)

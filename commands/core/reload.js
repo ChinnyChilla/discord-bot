@@ -4,6 +4,7 @@ module.exports = {
     description: 'Reload all the commands of the discord bot (REQUIRES DEV)',
     args: '',
     execute(client, interaction) {
+        return interaction.editReply("This command doesnt work")
 
         if (interaction.user.id !== client.config.devID) {
             interaction.editReply(`<@${message.author.id}>You must be the developer in order to use this!`)
