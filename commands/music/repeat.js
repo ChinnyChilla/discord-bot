@@ -24,6 +24,11 @@ module.exports = {
                     value: 2,
                     description: "Repeat queue"
                 },
+                {
+                    name: "Autoplay",
+                    value: 3,
+                    description: "Autoplay"
+                }
             ]
         }
     ],
@@ -44,6 +49,9 @@ module.exports = {
         } else if (args['mode'] == 2){
             queue.setRepeatMode(2)
             interaction.editReply('Repeating queue!')
+        } else if (args['mode'] == 3) {
+            queue.setRepeatMode(3)
+            interaction.editReply("Set autoplay")
         } else {
             queue.setRepeatMode(0)
             interaction.editReply('Stopped repeating!')
