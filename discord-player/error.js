@@ -12,7 +12,7 @@ module.exports = (client, queue, error) => {
     }
     if (error = "NotPlaying") {
         sendMessage("The bot is currently not playing anything!")
-        queue.destroy()
+
     } else if (error = "UnableToJoin") {
         sendMessage("Could not join the channel!")
         
