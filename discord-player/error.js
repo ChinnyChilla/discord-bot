@@ -1,13 +1,13 @@
 module.exports = (client, queue, error) => {
-    client.functions.get('log').execute(queue.guild.id, `Error ${error}`)
+    client.functions.get('log').execute(queue.guild.id, `Error: ${error}`)
     function sendMessage(data) {
         try {
             queue.metadata.channel.send(data).then(function(message) {
                 setTimeout(() => {message.delete()}, 15000)
             })
         } catch (err) {
-            console.log(`Error: ${err}`)
-            console.log("Probably no queue metadata")
+            console.error(`Error: ${err}`)
+            console.error("Probably no queue metadata")
         }
     }
     if (error = "NotPlaying") {
