@@ -16,14 +16,12 @@
 #### **Youtube music stops seconds after starting**
 
 Problem: Issue with old codecs
- > Fix (Temporary): Replace file in node_modules/discord-player/dist/Structures/Queue.js with Queue.js in folder 'temporary files'
- [Credit](https://github.com/Androz2091/discord-player/issues/794#issue-1000772967)
+ > Fixed
 
  #### **Spotify music stops seconds after starting**
- > No Fix
+ > Fixed
 
 #### **Queue stops playing after a song**
  
  Problem: discord-player emits ConnectionError and PlayerError
- (trying to find reason)
- > Fix: Quit the queue (/quit) and readd the music
+ > I think its fixed

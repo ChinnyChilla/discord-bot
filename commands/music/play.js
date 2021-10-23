@@ -33,7 +33,15 @@ module.exports = {
             const {name, value} = option
             args[name] = value
         }
-        var queue = client.player.createQueue(interaction.guild, {metadata: interaction})
+        var queue = client.player.createQueue(interaction.guild, {ytdlOptions: {
+            filter: 'audioonly', 
+            quality: 'highest',
+            highWaterMark: 1 << 25,
+            dlChunkSize: 0,
+            },
+            metadata: interaction
+            })
+            
         if (interaction.channel.id != queue.metadata.channel.id) {
             return interaction.editReply(`For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
         }
