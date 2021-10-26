@@ -24,4 +24,4 @@ Problem: Issue with old codecs
 #### **Queue stops playing after a song**
  
  Problem: discord-player emits ConnectionError and PlayerError
- > I think its fixed
+ > Current Solution: Retry
