@@ -11,11 +11,6 @@ module.exports = {
         },
         {
             type: 5,
-            name: "liked",
-            description: "Play your liked songs playlist (overrides the song query)"
-        },
-        {
-            type: 5,
             name: 'shuffle',
             description: "Shuffle the queue when you add it."
         }
@@ -53,9 +48,6 @@ module.exports = {
         const song = await client.player.search(args['song'], {
             requestedBy: interaction.member
         })
-        if (args['liked']) {
-            return interaction.editReply('WIP')
-        }
         try {
                 if (!queue.connection) {await queue.connect(interaction.member.voice.channel)}
             } catch {
