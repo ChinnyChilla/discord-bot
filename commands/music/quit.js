@@ -8,7 +8,7 @@ module.exports = {
         if (interaction.channel.id != queue.metadata.channel.id) {
             return interaction.editReply(`For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
         }
-        queue.destroy()
+        queue.stop()
         interaction.editReply("Quitted!")
         client.functions.get('log').execute(interaction.guildId, `Player Quitted`)
     }

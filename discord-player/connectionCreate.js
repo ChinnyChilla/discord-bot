@@ -33,8 +33,8 @@ module.exports = async (client, queue, connection) => {
                 setTimeout(() => message.delete(), 10000)
             })
         }
+        
         likedSongs[user.id] = userLikedSongs
-        // going to save Track objects instead of just urls in the future
         fs.writeFile(reqPath, JSON.stringify(likedSongs), function(err) {
             if (err) {
                 console.error(`An Error has occured! ${err}`)

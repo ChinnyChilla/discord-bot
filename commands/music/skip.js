@@ -30,7 +30,7 @@ module.exports = {
                 client.functions.get('log').execute(interaction.guildId, `Skipped all tracks`)
                 return interaction.editReply('Skipped all tracks!')
             }
-            for (i = 0; i < args['amount']; i++) {
+            for (i = 0; i < args['amount'] - 1; i++) {
                 await queue.remove(0)
             }
             queue.skip()
