@@ -6,7 +6,7 @@ module.exports = async (client, interaction) => {
         setTimeout(() => {interaction.deleteReply()}, 30000)
         return
     }
-    interaction.reply(`Recieved your ${command.name} command... please wait`).then(() => {
+    interaction.deferReply().then(() => {
         setTimeout(() => interaction.deleteReply(), 30000)
         client.functions.get('log').execute(interaction.guildId, `${interaction.member.user.tag} requested command ${command.name}`)
         command.execute(client, interaction)  

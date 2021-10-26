@@ -33,8 +33,7 @@ module.exports = {
                     userLikedSongs.push(track.url)
                 }
             })
-            interaction.editReply(`Added ${song.playlist.tracks.length - alreadyLiked} to your liked playlist! 
-                                \n(${alreadyLiked} songs were already liked)`)
+            interaction.editReply(`Added ${song.playlist.tracks.length - alreadyLiked} to your liked playlist!\n(${alreadyLiked} songs were already liked)`)
             } else {
             if (!(index > -1)) {
                 userLikedSongs.push(song[0].url)

@@ -20,7 +20,7 @@ if (!fs.existsSync('./logs')) {
 }
 if (!fs.existsSync('./data')) {
     fs.mkdirSync('./data')
-    fs.writeFileSync('./data/likedSongs.json')
+    fs.writeFileSync('./data/likedSongs.json', '{}')
 }
 const { Player } = require('discord-player')
 
