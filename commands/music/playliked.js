@@ -52,7 +52,6 @@ module.exports = {
             return new Promise((resolve, reject) => {
                 var listofTracks = new Array();
                 Promise.all(promises).then(async (tracks) => {
-                    console.log(tracks)
                     queue.addTracks(tracks)
                     if (interaction.options.get('shuffle').value) {
                         queue.shuffle()

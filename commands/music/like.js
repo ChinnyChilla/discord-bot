@@ -15,7 +15,6 @@ module.exports = {
         const fs = require('fs');
         const reqPath = path.join(__dirname, '../../data/likedSongs.json')
         const likedSongs = require(reqPath)
-        console.log(interaction.options.get('song').value)
         const song = await client.player.search(interaction.options.get('song').value, {})
 
         var userLikedSongs = likedSongs[interaction.member.id]
