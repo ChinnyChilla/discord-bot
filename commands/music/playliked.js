@@ -25,10 +25,6 @@ module.exports = {
         if (interaction.channel.id != queue.metadata.channel.id) {
             return interaction.editReply(`For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
         }
-        if (!client.queueMessages.get(interaction.guild.id)) {
-            const queueMessage = await interaction.channel.send(`Bound to <#${interaction.channel.id}>`)
-            client.queueMessages.set(interaction.guild.id, queueMessage)
-        }
         const fs = require('fs');
         const path = require('path');
         const reqPath = path.join(__dirname, '../../data/likedSongs.json')
@@ -36,7 +32,10 @@ module.exports = {
         if (!data[interaction.member.id] || data[interaction.member.id].length == 0) {return interaction.editReply("Please first like some songs!")}
 
         const songs = data[interaction.member.id]
-
+        if (!client.queueMessages.get(interaction.guild.id)) {
+            const queueMessage = await interaction.channel.send(`Bound to <#${interaction.channel.id}>`)
+            client.queueMessages.set(interaction.guild.id, queueMessage)
+        }
 
         var promises = new Array();
         songs.forEach(async song => {
