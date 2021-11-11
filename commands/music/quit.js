@@ -11,5 +11,6 @@ module.exports = {
         queue.stop()
         interaction.editReply("Quitted!")
         client.functions.get('log').execute(interaction.guildId, `Player Quitted`)
+        client.functions.get('deleteQueue').execute(client, interaction.guild.id)
     }
 }

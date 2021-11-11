@@ -69,7 +69,7 @@ module.exports = {
             } catch {
                 interaction.editReply("Failed to join your voice channel!")
             }
-            client.functions.get('log').execute(interaction.guildId, `Playing playing liked songs`)
+            client.functions.get('log').execute(interaction.guildId, `Playing liked songs`)
             if (!queue.playing) {await queue.play()}
         })
     }

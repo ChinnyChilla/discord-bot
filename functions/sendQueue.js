@@ -69,7 +69,7 @@ module.exports = {
                 catch {
                     queue.stop()
                 }
-            }, 2000);
+            }, 5000);
             client.queueIntervals.set(guildID, interval)
         }
 
