@@ -52,8 +52,10 @@ module.exports = {
                 var listofTracks = new Array();
                 Promise.all(promises).then(async (tracks) => {
                     queue.addTracks(tracks)
-                    if (interaction.options.get('shuffle').value) {
-                        queue.shuffle()
+                    if (interaction.options.get('shuffle')) {
+                        if (interaction.options.get('shuffle').value) {
+                            queue.shuffle()
+                        }
                     }
                     resolve()
                 })
