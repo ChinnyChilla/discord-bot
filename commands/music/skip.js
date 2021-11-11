@@ -26,7 +26,7 @@ module.exports = {
         if (args['amount']) {
             if (args['amount'] < 0) { return interaction.editReply("Invalid number!")}
             if (args['amount'] > queue.tracks.length) {
-                queue.destroy()
+                queue.stop()
                 client.functions.get('log').execute(interaction.guildId, `Skipped all tracks`)
                 return interaction.editReply('Skipped all tracks!')
             }
@@ -40,7 +40,7 @@ module.exports = {
             if (queue.tracks.length == 0) {
                 client.functions.get('log').execute(interaction.guildId, `Skipped last track, leaving`)
                 interaction.editReply('No more songs, quitting')
-                return queue.destroy();
+                return queue.stop();
 
             }
             queue.skip()

@@ -67,7 +67,7 @@ module.exports = {
                 
                 try {queueMessage.edit({embeds: [discordEmbed]}).catch("Something went wrong when editing")}
                 catch {
-                    queue.destory()
+                    queue.stop()
                 }
             }, 2000);
             client.queueIntervals.set(guildID, interval)
