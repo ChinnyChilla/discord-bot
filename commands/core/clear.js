@@ -3,7 +3,6 @@ module.exports = {
     name: 'clear',
     category: 'core',
     description: 'Clears the channel of messages',
-    args: '',
     options: [
         {
             type: 7,

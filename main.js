@@ -24,6 +24,7 @@ if (!fs.existsSync('./data')) {
 }
 const { Player } = require('discord-player')
 
+var testCommands = new Array();
 client.commands = new Array();
 client.player = new Player(client);
 client.queueMessages = new Collection();
@@ -69,7 +70,12 @@ async function refreshCommands() {
             if (file.endsWith(".js")) {
                 console.log("Loading command: " + file)
                 var command = require(`./commands/${dir}/${file}`)
-                client.commands.push(command)
+                if (command.testOnly) {
+                    testCommands.push(command)
+                } else {
+                    client.commands.push(command)
+                }
+                
                 // client.commands.set(command.name.toLowerCase(), command)
             };
         });
@@ -77,12 +83,14 @@ async function refreshCommands() {
     try {
         if (process.env.TEST_SERVER_GUILD_ID){
             await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID, process.env.TEST_SERVER_GUILD_ID),
-            { body: client.commands });
+            { body: client.commands.concat(testCommands) });
             console.log("Reloaded application (/) commands in test server")
+        } else {
+            await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID), 
+            { body: client.commands });
+            console.log("Successfully reloaded application (/) commands.");
         }
-        await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID), 
-        { body: client.commands });
-        console.log("Successfully reloaded application (/) commands.");
+
     } catch (err) {
         console.log("REFRESHING SLASH COMMANDS FAILED")
         console.error(err);
