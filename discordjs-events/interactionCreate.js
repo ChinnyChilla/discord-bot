@@ -1,6 +1,7 @@
 module.exports = async (client, interaction) => {
     if (!interaction.isCommand()) {return}
     const command = client.commands.find(command => command.name == interaction.commandName)
+    if (!command) {return}
     if (command.category == 'music' && !interaction.inGuild()) {
         interaction.reply("Music commands are only available in a guild!")
         setTimeout(() => interaction.deleteReply().catch(err => {

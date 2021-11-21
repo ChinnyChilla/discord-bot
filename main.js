@@ -85,6 +85,7 @@ async function refreshCommands() {
             await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID, process.env.TEST_SERVER_GUILD_ID),
             { body: client.commands.concat(testCommands) });
             console.log("Reloaded application (/) commands in test server")
+            client.commands = client.commands.concat(testCommands)
         } else {
             await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID), 
             { body: client.commands });

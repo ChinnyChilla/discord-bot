@@ -20,14 +20,9 @@ module.exports = {
         if (!interaction.member.voice.channel) {
             return interaction.editReply("Please join a voice channel")
         }
+        const requestedSong = interaction.options.getString('song')
+        const shuffle = interaction.options.getBoolean('shuffle')
         
-
-        const options = interaction.options.data
-        const args = {}
-        for (const option of options) {
-            const {name, value} = option
-            args[name] = value
-        }
         var queue = client.player.createQueue(interaction.guild, {ytdlOptions: {
             filter: 'audioonly', 
             quality: 'highest',
@@ -45,9 +40,12 @@ module.exports = {
             client.queueMessages.set(interaction.guild.id, queueMessage)
         }
         
-        const song = await client.player.search(args['song'], {
+        const song = await client.player.search(requestedSong, {
             requestedBy: interaction.member
         })
+        if (!song.tracks[0]) {
+            return interaction.editReply("Could not find song!")
+        }
         try {
                 if (!queue.connection) {await queue.connect(interaction.member.voice.channel)}
             } catch {
@@ -60,7 +58,7 @@ module.exports = {
             interaction.editReply(`Track ${song.tracks[0].title} added!`)
             await queue.addTrack(song.tracks[0])
         }
-        if (args['shuffle']) {
+        if (shuffle) {
             await queue.shuffle()
         }
         client.functions.get('log').execute(interaction.guildId, `Player added song(s)`)
