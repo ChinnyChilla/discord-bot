@@ -10,7 +10,7 @@ module.exports = async (client, queue, connection) => {
     const message = client.queueMessages.get(queue.metadata.guild.id)
     
     message.react('❤️').then((messageReaction) => {
-        const filter = (reaction, user) => reaction.emoji.name === '❤️'
+        const filter = (reaction, user) => reaction.emoji.name === '❤️' && !user.bot
         const collector = message.createReactionCollector({filter})
         client.queueReactionsCollections.set(message.guild.id, collector)
         collector.on('collect', (reaction, user) => {
