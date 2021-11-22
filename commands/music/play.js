@@ -40,28 +40,28 @@ module.exports = {
             client.queueMessages.set(interaction.guild.id, queueMessage)
         }
         
-        const song = await client.player.search(requestedSong, {
+        client.player.search(requestedSong, {
             requestedBy: interaction.member
-        })
-        if (!song.tracks[0]) {
-            return interaction.editReply("Could not find song!")
-        }
-        try {
-                if (!queue.connection) {await queue.connect(interaction.member.voice.channel)}
-            } catch {
-                interaction.editReply("Failed to join your voice channel!")
+        }).then(song => {
+            if (!song.tracks[0]) {return interaction.editReply("Could not find song!")}
+            
+            try {
+                    if (!queue.connection) {await queue.connect(interaction.member.voice.channel)}
+                } catch {
+                    interaction.editReply("Failed to join your voice channel!")
+                }
+            if (song.playlist) {
+                interaction.editReply(`Playlist ${song.playlist.title} added!`)
+                await queue.addTracks(song.playlist.tracks)
+            } else {
+                interaction.editReply(`Track ${song.tracks[0].title} added!`)
+                await queue.addTrack(song.tracks[0])
             }
-        if (song.playlist) {
-            interaction.editReply(`Playlist ${song.playlist.title} added!`)
-            await queue.addTracks(song.playlist.tracks)
-        } else {
-            interaction.editReply(`Track ${song.tracks[0].title} added!`)
-            await queue.addTrack(song.tracks[0])
-        }
-        if (shuffle) {
-            await queue.shuffle()
-        }
-        client.functions.get('log').execute(interaction.guildId, `Player added song(s)`)
-        if (!queue.playing) {await queue.play()}
+            if (shuffle) {
+                await queue.shuffle()
+            }
+            client.functions.get('log').execute(interaction.guildId, `Player added song(s)`)
+            if (!queue.playing) {await queue.play()}
+        })
     }
 }

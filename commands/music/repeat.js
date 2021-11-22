@@ -33,25 +33,21 @@ module.exports = {
         }
     ],
     execute(client, interaction) {
-        const args = {}
-        for (const option of interaction.options.data) {
-            const {name, value} = option
-            args[name] = value
-        }
+        const mode = interaction.options.getInteger('mode')
         const queue = client.player.getQueue(interaction.guild)
         if (!queue) {return interaction.editReply("There is currently no queue!")}
         if (interaction.channel.id != queue.metadata.channel.id) {
             return interaction.editReply(`For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
         }
-        if (args['mode'] == 1) {
+        if (mode == 1) {
             queue.setRepeatMode(1)
-            interaction.editReply('Repeating song!')
-        } else if (args['mode'] == 2){
+            interaction.editReply('Repeating Song!')
+        } else if (mode == 2){
             queue.setRepeatMode(2)
-            interaction.editReply('Repeating queue!')
-        } else if (args['mode'] == 3) {
+            interaction.editReply('Repeating Queue!')
+        } else if (mode == 3) {
             queue.setRepeatMode(3)
-            interaction.editReply("Set autoplay")
+            interaction.editReply("Autoplay Enabled!")
         } else {
             queue.setRepeatMode(0)
             interaction.editReply('Stopped repeating!')

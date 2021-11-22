@@ -11,7 +11,7 @@ module.exports = {
     ],
     async execute(client, interaction) {
         
-        const amount = interaction.options.getInteger('amount') ? interaction.options.getInteger('amount') : 1
+        const amount = interaction.options.getInteger('amount') ?? 1
         
         const queue = client.player.getQueue(interaction.guild)
         if (!queue) {return interaction.editReply("There is currently no queue!")}
