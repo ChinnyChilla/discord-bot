@@ -39,5 +39,17 @@ module.exports = {
             discordEmbed.addField("Repeat mode:", repeatModes[queue.repeatMode - 1])
         }
         client.queueEmbeds.set(guildID, discordEmbed)
+        var progressionBar = queue.createProgressBar({
+            timecodes: true,
+            length: 15,
+            indicator: "🟢",
+            line: "─"
+        })
+        discordEmbed.setDescription(`${progressionBar}`)
+                        
+        try {client.queueMessages.get(guildID).edit({embeds: [discordEmbed]}).catch("Something went wrong when editing")}
+        catch {
+            queue.stop()
+        }
     }
 }

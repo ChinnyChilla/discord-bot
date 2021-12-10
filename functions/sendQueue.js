@@ -52,6 +52,23 @@ module.exports = {
         client.queueEmbeds.set(guildID, discordEmbed)
         const isInterval = client.queueIntervals.get(guildID)
         if (!isInterval) {
+            // Call it the first time so it doesn't have to wait
+            var progressionBar = ""
+            const discordEmbed = client.queueEmbeds.get(guildID)
+            if (queue.tracks) {
+                progressionBar = queue.createProgressBar({
+                    timecodes: true,
+                    length: 15,
+                    indicator: "🟢",
+                    line: "─"
+                })
+            }
+            discordEmbed.setDescription(`Author: ${firstTrack.author} \n ${progressionBar}`)
+            
+            try {queueMessage.edit({embeds: [discordEmbed]}).catch("Something went wrong when editing")}
+            catch {
+                queue.stop()
+            }
             const interval = setInterval(() => {
                 var progressionBar = ""
                 const discordEmbed = client.queueEmbeds.get(guildID)
@@ -69,7 +86,7 @@ module.exports = {
                 catch {
                     queue.stop()
                 }
-            }, 5000);
+            }, 1000 * 20);
             client.queueIntervals.set(guildID, interval)
         }
 

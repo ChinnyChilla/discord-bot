@@ -1,3 +1,4 @@
+const {MessageEmbed, Message} = require('discord.js')
 module.exports = {
     name: 'play',
     description: 'Plays a song',
@@ -22,7 +23,8 @@ module.exports = {
         }
         const requestedSong = interaction.options.getString('song')
         const shuffle = interaction.options.getBoolean('shuffle')
-        
+        var firstTime = false
+        if (!client.player.getQueue(interaction.guild)) {firstTime = true}
         var queue = client.player.createQueue(interaction.guild, {ytdlOptions: {
             filter: 'audioonly', 
             quality: 'highest',
@@ -35,10 +37,6 @@ module.exports = {
         if (interaction.channel.id != queue.metadata.channel.id) {
             return interaction.editReply(`For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
         }
-        if (!client.queueMessages.get(interaction.guild.id)) {
-            const queueMessage = await interaction.channel.send(`Bound to <#${interaction.channel.id}>`)
-            client.queueMessages.set(interaction.guild.id, queueMessage)
-        }
         
         const song = await client.player.search(requestedSong, {
             requestedBy: interaction.member
@@ -47,22 +45,65 @@ module.exports = {
             client.functions.get('deleteQueue').execute(client, interaction.guild.id)
             return interaction.editReply("Could not find song!")
         }
-        try {
-                if (!queue.connection) {await queue.connect(interaction.member.voice.channel)}
-            } catch {
-                interaction.editReply("Failed to join your voice channel!")
+        var index = 0
+
+        async function play() {
+            if (!client.queueMessages.get(interaction.guild.id)) {
+                const queueMessage = await interaction.channel.send(`Bound to <#${interaction.channel.id}>`)
+                client.queueMessages.set(interaction.guild.id, queueMessage)
             }
-        if (song.playlist) {
-            interaction.editReply(`Playlist ${song.playlist.title} added!`)
-            await queue.addTracks(song.playlist.tracks)
+            if (shuffle) {
+                if (firstTime) {
+                    await queue.addTrack(queue.tracks[0])
+                    await queue.shuffle()
+                    await queue.remove(0)
+                } else {
+                    await queue.shuffle()
+                }
+            }
+            try {
+                    if (!queue.connection) {await queue.connect(interaction.member.voice.channel)}
+                } catch {
+                    interaction.editReply("Failed to join your voice channel!")
+                }
+
+            client.functions.get('log').execute(interaction.guildId, `Player added song(s)`)
+            if (!queue.playing) {await queue.play()}
+        }
+        if (!requestedSong.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/)) {
+            const embed = new MessageEmbed()
+            .setTitle("Please select a video")
+            .setDescription('Type in a number 1-5 to select your video')
+            for(i=0;i<5;i++) {
+                var track = song.tracks[i]
+                embed.addFields(
+                {name: `${i + 1}: ${track.title}`, value: `Author: ${track.author}`, inline: true},
+                {name: track.duration, value: `[${track.source}](${track.url})`, inline: true},
+                {name: '\u200B', value: "\u200B", inline: true},
+            )}
+            interaction.editReply({embeds: [embed]})
+            const filter = (message) => message.author.id == interaction.member.id
+            const collector = interaction.channel.createMessageCollector({filter, max:1, time:15000})
+            collector.on('end', async collected => {
+                if (collected.size == 0) {return interaction.editReply({content: "Timed out", embeds: []})}
+                if (collected.first().content.match(/([1-5])/)) {
+                    await queue.addTrack(song.tracks[parseInt(collected.first().content) - 1])
+                    interaction.editReply(`Selected video ${collected.first().content}`)
+                    play()
+                    return
+                } 
+                return interaction.editReply({content: "Message wasn't a number between 1-5", embeds: []})
+            })
         } else {
-            interaction.editReply(`Track ${song.tracks[0].title} added!`)
-            await queue.addTrack(song.tracks[0])
+            if (song.playlist) {
+                interaction.editReply(`Playlist ${song.playlist.title} added!`)
+                await queue.addTracks(song.playlist.tracks)
+                play()
+            } else {
+                interaction.editReply(`Track ${song.tracks[index].title} added!`)
+                await queue.addTrack(song.tracks[index])
+                play()
+            }
         }
-        if (shuffle) {
-            await queue.shuffle()
-        }
-        client.functions.get('log').execute(interaction.guildId, `Player added song(s)`)
-        if (!queue.playing) {await queue.play()}
     }
 }

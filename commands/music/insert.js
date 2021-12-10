@@ -1,3 +1,4 @@
+const {MessageEmbed} = require('discord.js')
 module.exports = {
     name: 'insert',
     description: 'Insert the song',
@@ -31,17 +32,46 @@ module.exports = {
             requestedBy: interaction.member
         })
         if (!song.tracks[0]) {return interaction.editReply("Could not find song!")}
-
-        if (position == 0) {
-            await queue.insert(song.tracks[0], 0)
-            const currentSong = queue.nowPlaying()
-            await queue.addTrack(currentSong)
-            queue.skip()
-            interaction.editReply("Playing song immediately")
-        } else {
-            queue.insert(song.tracks[0], position - 1)
-            interaction.editReply(`Inserted song at position **${position}**`)
+        async function insertTrack(track) {
+            if (position == 0) {
+                await queue.insert(track, 0)
+                const currentSong = queue.nowPlaying()
+                await queue.addTrack(currentSong)
+                queue.skip()
+                interaction.editReply("Playing song immediately")
+            } else {
+                queue.insert(track, position - 1)
+                interaction.editReply(`Inserted song at position **${position}**`)
+            }
+            client.functions.get('log').execute(interaction.guildId, `Player playing immediately`)
         }
-        client.functions.get('log').execute(interaction.guildId, `Player playing immediately`)
+
+        if (!requestedSong.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/)) {
+            const embed = new MessageEmbed()
+            .setTitle("Please select a video")
+            .setDescription('Type in a number 1-5 to select your video')
+            for(i=0;i<5;i++) {
+                var track = song.tracks[i]
+                embed.addFields(
+                {name: `${i + 1}: ${track.title}`, value: `Author: ${track.author}`, inline: true},
+                {name: track.duration, value: `[${track.source}](${track.url})`, inline: true},
+                {name: '\u200B', value: "\u200B", inline: true},
+            )}
+            interaction.editReply({embeds: [embed]})
+            const filter = (message) => message.author.id == interaction.member.id
+            const collector = interaction.channel.createMessageCollector({filter, max:1, time:15000})
+            collector.on('end', async collected => {
+                if (collected.size == 0) {return interaction.editReply({content: "Timed out", embeds: []})}
+                if (collected.first().content.match(/([1-5])/)) {
+                    interaction.editReply(`Selected video ${collected.first().content}`)
+                    await insertTrack(song.tracks[parseInt(collected.first().content) - 1])
+                    return
+                }
+                return interaction.editReply({content: "Message wasn't a number between 1-5", embeds: []})
+            })
+        } else {
+            interaction.editReply(`Track ${song.tracks[0].title} added!`)
+            await queue.addTrack(song.tracks[0])
+        }
     }
 }

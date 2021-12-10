@@ -82,6 +82,8 @@ module.exports = {
             if (!interaction.member.voice.channel) {
                 return interaction.editReply("Please join a voice channel")
             }
+            var firstTime = false
+            if (!client.player.getQueue(interaction.guild)) {firstTime = true}
             var queue = client.player.createQueue(interaction.guild, {ytdlOptions: {
                 filter: 'audioonly', 
                 quality: 'highest',
@@ -120,9 +122,15 @@ module.exports = {
                 return new Promise((resolve, reject) => {
                     var listofTracks = new Array();
                     Promise.all(promises).then(async (tracks) => {
-                        queue.addTracks(tracks)
+                        await queue.addTracks(tracks)
                         if (interaction.options.getBoolean('shuffle')) {
-                            queue.shuffle()
+                            if (firstTime) {
+                                await queue.addTrack(queue.tracks[0])
+                                await queue.shuffle()
+                                await queue.remove(0)
+                            } else {
+                                queue.shuffle()
+                            }
                         }
                         resolve()
                     })
