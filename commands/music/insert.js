@@ -62,6 +62,7 @@ module.exports = {
             const collector = interaction.channel.createMessageCollector({filter, max:1, time:15000})
             collector.on('end', async collected => {
                 if (collected.size == 0) {return interaction.editReply({content: "Timed out", embeds: []})}
+				collected.first().delete()
 				if (collected.first().content.match(/([1-5])/)) {
 					interaction.editReply(`Selected video ${collected.first().content}`)
 					await insertTrack(song.tracks[parseInt(collected.first().content) - 1])
