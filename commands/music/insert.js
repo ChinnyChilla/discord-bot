@@ -38,10 +38,10 @@ module.exports = {
                 const currentSong = queue.nowPlaying()
                 await queue.addTrack(currentSong)
                 queue.skip()
-                interaction.editReply("Playing song immediately")
+                interaction.editReply({content: `Playing ${track.title} immediately`, embeds: []})
             } else {
                 queue.insert(track, position - 1)
-                interaction.editReply(`Inserted song at position **${position}**`)
+                interaction.editReply({content: `Inserted ${track.title} at position **${position}**`, embeds: []})
             }
             client.functions.get('log').execute(interaction.guildId, `Player playing immediately`)
         }
@@ -62,16 +62,15 @@ module.exports = {
             const collector = interaction.channel.createMessageCollector({filter, max:1, time:15000})
             collector.on('end', async collected => {
                 if (collected.size == 0) {return interaction.editReply({content: "Timed out", embeds: []})}
-                if (collected.first().content.match(/([1-5])/)) {
-                    interaction.editReply(`Selected video ${collected.first().content}`)
-                    await insertTrack(song.tracks[parseInt(collected.first().content) - 1])
-                    return
-                }
-                return interaction.editReply({content: "Message wasn't a number between 1-5", embeds: []})
+				if (collected.first().content.match(/([1-5])/)) {
+					interaction.editReply(`Selected video ${collected.first().content}`)
+					await insertTrack(song.tracks[parseInt(collected.first().content) - 1])
+					return
+				}
+				return interaction.editReply({content: "Message wasn't a number between 1-5", embeds: []})
             })
         } else {
-            interaction.editReply(`Track ${song.tracks[0].title} added!`)
-            await queue.addTrack(song.tracks[0])
+            await insertTrack(song.tracks[0])
         }
     }
 }
