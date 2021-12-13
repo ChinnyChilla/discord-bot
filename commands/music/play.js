@@ -89,7 +89,7 @@ module.exports = {
 				collected.first().delete()
                 if (collected.first().content.match(/([1-5])/)) {
                     await queue.addTrack(song.tracks[parseInt(collected.first().content) - 1])
-                    interaction.editReply(`Selected video ${collected.first().content}`)
+                    interaction.editReply({content: `Selected video ${collected.first().content}`, embeds: []})
                     play()
                     return
                 } 
