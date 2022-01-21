@@ -21,6 +21,7 @@ if (!fs.existsSync('./logs')) {
 if (!fs.existsSync('./data')) {
     fs.mkdirSync('./data')
     fs.writeFileSync('./data/likedSongs.json', '{}')
+    fs.writeFileSync('./data/serverConfig.json', '{}')
 }
 const { Player } = require('discord-player')
 
@@ -32,9 +33,12 @@ client.queueEmbeds = new Collection();
 client.queueIntervals = new Collection();
 client.functions = new Collection();
 client.queueReactionsCollections = new Collection();
-
+client.defaultServerConfig = {
+    musicChannel: "0" // 0 is no channel else channelID
+}
+client.usersInMessageReactions = new Array();
 console.log("Loading Events")
-
+client.musicChannels = new Array();
 fs.readdirSync('./discordjs-events').forEach(file => {
     if (file.endsWith('.js')) {
         console.log("Loading discord.js file: " + file)
