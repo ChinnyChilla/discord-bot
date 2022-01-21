@@ -10,18 +10,3 @@
 5. Run 'npm install' (or 'npm i')
 6. Make sure there is no errors
 7. After all that, run 'node main.js' and there you go!
-
-### Current Bugs and Fixes:
-
-#### **Youtube music stops seconds after starting**
-
-Problem: Issue with old codecs
- > Fixed
-
- #### **Spotify music stops seconds after starting**
- > Fixed
-
-#### **Queue stops playing after a song**
- 
- Problem: discord-player emits ConnectionError and PlayerError
- > Current Solution: Retry
