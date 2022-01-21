@@ -8,7 +8,6 @@ module.exports = {
         const queue = client.player.getQueue(guildID)
 
         const queueMessage = client.queueMessages.get(guildID)
-        if (queueMessage.deleted) {return queue.destory()}
 
         const tracks = queue.tracks
 
@@ -26,9 +25,8 @@ module.exports = {
             
             const {ms, s, m, h, d} = require('time-convert')
             const time = ms.to(h, m, s)(queue.totalTime)
-            discordEmbed.setFooter(`Queue Length ${('0' + time[0]).slice(-2)}:${('0' + time[1]).slice(-2)}:${('0' + time[2]).slice(-2)}`,
-                    'https://media.discordapp.net/attachments/810009113009979394/821078381419561000/Anime_Girl.gif')
-        } else {discordEmbed.setFooter("No more songs!")}
+            discordEmbed.setFooter({text: `Queue Length ${('0' + time[0]).slice(-2)}:${('0' + time[1]).slice(-2)}:${('0' + time[2]).slice(-2)}`})
+        } else {discordEmbed.setFooter({text: "No more songs!"})}
         for(let i=0; i<5; i++) {
             if(!tracks[i]) {break}
             var track = tracks[i]
@@ -82,10 +80,11 @@ module.exports = {
                 }
                 discordEmbed.setDescription(`Author: ${firstTrack.author} \n ${progressionBar}`)
                 
-                try {queueMessage.edit({embeds: [discordEmbed]}).catch("Something went wrong when editing")}
-                catch {
-                    queue.stop()
-                }
+                queueMessage.edit({embeds: [discordEmbed]}).catch((err) => {
+                    queueMessage.channel.send("Failed to edit message, leaving!")
+                    return queue.stop()
+                })
+
             }, 1000 * 20);
             client.queueIntervals.set(guildID, interval)
         }

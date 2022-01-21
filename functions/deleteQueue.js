@@ -8,12 +8,14 @@ module.exports = {
       client.functions.get('log').execute(guildID, "Deleting queue components")
         queueMessage = client.queueMessages.get(guildID)
         if(queueMessage) {
-            if (!queueMessage.deleted) {
-                queueMessage.delete().then(message => {
+            queueMessage.delete().then(message => {
                 client.queueMessages.delete(guildID)
+            }).catch(err => {
+                if (err.httpStatus == 404) {
+                    console.log("Message already deleted")
+                } else {
+                console.log(err)}
             })
-            .catch(err => {console.log(err)})
-            }
         }
 
         if (client.queueIntervals.get(guildID)) {
