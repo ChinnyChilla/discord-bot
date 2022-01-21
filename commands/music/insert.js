@@ -47,6 +47,9 @@ module.exports = {
         }
 
         if (!requestedSong.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/)) {
+            if (client.usersInMessageReactions.includes(interaction.member.id)) {
+                return interaction.editReply("Please wait until your previous interaction is over")
+            }
             const embed = new MessageEmbed()
             .setTitle("Please select a video")
             .setDescription('Type in a number 1-5 to select your video')
@@ -60,7 +63,12 @@ module.exports = {
             interaction.editReply({embeds: [embed]})
             const filter = (message) => message.author.id == interaction.member.id
             const collector = interaction.channel.createMessageCollector({filter, max:1, time:15000})
+            client.usersInMessageReactions.push(interaction.member.id)
             collector.on('end', async collected => {
+                const index = client.usersInMessageReactions.indexOf(interaction.member.id)
+                if (index > -1) {
+                    client.usersInMessageReactions.splice(index, 1)
+                }
                 if (collected.size == 0) {return interaction.editReply({content: "Timed out", embeds: []})}
 				collected.first().delete()
 				if (collected.first().content.match(/([1-5])/)) {
