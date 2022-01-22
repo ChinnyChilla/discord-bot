@@ -23,5 +23,6 @@ module.exports = {
                 console.error("ERROR WRITING TO LOG FILE " + err)
             }
         })
+		console.log(`Logs ${guildID}: ` + content)
     }
 }

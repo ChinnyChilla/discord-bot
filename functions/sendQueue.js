@@ -82,6 +82,7 @@ module.exports = {
                 
                 queueMessage.edit({embeds: [discordEmbed]}).catch((err) => {
                     queueMessage.channel.send("Failed to edit message, leaving!")
+					console.log("Failed to send edit queueMessage!:" + err)
                     return queue.stop()
                 })
 
