@@ -46,7 +46,7 @@ module.exports = {
             line: "─"
         })
         discordEmbed.setDescription(`${progressionBar}`)
-                        
+        const queueMessage = client.queueMessages.get(guildID)
         queueMessage.edit({embeds: [discordEmbed]}).catch((err) => {
             queueMessage.channel.send("Failed to edit message, leaving!")
 			console.log("Failed to send edit queueMessage!:" + err)
