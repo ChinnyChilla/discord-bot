@@ -37,8 +37,10 @@ client.defaultServerConfig = {
     musicChannel: "0" // 0 is no channel else channelID
 }
 client.usersInMessageReactions = new Array();
-console.log("Loading Events")
 client.musicChannels = new Array();
+client.musicChannelServers = new Array();
+
+console.log("Loading Events")
 fs.readdirSync('./discordjs-events').forEach(file => {
     if (file.endsWith('.js')) {
         console.log("Loading discord.js file: " + file)
@@ -63,7 +65,6 @@ fs.readdirSync('./discord-player').forEach(file => {
 })
 
 console.log("Events Loaded!")
-
 
 console.log("Started refreshing application (/) commands.");
 
@@ -102,7 +103,6 @@ async function refreshCommands() {
     };
 };
 refreshCommands()
-
 
 console.log("Loading Functions");
 fs.readdirSync('./functions').forEach(file => {

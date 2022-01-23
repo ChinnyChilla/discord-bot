@@ -1,3 +1,4 @@
+const path = require('path')
 module.exports = async (client, interaction) => {
     if (!interaction.isCommand()) {return}
     const command = client.commands.find(command => command.name == interaction.commandName)
@@ -24,5 +25,9 @@ module.exports = async (client, interaction) => {
         }
     }), 30000)
     client.functions.get('log').execute(interaction.guildId, `${interaction.member.user.tag} requested command ${command.name}`)
-    command.execute(client, interaction)  
+    if (client.musicChannelServers.includes(interaction.guild.id) && !client.musicChannels.includes(interaction.channel.id) && command.category == 'music') {
+        const serverConfig = require(path.join(__dirname, "../data/serverConfig.json"))
+        return interaction.editReply(`This server has as dedicated music channel!\nPlease use <#${serverConfig[interaction.guild.id]['musicChannel']}> instead!`)
+    }
+    command.execute(client, interaction)
 }

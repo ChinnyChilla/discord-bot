@@ -1,4 +1,4 @@
-const { MessageActionRow, Permissions, Message, MessageButton } = require('discord.js')
+const { MessageActionRow, Permissions, Message, MessageButton, MessageEmbed } = require('discord.js')
 const path = require('path')
 const fs = require('fs')
 module.exports = {
@@ -34,16 +34,20 @@ module.exports = {
         const reqPath = path.join(__dirname, '../../data/serverConfig.json')
         var subCommand = interaction.options.getSubcommand()
         const serverConfig = require(reqPath)
-        console.log("Before finish executing: "+ serverConfig)
+
         if (subCommand == "view") {
+            const discordEmbed = new MessageEmbed()
+            .setTitle('Current server settings')
             const currentServerConfig = serverConfig[interaction.guild.id]
+            discordEmbed.addField("Current music channel", `<#${currentServerConfig['musicChannel']}>`)
+            interaction.editReply({embeds: [discordEmbed]})
         } else if (subCommand == 'set') {
             if (!interaction.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
                 return interaction.editReply("You need ADMINISTRATOR to use this command!")
             }
             const selectedSetting = interaction.options.getString("setting")
             if (selectedSetting == "musicChannel") {
-                interaction.editReply("Please type in a text channel (starts with #)")
+                interaction.editReply("Please type in a text channel (starts with #) or 0 to remove music channel from this server")
                 const filter = (message) => message.author.id == interaction.member.id
                 const collector = interaction.channel.createMessageCollector({filter, max:1, time:15000})
                 client.usersInMessageReactions.push(interaction.member.id)
@@ -55,8 +59,15 @@ module.exports = {
                     if (collected.size == 0) {return interaction.editReply({content: "Timed out"})}
                     collected.first().delete()
                     if (collected.first().content.match(/<#\d+>/)) {
+                        if (collected.first().content == '0') {
+                            const index = client.musicChannelServers.indexOf(interaction.guild.id)
+                            if (index >-1) {
+                                client.musicChannelServers.splice(1, index)
+                            }
+                            return interaction.editReply("Successfully removed")
+                        }
                         serverConfig[interaction.guild.id][selectedSetting] = collected.first().content.slice(2, -1)
-                        console.log(serverConfig)
+                        client.functions.get('log', `Set ${interaction.guild.id} musicChannel to ${collected.first().content}`)
                         fs.writeFileSync(reqPath, JSON.stringify(serverConfig), function(err) {
                             if (err) {
                                 console.error(`An Error has occured! ${err}`)
@@ -69,6 +80,7 @@ module.exports = {
                     for (var serverId in serverConfig) { 
                         if (!client.musicChannels.includes(serverConfig[serverId]['musicChannel'])) {
                             client.musicChannels.push(serverConfig[serverId]['musicChannel'])
+                            client.musicChannelServers.push(serverId)
                         }
                     }
                 })

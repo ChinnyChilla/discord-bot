@@ -7,6 +7,7 @@ module.exports = (client, guild) => {
         serverConfig[guild.id] = client.defaultServerConfig
         serverConfig[guild.id]['musicChannel'] = channel.id
         client.musicChannels.push(channel.id)
+        client.musicChannelServers.push(serverId)
         fs.writeFile(reqPath, JSON.stringify(serverConfig), function(err) {
             if (err) {
                 console.error(`An Error has occured! ${err}`)

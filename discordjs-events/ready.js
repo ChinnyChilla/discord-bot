@@ -27,6 +27,7 @@ module.exports = (client) => {
     for (var serverId in serverConfig) { 
         if (!client.musicChannels.includes(serverConfig[serverId]['musicChannel'])) {
             client.musicChannels.push(serverConfig[serverId]['musicChannel'])
+            client.musicChannelServers.push(serverId)
         }
     }
 }
