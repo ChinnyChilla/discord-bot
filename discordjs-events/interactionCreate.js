@@ -1,6 +1,7 @@
 const path = require('path')
 module.exports = async (client, interaction) => {
     if (!interaction.isCommand()) {return}
+	if (interaction.type == "MESSAGE_COMPONENT") {return client.emit("messageButtonClicked", interaction)}
     const command = client.commands.find(command => command.name == interaction.commandName)
     if (!command) {return}
     function notInGuild() {

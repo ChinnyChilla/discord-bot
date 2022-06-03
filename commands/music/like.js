@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const reqPath = path.join(__dirname, '../../data/likedSongs.json');
+const queueInfo = require("../../functions/createQueueInfoClass.js")
 
 module.exports = {
     name: 'like',
@@ -103,9 +104,10 @@ module.exports = {
             if (!data[interaction.member.id] || data[interaction.member.id].length == 0) {return interaction.editReply("Please first like some songs!")}
 
             const songs = data[interaction.member.id]
-            if (!client.queueMessages.get(interaction.guild.id)) {
+            if (!client.queueInfo.get(interaction.guild.id)) {
                 const queueMessage = await interaction.channel.send(`Bound to <#${interaction.channel.id}>`)
-                client.queueMessages.set(interaction.guild.id, queueMessage)
+                const queueInfo = new queueInfo(queueMessage, queue)
+				client.queueInfo.set(interaction.guild.id, queueInfo)
             }
 
             var promises = new Array();

@@ -1,3 +1,4 @@
+const {MessageActionRow, MessageButton} = require('discord.js')
 module.exports = {
     name: 'updateQueue',
     category: 'functions',
@@ -5,8 +6,9 @@ module.exports = {
     args: '[client, queue]',
     execute(client, queue, paused = false) {
         const guildID = queue.guild.id
-        const discordEmbed = client.queueEmbeds.get(queue.metadata.guild.id)
-        if (!discordEmbed) {return}
+		const queueInfo = client.queueInfo.get(guildID)
+        if (!queueInfo) {return}
+        const discordEmbed = queueInfo.embed
         const tracks = queue.tracks
         if (!tracks) {return}
         discordEmbed.spliceFields(0, 20)
@@ -37,8 +39,8 @@ module.exports = {
         if (queue.repeatMode) {
             const repeatModes = ['TRACK', 'QUEUE', 'AUTOPLAY']
             discordEmbed.addField("Repeat mode:", repeatModes[queue.repeatMode - 1])
-        }
-        client.queueEmbeds.set(guildID, discordEmbed)
+		}
+		queueInfo.setEmbed(discordEmbed)
         var progressionBar = queue.createProgressBar({
             timecodes: true,
             length: 15,
@@ -46,7 +48,7 @@ module.exports = {
             line: "─"
         })
         discordEmbed.setDescription(`${progressionBar}`)
-        const queueMessage = client.queueMessages.get(guildID)
+        const queueMessage = queueInfo.message
         queueMessage.edit({embeds: [discordEmbed]}).catch((err) => {
             queueMessage.channel.send("Failed to edit message, leaving!")
 			console.log("Failed to send edit queueMessage!:" + err)

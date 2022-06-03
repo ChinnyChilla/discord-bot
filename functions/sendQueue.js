@@ -1,13 +1,16 @@
+const {MessageActionRow, MessageButton} = require('discord.js')
 module.exports = {
     name: 'sendQueue',
     category: 'functions',
     description: 'Sends the queue after every song',
     args: '[client, queue]',
     execute(client, queuetemp, firstTrack) {
-        const guildID = queuetemp.metadata.guild.id
+		const guildID = queuetemp.metadata.guild.id
+
+		const queueInfo = client.queueInfo.get(guildID)
         const queue = client.player.getQueue(guildID)
 
-        const queueMessage = client.queueMessages.get(guildID)
+        const queueMessage = queueInfo.message
 
         const tracks = queue.tracks
 
@@ -47,12 +50,12 @@ module.exports = {
         if (queue.repeatMode) {
             discordEmbed.addField("Repeat mode:", repeatModes[queue.repeatMode - 1])
         }
-        client.queueEmbeds.set(guildID, discordEmbed)
-        const isInterval = client.queueIntervals.get(guildID)
+        queueInfo.setEmbed(discordEmbed)
+        const isInterval = queueInfo.interval
         if (!isInterval) {
             // Call it the first time so it doesn't have to wait
             var progressionBar = ""
-            const discordEmbed = client.queueEmbeds.get(guildID)
+            const discordEmbed = queueInfo.embed
             if (queue.tracks) {
                 progressionBar = queue.createProgressBar({
                     timecodes: true,
@@ -61,15 +64,61 @@ module.exports = {
                     line: "─"
                 })
             }
+			const row = new MessageActionRow()
+			.setComponents([
+				new MessageButton()
+					.setCustomId("pause")
+					.setLabel("Pause")
+					.setStyle('PRIMARY'),
+				new MessageButton()
+					.setCustomId("resume")
+					.setLabel("Resume")
+					.setStyle('PRIMARY'),
+				new MessageButton()
+					.setCustomId('skip')
+					.setLabel('Skip')
+					.setStyle('PRIMARY')
+			])
             discordEmbed.setDescription(`Author: ${firstTrack.author} \n ${progressionBar}`)
             
-            try {queueMessage.edit({embeds: [discordEmbed]}).catch("Something went wrong when editing")}
+            try {queueMessage.edit({embeds: [discordEmbed], components: [row]}).catch("Something went wrong when editing")}
             catch {
                 queue.stop()
             }
+			const filter = i => !i.bot
+			const collector = queueMessage.channel.createMessageComponentCollector({filter});
+			collector.on('collect', async c => {
+				if (c.customId == "resume") {
+					queue.setPaused(false)
+					c.reply("Resumed!")
+					client.functions.get('updateQueue').execute(client, queue)
+
+				}
+				if (c.customId == "pause") {
+					queue.setPaused(true)
+					c.reply("Paused!")
+					client.functions.get('updateQueue').execute(client, queue, true)
+				}
+				if (c.customId == "skip") {
+					if (queue.tracks.length == 0) {
+						queue.stop()
+						client.functions.get('log').execute(guildID, `No more songs, leaving!`)
+						return c.reply('No more songs, leaving!!')
+					}
+					queue.skip()
+					c.reply("Skipped!")
+					client.functions.get('updateQueue').execute(client, queue)
+				}
+				setTimeout(() => c.deleteReply().catch(err => {
+					if (err.httpStatus == 404) {
+						console.log("Reply already deleted")
+					}
+				}), 5000)
+			})
+			queueInfo.setButtonCollector(collector)
             const interval = setInterval(() => {
                 var progressionBar = ""
-                const discordEmbed = client.queueEmbeds.get(guildID)
+                const discordEmbed = queueInfo.embed
                 if (queue.tracks) {
                     progressionBar = queue.createProgressBar({
                         timecodes: true,
@@ -87,9 +136,7 @@ module.exports = {
                 })
 
             }, 1000 * 20);
-            client.queueIntervals.set(guildID, interval)
+            queueInfo.setInterval(interval)
         }
-
-        
     }
 }

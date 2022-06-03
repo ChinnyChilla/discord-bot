@@ -5,4 +5,5 @@ module.exports = (client, queue, error) => {
         queue.play(queue.tracks[0], {immediate: true})
         queue.remove(0)
     })
+	console.log(error)
 }

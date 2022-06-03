@@ -1,4 +1,5 @@
 const {MessageEmbed, Message} = require('discord.js')
+const queueInfo = require("../../functions/createQueueInfoClass.js")
 module.exports = {
     name: 'play',
     description: 'Plays a song',
@@ -48,9 +49,11 @@ module.exports = {
         var index = 0
 
         async function play() {
-            if (!client.queueMessages.get(interaction.guild.id)) {
+			console.log(client.queueInfo.get(interaction.guild.id))
+            if (!client.queueInfo.get(interaction.guild.id)) {
                 const queueMessage = await interaction.channel.send(`Bound to <#${interaction.channel.id}>`)
-                client.queueMessages.set(interaction.guild.id, queueMessage)
+                var queueInfotemp = new queueInfo(queueMessage, queue)
+				await client.queueInfo.set(interaction.guild.id, queueInfotemp)
             }
             if (shuffle) {
                 if (firstTime) {
@@ -96,9 +99,11 @@ module.exports = {
                 if (collected.size == 0) {return interaction.editReply({content: "Timed out", embeds: []})}
 				collected.first().delete()
                 if (collected.first().content.match(/([1-5])/)) {
-                    await queue.addTrack(song.tracks[parseInt(collected.first().content) - 1])
-                    interaction.editReply({content: `Selected video ${collected.first().content}`, embeds: []})
+					number = parseInt(collected.first().content)
+					if (!(0 < number < 6)) {return interaction.editReply("Number too big or small")}
+                    await queue.addTrack(song.tracks[number - 1])
                     play()
+                    interaction.editReply({content: `Selected video ${collected.first().content}`, embeds: []})
                     return
                 } 
                 return interaction.editReply({content: "Message wasn't a number between 1-5", embeds: []})

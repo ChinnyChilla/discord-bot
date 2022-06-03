@@ -28,11 +28,8 @@ const { Player } = require('discord-player')
 var testCommands = new Array();
 client.commands = new Array();
 client.player = new Player(client);
-client.queueMessages = new Collection();
-client.queueEmbeds = new Collection();
-client.queueIntervals = new Collection();
+client.queueInfo = new Collection();
 client.functions = new Collection();
-client.queueReactionsCollections = new Collection();
 client.defaultServerConfig = {
     musicChannel: "0" // 0 is no channel else channelID
 }
