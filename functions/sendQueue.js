@@ -86,37 +86,43 @@ module.exports = {
             catch {
                 queue.stop()
             }
-			const filter = i => !i.bot
-			const collector = queueMessage.channel.createMessageComponentCollector({filter});
-			collector.on('collect', async c => {
-				if (c.customId == "resume") {
-					queue.setPaused(false)
-					c.reply("Resumed!")
-					client.functions.get('updateQueue').execute(client, queue)
+			
+			if (!queueInfo.buttonCollector) {
+				const filter = i => !i.bot
+				const collector = queueMessage.channel.createMessageComponentCollector({filter});
+				collector.on('collect', async c => {
+					if (c.customId == "resume") {
+						queue.setPaused(false)
+						c.reply("Resumed!")
+						client.functions.get('updateQueue').execute(client, queue)
 
-				}
-				if (c.customId == "pause") {
-					queue.setPaused(true)
-					c.reply("Paused!")
-					client.functions.get('updateQueue').execute(client, queue, true)
-				}
-				if (c.customId == "skip") {
-					if (queue.tracks.length == 0) {
-						queue.stop()
-						client.functions.get('log').execute(guildID, `No more songs, leaving!`)
-						return c.reply('No more songs, leaving!!')
 					}
-					queue.skip()
-					c.reply("Skipped!")
-					client.functions.get('updateQueue').execute(client, queue)
-				}
-				setTimeout(() => c.deleteReply().catch(err => {
-					if (err.httpStatus == 404) {
-						console.log("Reply already deleted")
+					if (c.customId == "pause") {
+						queue.setPaused(true)
+						c.reply("Paused!")
+						client.functions.get('updateQueue').execute(client, queue, true)
 					}
-				}), 5000)
-			})
-			queueInfo.setButtonCollector(collector)
+					if (c.customId == "skip") {
+						if (queue.tracks.length == 0) {
+							queue.stop()
+							client.functions.get('log').execute(guildID, `No more songs, leaving!`)
+							return c.reply('No more songs, leaving!!')
+						}
+						queue.skip()
+						c.reply("Skipped!")
+						client.functions.get('updateQueue').execute(client, queue)
+					}
+
+					setTimeout(() => {
+						c.deleteReply().catch(err => {
+							if (err.httpStatus == 404) {
+								console.log("Reply already deleted")
+							}
+						})
+					}, 5000)
+				})
+				queueInfo.setButtonCollector(collector)
+			}
             const interval = setInterval(() => {
                 var progressionBar = ""
                 const discordEmbed = queueInfo.embed

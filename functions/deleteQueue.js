@@ -12,12 +12,12 @@ module.exports = {
 
         if (queueInfo.interval) {
 			queueInfo.clearQueueInterval()
-			queueInfo.setInterval("")
+			queueInfo.setInterval(undefined)
 		}
         if (queueInfo.buttonCollector) {
             queueInfo.stopButtonCollector()
-            queueInfo.setButtonCollector("")
+            queueInfo.setButtonCollector(undefined)
         }
-        queueInfo.setEmbed("")
+        queueInfo.setEmbed(undefined)
     }
 }

@@ -3,9 +3,9 @@ module.exports = class queueInfo {
 		this.message = queueMessage
 		this.queue = queue
 	}
-	buttonCollector = "";
-	embed = "";
-	interval = "";
+	buttonCollector = undefined;
+	embed = undefined;
+	interval = undefined;
 
 	setQueue(queue) {
 		this.queue = queue

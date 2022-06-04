@@ -5,3 +5,4 @@ data
 *.log
 data/likedSongs.json
 .env
+data/serverConfig.json
