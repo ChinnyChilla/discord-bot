@@ -49,7 +49,6 @@ module.exports = {
         var index = 0
 
         async function play() {
-			console.log(client.queueInfo.get(interaction.guild.id))
             if (!client.queueInfo.get(interaction.guild.id)) {
                 const queueMessage = await interaction.channel.send(`Bound to <#${interaction.channel.id}>`)
                 var queueInfotemp = new queueInfo(queueMessage, queue)

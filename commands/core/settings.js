@@ -57,7 +57,7 @@ module.exports = {
                         client.usersInMessageReactions.splice(index, 1)
                     }
                     if (collected.size == 0) {return interaction.editReply({content: "Timed out"})}
-                    collected.first().delete()
+                    collected.first().delete().catch(err => console.log("Message already deleted"))
                     if (collected.first().content.match(/<#\d+>/)) {
                         if (collected.first().content == '0') {
                             const index = client.musicChannelServers.indexOf(interaction.guild.id)

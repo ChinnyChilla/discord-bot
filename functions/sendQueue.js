@@ -28,7 +28,8 @@ module.exports = {
             
             const {ms, s, m, h, d} = require('time-convert')
             const time = ms.to(h, m, s)(queue.totalTime)
-            discordEmbed.setFooter({text: `Queue Length ${('0' + time[0]).slice(-2)}:${('0' + time[1]).slice(-2)}:${('0' + time[2]).slice(-2)}`})
+			const footer = `Queue Length ${('0' + time[0]).slice(-2)}:${('0' + time[1]).slice(-2)}:${('0' + time[2]).slice(-2)}`
+            discordEmbed.setFooter({text: footer.toString()})
         } else {discordEmbed.setFooter({text: "No more songs!"})}
         for(let i=0; i<5; i++) {
             if(!tracks[i]) {break}

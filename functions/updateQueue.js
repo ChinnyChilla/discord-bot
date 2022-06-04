@@ -9,6 +9,7 @@ module.exports = {
 		const queueInfo = client.queueInfo.get(guildID)
         if (!queueInfo) {return}
         const discordEmbed = queueInfo.embed
+		if (!discordEmbed) {return}
         const tracks = queue.tracks
         if (!tracks) {return}
         discordEmbed.spliceFields(0, 20)
@@ -26,8 +27,8 @@ module.exports = {
         if (tracks) {
             const {ms, s, m, h, d} = require('time-convert')
             const time = ms.to(h, m, s)(queue.totalTime)
-            discordEmbed.setFooter(`Queue Length ${('0' + time[0]).slice(-2)}:${('0' + time[1]).slice(-2)}:${('0' + time[2]).slice(-2)}`,
-                    'https://media.discordapp.net/attachments/810009113009979394/821078381419561000/Anime_Girl.gif')
+			const footer = `Queue Length ${('0' + time[0]).slice(-2)}:${('0' + time[1]).slice(-2)}:${('0' + time[2]).slice(-2)}` 
+            discordEmbed.setFooter({text: footer.toString()})
         } else {discordEmbed.setFooter("No more songs!")}
         
         if (paused) {
