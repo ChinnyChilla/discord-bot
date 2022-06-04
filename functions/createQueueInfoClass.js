@@ -27,7 +27,7 @@ module.exports = class queueInfo {
 	}
 	deleteQueueMessage() {
 		this.message.delete().then(message => {
-                client.queueMessages.delete(guildID)
+			console.log("Deleting queue message")
             }).catch(err => {
                 if (err.httpStatus == 404) {
                     console.log("Message already deleted")
