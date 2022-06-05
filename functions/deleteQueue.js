@@ -12,12 +12,10 @@ module.exports = {
 
         if (queueInfo.interval) {
 			queueInfo.clearQueueInterval()
-			queueInfo.setInterval(undefined)
 		}
         if (queueInfo.buttonCollector) {
             queueInfo.stopButtonCollector()
-            queueInfo.setButtonCollector(undefined)
         }
-        queueInfo.setEmbed(undefined)
+        client.queueInfo.delete(guildID)
     }
 }
