@@ -1,10 +1,12 @@
 const {MessageActionRow, MessageButton} = require('discord.js')
+const axios = require('axios')
+const https = require('https')
 module.exports = {
     name: 'updateQueue',
     category: 'functions',
     description: 'Updates the queue',
     args: '[client, queue]',
-    execute(client, queue, paused = false) {
+    async execute(client, queue, paused = false) {
         const guildID = queue.guild.id
 		const queueInfo = client.queueInfo.get(guildID)
         if (!queueInfo) {return}
@@ -13,6 +15,26 @@ module.exports = {
         const tracks = queue.tracks
         if (!tracks) {return}
         discordEmbed.spliceFields(0, 20)
+		const instance = axios.create({
+			httpsAgent: new https.Agent({  
+				rejectUnauthorized: false
+			})
+		});
+		const queueToSend = {
+			tracks: queue.tracks,
+			previousTracks: queue.previousTracks,
+			playing: queue.playing,
+			channelName: queue.connection.channel.name,
+			paused: queue.connection.paused,
+			guildName: queue.guild.name,
+			
+		}
+		instance.post('https://localhost:443/api/post/updateQueue', {
+				action: 'send_queue',
+				token: 'example',
+				id: guildID,
+				queue: queueToSend
+			})
         for(let i=0; i<5; i++) {
             if(!tracks[i]) {break}
             var track = tracks[i]

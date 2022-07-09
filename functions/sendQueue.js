@@ -1,15 +1,41 @@
-const {MessageActionRow, MessageButton} = require('discord.js')
+const {MessageActionRow, MessageButton} = require('discord.js');
+const axios = require('axios')
+const https = require('https')
 module.exports = {
     name: 'sendQueue',
     category: 'functions',
     description: 'Sends the queue after every song',
     args: '[client, queue]',
-    execute(client, queuetemp, firstTrack) {
+    async execute(client, queuetemp, firstTrack) {
 		const guildID = queuetemp.metadata.guild.id
 
 		const queueInfo = client.queueInfo.get(guildID)
         const queue = client.player.getQueue(guildID)
-
+		const instance = axios.create({
+			httpsAgent: new https.Agent({  
+				rejectUnauthorized: false
+			})
+		});
+		const date = new Date()
+		setTimeout(() => {
+			const queueToSend = {
+				tracks: queue.tracks,
+				previousTracks: queue.previousTracks,
+				playing: queue.playing,
+				channelName: queue.connection.channel.name,
+				paused: queue.connection.paused,
+				guildName: queue.guild.name,
+				firstTrack: firstTrack,
+				currentStreamTime: queue.streamTime,
+				timeSongFinish: new Date(date.getTime() + firstTrack.durationMS - queue.streamTime)
+			}
+			instance.post('https://localhost:443/api/post/updateQueue', {
+				action: 'send_queue',
+				token: 'example',
+				id: guildID,
+				queue: queueToSend
+			})
+		}, 1000)
         const queueMessage = queueInfo.message
 
         const tracks = queue.tracks
