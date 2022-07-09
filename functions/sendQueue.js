@@ -34,7 +34,7 @@ module.exports = {
 				token: 'example',
 				id: guildID,
 				queue: queueToSend
-			})
+			}).catch(err => console.log("Error sending queue"))
 		}, 1000)
         const queueMessage = queueInfo.message
 
