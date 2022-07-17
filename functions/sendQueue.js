@@ -27,14 +27,14 @@ module.exports = {
 				guildName: queue.guild.name,
 				firstTrack: firstTrack,
 				currentStreamTime: queue.streamTime,
-				timeSongFinish: new Date(date.getTime() + firstTrack.durationMS - queue.streamTime)
+				timeSongFinish: new Date(date.getTime() + firstTrack.durationMS - queue.streamTime).getTime()
 			}
 			instance.post('https://localhost:443/api/post/updateQueue', {
 				action: 'send_queue',
-				token: 'example',
+				token: process.env.SERVER_QUEUE_TOKEN,
 				id: guildID,
 				queue: queueToSend
-			}).catch(err => console.log("Error sending queue"))
+			}).catch(err => console.log("Error sending queue: " + err))
 		}, 1000)
         const queueMessage = queueInfo.message
 
@@ -118,12 +118,18 @@ module.exports = {
 				const collector = queueMessage.channel.createMessageComponentCollector({filter});
 				collector.on('collect', async c => {
 					if (c.customId == "resume") {
+						if (!queue.connection.paused) {
+							return c.reply('Already playing')
+						}
 						queue.setPaused(false)
 						c.reply("Resumed!")
 						client.functions.get('updateQueue').execute(client, queue)
 
 					}
 					if (c.customId == "pause") {
+						if (queue.connection.paused) {
+							return c.reply('Already paused')
+						}
 						queue.setPaused(true)
 						c.reply("Paused!")
 						client.functions.get('updateQueue').execute(client, queue, true)

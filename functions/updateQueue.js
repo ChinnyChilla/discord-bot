@@ -21,6 +21,7 @@ module.exports = {
 			})
 		});
 		const date = new Date();
+		console.log(queue.connection.paused)
 		const queueToSend = {
 			tracks: queue.tracks,
 			previousTracks: queue.previousTracks,
@@ -30,15 +31,15 @@ module.exports = {
 			guildName: queue.guild.name,
 			firstTrack: queue.previousTracks[queue.previousTracks.length - 1],
 			currentStreamTime: queue.streamTime,
-			timeSongFinish: new Date(date.getTime() + queue.previousTracks[queue.previousTracks.length - 1].durationMS - queue.streamTime)
+			timeSongFinish: new Date(date.getTime() + queue.previousTracks[queue.previousTracks.length - 1].durationMS - queue.streamTime).getTime()
 			
 		}
 		instance.post('https://localhost:443/api/post/updateQueue', {
 				action: 'send_queue',
-				token: 'example',
+				token: process.env.SERVER_QUEUE_TOKEN,
 				id: guildID,
 				queue: queueToSend
-			}).catch(err => console.log("Error sending queue"))
+			}).catch(err => console.log("Error sending queue: " + err))
         for(let i=0; i<5; i++) {
             if(!tracks[i]) {break}
             var track = tracks[i]

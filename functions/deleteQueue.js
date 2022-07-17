@@ -1,3 +1,5 @@
+const axios = require('axios')
+const https = require('https')
 module.exports = {
     name: 'deleteQueue',
     category: 'functions',
@@ -5,9 +7,21 @@ module.exports = {
     args: '[client, guildID]',
     execute(client, guildID) {
 		const queueInfo = client.queueInfo.get(guildID)
+		const instance = axios.create({
+			httpsAgent: new https.Agent({  
+				rejectUnauthorized: false
+			})
+		});
+		instance.post('https://localhost:443/api/post/updateQueue', {
+				action: 'delete',
+				token: process.env.SERVER_QUEUE_TOKEN,
+				id: guildID,
+				queue: {'deleted': true}
+			}).catch(err => console.log("Error updating delete: " + err))
         // Each server has a seperate log
       	client.functions.get('log').execute(guildID, "Deleting queue components")
 
+		if (!queueInfo) {return}
         queueInfo.deleteQueueMessage()
 
         if (queueInfo.interval) {
