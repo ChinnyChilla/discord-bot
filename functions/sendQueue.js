@@ -104,7 +104,11 @@ module.exports = {
 				new MessageButton()
 					.setCustomId('skip')
 					.setLabel('Skip')
-					.setStyle('PRIMARY')
+					.setStyle('PRIMARY'),
+				new MessageButton()
+					.setLabel("Web Version")
+					.setStyle('LINK')
+					.setURL(`https://chinny.site/music-queues/${guildID}`)
 			])
             discordEmbed.setDescription(`Author: ${firstTrack.author} \n ${progressionBar}`)
             
@@ -119,30 +123,33 @@ module.exports = {
 				collector.on('collect', async c => {
 					if (c.customId == "resume") {
 						if (!queue.connection.paused) {
-							return c.reply('Already playing')
+							c.reply('Already playing')
+						} else {
+							queue.setPaused(false)
+							c.reply("Resumed!")
+							client.functions.get('updateQueue').execute(client, queue)
 						}
-						queue.setPaused(false)
-						c.reply("Resumed!")
-						client.functions.get('updateQueue').execute(client, queue)
 
 					}
 					if (c.customId == "pause") {
 						if (queue.connection.paused) {
-							return c.reply('Already paused')
+							c.reply('Already paused')
+						} else {
+							queue.setPaused(true)
+							c.reply("Paused!")
+							client.functions.get('updateQueue').execute(client, queue, true)
 						}
-						queue.setPaused(true)
-						c.reply("Paused!")
-						client.functions.get('updateQueue').execute(client, queue, true)
 					}
 					if (c.customId == "skip") {
 						if (queue.tracks.length == 0) {
 							queue.stop()
 							client.functions.get('log').execute(guildID, `No more songs, leaving!`)
-							return c.reply('No more songs, leaving!!')
+							c.reply('No more songs, leaving!!')
+						} else {
+							queue.skip()
+							c.reply("Skipped!")
+							client.functions.get('updateQueue').execute(client, queue)
 						}
-						queue.skip()
-						c.reply("Skipped!")
-						client.functions.get('updateQueue').execute(client, queue)
 					}
 
 					setTimeout(() => {
