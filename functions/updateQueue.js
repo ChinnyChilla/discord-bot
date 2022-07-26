@@ -34,7 +34,7 @@ module.exports = {
 			timeSongFinish: new Date(date.getTime() + queue.previousTracks[queue.previousTracks.length - 1].durationMS - queue.streamTime).getTime()
 			
 		}
-		instance.post('https://localhost:443/api/post/updateQueue', {
+		instance.post('https://chinny.site/api/post/updateQueue', {
 				action: 'send_queue',
 				token: process.env.SERVER_QUEUE_TOKEN,
 				id: guildID,
