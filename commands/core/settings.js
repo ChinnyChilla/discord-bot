@@ -58,21 +58,30 @@ module.exports = {
                     }
                     if (collected.size == 0) {return interaction.editReply({content: "Timed out"})}
                     collected.first().delete().catch(err => console.log("Message already deleted"))
-                    if (collected.first().content.match(/<#\d+>/)) {
-                        if (collected.first().content == '0') {
+					if (collected.first().content == '0') {
                             const index = client.musicChannelServers.indexOf(interaction.guild.id)
                             if (index >-1) {
-                                client.musicChannelServers.splice(1, index)
+                                client.musicChannelServers.splice(index, 1)
                             }
                             return interaction.editReply("Successfully removed")
                         }
-                        serverConfig[interaction.guild.id][selectedSetting] = collected.first().content.slice(2, -1)
-                        client.functions.get('log', `Set ${interaction.guild.id} musicChannel to ${collected.first().content}`)
+                    if (collected.first().content.match(/<#\d+>/)) {
+						const previousId = serverConfig[interaction.guild.id]['musicChannel']
+                        serverConfig[interaction.guild.id][selectedSetting] = collected.first().content.slice(2, -1)	
+                        client.functions.get('log').execute(interaction.guild.id, `Set musicChannel to ${collected.first().content}`)
+						
                         fs.writeFileSync(reqPath, JSON.stringify(serverConfig), function(err) {
                             if (err) {
                                 console.error(`An Error has occured! ${err}`)
                             } else {console.log("Write successful")}
                         })
+						if (previousId !== 0) {
+							const prevIndex = client.musicChannels.indexOf(previousId)
+							if (prevIndex >-1) {
+                                client.musicChannels.splice(prevIndex, 1)
+								client.functions.get('log').execute(interaction.guild.id, `Successfully removed previous musicChannel ${previousId}`)
+                            }
+						}
                     } else {
                         return interaction.editReply("Invalid channel!")
                     }
