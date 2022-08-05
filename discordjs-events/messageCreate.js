@@ -1,5 +1,4 @@
 module.exports = (client, message) => {
-	console.log(message)
     if (!client.usersInMessageReactions.includes(message.author.id)) {
         if (client.musicChannels.includes(message.channelId) && !message.author.bot) {
             message.delete();
