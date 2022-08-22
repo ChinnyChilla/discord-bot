@@ -1,17 +1,17 @@
-const {MessageEmbed} = require('discord.js')
+const {MessageEmbed, ApplicationCommandOptionType} = require('discord.js')
 module.exports = {
     name: 'insert',
     description: 'Insert the song',
     category: 'music',
     options: [
         {
-            type: 3,
+            type: ApplicationCommandOptionType.String,
             name: "song",
             description: "Song URL/Title or Playlist URL",
             required: true,
         },
         {
-            type: 4,
+            type: ApplicationCommandOptionType.Integer,
             name: 'position',
             description: "Where to put it (0 is instantly playing)",
             required: true

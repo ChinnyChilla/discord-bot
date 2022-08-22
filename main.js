@@ -1,15 +1,16 @@
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('discord-api-types/v9')
 require('dotenv').config()
-const { Collection, Client, Intents } = require('discord.js');
+const { Collection, Client, GatewayIntentBits, Partials } = require('discord.js');
 
 const rest = new REST({version: '9'}).setToken(process.env.DISCORD_TOKEN)
 const client = new Client({ intents: [
-    Intents.FLAGS.GUILDS, 
-    Intents.FLAGS.GUILD_MESSAGES, 
-    Intents.FLAGS.GUILD_VOICE_STATES,
-    Intents.FLAGS.GUILD_MESSAGE_REACTIONS    
-]})
+	GatewayIntentBits.Guilds,
+	GatewayIntentBits.GuildMessages,
+	GatewayIntentBits.GuildVoiceStates,
+	GatewayIntentBits.GuildMessageReactions,
+	GatewayIntentBits.MessageContent
+], partials: [Partials.Channel]})
 // const config = require('./config.json');
 const fs = require('fs');
 
@@ -77,8 +78,6 @@ async function refreshCommands() {
                 } else {
                     client.commands.push(command)
                 }
-                
-                // client.commands.set(command.name.toLowerCase(), command)
             };
         });
     });

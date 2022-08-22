@@ -1,3 +1,4 @@
+const {ApplicationCommandOptionType} = require('discord.js')
 module.exports = {
     name: 'repeat',
     description: 'Repeats current track or entire queue',
@@ -5,7 +6,7 @@ module.exports = {
     options: [
         {
             name: "mode",
-            type: 4,
+            type: ApplicationCommandOptionType.Integer,
             description: "Repeat mode",
             required: true,
             choices: [

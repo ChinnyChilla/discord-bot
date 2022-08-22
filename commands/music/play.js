@@ -1,4 +1,4 @@
-const {MessageEmbed, Message} = require('discord.js')
+const {ApplicationCommandOptionType, EmbedBuilder} = require('discord.js')
 const queueInfo = require("../../functions/createQueueInfoClass.js")
 module.exports = {
     name: 'play',
@@ -6,13 +6,13 @@ module.exports = {
     category: 'music',
     options: [
         {
-            type: 3,
+            type: ApplicationCommandOptionType.String,
             name: "song",
             description: "Song URL/Title or Playlist URL",
             required: true,
         },
         {
-            type: 5,
+            type: ApplicationCommandOptionType.Boolean,
             name: 'shuffle',
             description: "Shuffle the queue when you add it."
         }
@@ -41,7 +41,7 @@ module.exports = {
         
         const song = await client.player.search(requestedSong, {
             requestedBy: interaction.member
-        })
+        })	
         if (!song.tracks[0]) {
             client.functions.get('deleteQueue').execute(client, interaction.guild.id)
             return interaction.editReply("Could not find song!")
@@ -76,7 +76,7 @@ module.exports = {
             if (client.usersInMessageReactions.includes(interaction.member.id)) {
                 return interaction.editReply("Please wait until your previous interaction is over")
             }
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
             .setTitle("Please select a video")
             .setDescription('Type in a number 1-5 to select your video')
             for(i=0;i<5;i++) {
