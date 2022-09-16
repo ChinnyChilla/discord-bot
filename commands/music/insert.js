@@ -1,3 +1,4 @@
+const { QueryType } = require('discord-player')
 const {MessageEmbed, ApplicationCommandOptionType} = require('discord.js')
 module.exports = {
     name: 'insert',
@@ -29,7 +30,8 @@ module.exports = {
         if (position < 0) {return interaction.editReply("Invalid position")}
 
         const song = await client.player.search(requestedSong, {
-            requestedBy: interaction.member
+            requestedBy: interaction.member,
+			searchEngine: QueryType.AUTO
         })
         if (!song.tracks[0]) {return interaction.editReply("Could not find song!")}
         async function insertTrack(track) {

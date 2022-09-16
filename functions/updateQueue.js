@@ -21,7 +21,6 @@ module.exports = {
 			})
 		});
 		const date = new Date();
-		console.log(queue.connection.paused)
 		const queueToSend = {
 			tracks: queue.tracks,
 			previousTracks: queue.previousTracks,
@@ -59,14 +58,14 @@ module.exports = {
         } else {discordEmbed.setFooter("No more songs!")}
         
         if (paused) {
-            discordEmbed.setColor("RED")
-        
+            discordEmbed.setColor(0xFF0000)
+            
         } else {
-            discordEmbed.setColor("GREEN")
+            discordEmbed.setColor(0x00FF00)
         }
         if (queue.repeatMode) {
             const repeatModes = ['TRACK', 'QUEUE', 'AUTOPLAY']
-            discordEmbed.addField("Repeat mode:", repeatModes[queue.repeatMode - 1])
+            discordEmbed.addFields({name: "Repeat mode:", value: repeatModes[queue.repeatMode - 1]})
 		}
 		queueInfo.setEmbed(discordEmbed)
         var progressionBar = queue.createProgressBar({

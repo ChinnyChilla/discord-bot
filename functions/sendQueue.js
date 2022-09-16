@@ -47,7 +47,7 @@ module.exports = {
         //('0' + time).slice(-2) used to add another 0 if <10
         .setTimestamp()
         .setThumbnail(firstTrack.thumbnail)
-        .addField('\u200B', `Requested By ${firstTrack.requestedBy.tag}`)
+        .addFields({name: '\u200B', value: `Requested By ${firstTrack.requestedBy.tag}`})
 
         if (tracks) {
             const {ms, s, m, h, d} = require('time-convert')
@@ -66,14 +66,14 @@ module.exports = {
             
         }
         if (queue.paused) {
-            discordEmbed.setColor("RED")
+            discordEmbed.setColor(0xFF0000)
             
         } else {
-            discordEmbed.setColor("GREEN")
+            discordEmbed.setColor(0x00FF00)
         }
         const repeatModes = ['TRACK', 'QUEUE', 'AUTOPLAY']
         if (queue.repeatMode) {
-            discordEmbed.addField("Repeat mode:", repeatModes[queue.repeatMode - 1])
+            discordEmbed.addFields({name: "Repeat mode:", value: repeatModes[queue.repeatMode - 1]})
         }
         queueInfo.setEmbed(discordEmbed)
         const isInterval = queueInfo.interval

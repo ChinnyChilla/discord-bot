@@ -1,4 +1,4 @@
-const { MessageActionRow, PermissionsBitField, Message, MessageButton, MessageEmbed, ApplicationCommandOptionType } = require('discord.js')
+const { MessageActionRow, PermissionsBitField, Message, MessageButton, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js')
 const path = require('path')
 const fs = require('fs')
 module.exports = {
@@ -36,10 +36,10 @@ module.exports = {
         const serverConfig = require(reqPath)
 
         if (subCommand == "view") {
-            const discordEmbed = new MessageEmbed()
+            const discordEmbed = new EmbedBuilder()
             .setTitle('Current server settings')
             const currentServerConfig = serverConfig[interaction.guild.id]
-            discordEmbed.addField("Current music channel", `<#${currentServerConfig['musicChannel']}>`)
+            discordEmbed.addFields({name: "Current music channel", value: `<#${currentServerConfig['musicChannel']}>`})
             interaction.editReply({embeds: [discordEmbed]})
         } else if (subCommand == 'set') {
             if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
