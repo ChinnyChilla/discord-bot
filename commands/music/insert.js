@@ -1,17 +1,18 @@
-const {MessageEmbed} = require('discord.js')
+const { QueryType } = require('discord-player')
+const {MessageEmbed, ApplicationCommandOptionType} = require('discord.js')
 module.exports = {
     name: 'insert',
     description: 'Insert the song',
     category: 'music',
     options: [
         {
-            type: 3,
+            type: ApplicationCommandOptionType.String,
             name: "song",
             description: "Song URL/Title or Playlist URL",
             required: true,
         },
         {
-            type: 4,
+            type: ApplicationCommandOptionType.Integer,
             name: 'position',
             description: "Where to put it (0 is instantly playing)",
             required: true
@@ -29,7 +30,8 @@ module.exports = {
         if (position < 0) {return interaction.editReply("Invalid position")}
 
         const song = await client.player.search(requestedSong, {
-            requestedBy: interaction.member
+            requestedBy: interaction.member,
+			searchEngine: QueryType.AUTO
         })
         if (!song.tracks[0]) {return interaction.editReply("Could not find song!")}
         async function insertTrack(track) {

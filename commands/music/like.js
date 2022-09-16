@@ -2,18 +2,18 @@ const path = require('path');
 const fs = require('fs');
 const reqPath = path.join(__dirname, '../../data/likedSongs.json');
 const queueInfo = require("../../functions/createQueueInfoClass.js")
-
+const {ApplicationCommandOptionType} = require('discord.js')
 module.exports = {
     name: 'like',
     description: 'Everything with your liked playlist',
     category: 'music',
     options: [
         {
-            type: 1,
+            type: ApplicationCommandOptionType.Subcommand,
             name: "song",
             description: "Like a song",
             options: [{
-                type: 3,
+                type: ApplicationCommandOptionType.String,
                 name: 'song',
                 description: 'Song URL/Title or Playlist URL to add to your playlist',
                 required: true,
@@ -21,17 +21,17 @@ module.exports = {
 
         },
         {
-            type: 1,
+            type: ApplicationCommandOptionType.Subcommand,
             name: "play",
             description: 'Play your liked songs!',
             options: [{
-                type: 5,
+                type: ApplicationCommandOptionType.Boolean,
                 name: 'shuffle',
                 description: "Shuffle liked songs",
             }],
         },
         {
-            type: 1,
+            type: ApplicationCommandOptionType.Subcommand,
             name: "list",
             description: "List your current liked songs"
         }

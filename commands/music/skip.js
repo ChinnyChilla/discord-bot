@@ -1,10 +1,11 @@
+const {ApplicationCommandOptionType} = require('discord.js')
 module.exports = {
     name: 'skip',
     description: 'Skips song(s)',
     category: 'music',
     options: [
         {
-            type: 4,
+            type: ApplicationCommandOptionType.Integer,
             name: 'amount',
             description: 'skip amount of tracks'
         }

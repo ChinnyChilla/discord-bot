@@ -1,4 +1,4 @@
-const {MessageActionRow, MessageButton} = require('discord.js');
+const {MessageActionRow, MessageButton, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
 const axios = require('axios')
 const https = require('https')
 module.exports = {
@@ -40,18 +40,16 @@ module.exports = {
 
         const tracks = queue.tracks
 
-        const { MessageEmbed }  = require('discord.js')
-        const discordEmbed = new MessageEmbed()
+        const { EmbedBuilder }  = require('discord.js')
+        const discordEmbed = new EmbedBuilder()
         .setTitle(`Now Playing: ${firstTrack.title}`)
         .setURL(firstTrack.url)
         //('0' + time).slice(-2) used to add another 0 if <10
         .setTimestamp()
         .setThumbnail(firstTrack.thumbnail)
-        .addField('\u200B', `Requested By ${firstTrack.requestedBy.tag}`)
-
+        .addFields({name: '\u200B', value: `Requested By ${firstTrack.requestedBy.tag}`})
 
         if (tracks) {
-            
             const {ms, s, m, h, d} = require('time-convert')
             const time = ms.to(h, m, s)(queue.totalTime)
 			const footer = `Queue Length ${('0' + time[0]).slice(-2)}:${('0' + time[1]).slice(-2)}:${('0' + time[2]).slice(-2)}`
@@ -68,14 +66,14 @@ module.exports = {
             
         }
         if (queue.paused) {
-            discordEmbed.setColor("RED")
+            discordEmbed.setColor(0xFF0000)
             
         } else {
-            discordEmbed.setColor("GREEN")
+            discordEmbed.setColor(0x00FF00)
         }
         const repeatModes = ['TRACK', 'QUEUE', 'AUTOPLAY']
         if (queue.repeatMode) {
-            discordEmbed.addField("Repeat mode:", repeatModes[queue.repeatMode - 1])
+            discordEmbed.addFields({name: "Repeat mode:", value: repeatModes[queue.repeatMode - 1]})
         }
         queueInfo.setEmbed(discordEmbed)
         const isInterval = queueInfo.interval
@@ -91,23 +89,23 @@ module.exports = {
                     line: "─"
                 })
             }
-			const row = new MessageActionRow()
+			const row = new ActionRowBuilder()
 			.setComponents([
-				new MessageButton()
+				new ButtonBuilder()
 					.setCustomId("pause")
 					.setLabel("Pause")
-					.setStyle('PRIMARY'),
-				new MessageButton()
+					.setStyle(ButtonStyle.Primary),
+				new ButtonBuilder()
 					.setCustomId("resume")
 					.setLabel("Resume")
-					.setStyle('PRIMARY'),
-				new MessageButton()
+					.setStyle(ButtonStyle.Primary),
+				new ButtonBuilder()
 					.setCustomId('skip')
 					.setLabel('Skip')
-					.setStyle('PRIMARY'),
-				new MessageButton()
+					.setStyle(ButtonStyle.Primary),
+				new ButtonBuilder()
 					.setLabel("Web Version")
-					.setStyle('LINK')
+					.setStyle(ButtonStyle.Link)
 					.setURL(`https://chinny.site/music-queues/${guildID}`)
 			])
             discordEmbed.setDescription(`Author: ${firstTrack.author} \n ${progressionBar}`)

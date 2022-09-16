@@ -1,4 +1,4 @@
-const { MessageActionRow, Permissions, Message, MessageButton, MessageEmbed } = require('discord.js')
+const { MessageActionRow, PermissionsBitField, Message, MessageButton, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js')
 const path = require('path')
 const fs = require('fs')
 module.exports = {
@@ -7,12 +7,12 @@ module.exports = {
     description: 'Everything server setting',
     options: [
         {
-            type: 1,
+            type: ApplicationCommandOptionType.Subcommand,
             name: "set",
             description: "Set a setting",
             options: [
                 {
-                    type: 3,
+                    type: ApplicationCommandOptionType.String,
                     name: "setting",
                     description: "Specific setting",
                     choices: [
@@ -25,7 +25,7 @@ module.exports = {
             }]
         },
         {
-            type: 1,
+            type: ApplicationCommandOptionType.Subcommand,
             name: "view",
             description: "See current server config",
         }
@@ -36,22 +36,22 @@ module.exports = {
         const serverConfig = require(reqPath)
 
         if (subCommand == "view") {
-            const discordEmbed = new MessageEmbed()
+            const discordEmbed = new EmbedBuilder()
             .setTitle('Current server settings')
             const currentServerConfig = serverConfig[interaction.guild.id]
-            discordEmbed.addField("Current music channel", `<#${currentServerConfig['musicChannel']}>`)
+            discordEmbed.addFields({name: "Current music channel", value: `<#${currentServerConfig['musicChannel']}>`})
             interaction.editReply({embeds: [discordEmbed]})
         } else if (subCommand == 'set') {
-            if (!interaction.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) {
+            if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
                 return interaction.editReply("You need ADMINISTRATOR to use this command!")
             }
             const selectedSetting = interaction.options.getString("setting")
             if (selectedSetting == "musicChannel") {
                 interaction.editReply("Please type in a text channel (starts with #) or 0 to remove music channel from this server")
                 const filter = (message) => message.author.id == interaction.member.id
-                const collector = interaction.channel.createMessageCollector({filter, max:1, time:15000})
+                const collector = interaction.channel.awaitMessages({filter, max:1, time:15000})
                 client.usersInMessageReactions.push(interaction.member.id)
-                collector.on('end', async collected => {
+                collector.then(async collected => {
                     const index = client.usersInMessageReactions.indexOf(interaction.member.id)
                     if (index > -1) {
                         client.usersInMessageReactions.splice(index, 1)
@@ -83,6 +83,7 @@ module.exports = {
                             }
 						}
                     } else {
+						console.log(collected.first())
                         return interaction.editReply("Invalid channel!")
                     }
                     interaction.editReply(`Set ${collected.first().content} to be the music channel`)
