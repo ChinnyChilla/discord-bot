@@ -1,11 +1,13 @@
 const date = require('date-and-time')
+const { ActivityType } = require('discord.js')
 const fs = require('fs')
 const path = require('path')
 module.exports = (client) => {
     console.log(`Bot is ready as ${client.user.tag}!`)
     console.log(`Currently in ${client.guilds.cache.size} server`)
     client.user.setPresence({ activities: [{ name: 'Type / to begin!', 
-    type: 'STREAMING' }], status: 'online' })
+    type: ActivityType.Listening }], status: 'online' })
+	console.log("Set Presense")
     setInterval(() => {
         const now = new Date();
         console.log(`[${date.format(now, 'HH:mm')}] Status Report:`)
