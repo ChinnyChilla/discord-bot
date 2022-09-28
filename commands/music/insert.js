@@ -1,5 +1,5 @@
 const { QueryType } = require('discord-player')
-const {MessageEmbed, ApplicationCommandOptionType} = require('discord.js')
+const {ApplicationCommandOptionType, EmbedBuilder} = require('discord.js')
 module.exports = {
     name: 'insert',
     description: 'Insert the song',
@@ -52,7 +52,7 @@ module.exports = {
             if (client.usersInMessageReactions.includes(interaction.member.id)) {
                 return interaction.editReply("Please wait until your previous interaction is over")
             }
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
             .setTitle("Please select a video")
             .setDescription('Type in a number 1-5 to select your video')
             for(i=0;i<5;i++) {
