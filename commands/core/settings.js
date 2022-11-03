@@ -67,7 +67,7 @@ module.exports = {
                         }
                     if (collected.first().content.match(/<#\d+>/)) {
 						const previousId = serverConfig[interaction.guild.id]['musicChannel']
-                        serverConfig[interaction.guild.id][selectedSetting] = collected.first().content.slice(2, -1)	
+                        serverConfig[interaction.guild.id][selectedSetting] = collected.first().content.slice(2, -1)
                         client.functions.get('log').execute(interaction.guild.id, `Set musicChannel to ${collected.first().content}`)
 						
                         fs.writeFileSync(reqPath, JSON.stringify(serverConfig), function(err) {
@@ -81,6 +81,19 @@ module.exports = {
                                 client.musicChannels.splice(prevIndex, 1)
 								client.functions.get('log').execute(interaction.guild.id, `Successfully removed previous musicChannel ${previousId}`)
                             }
+						}
+						try {
+							const channel = await client.channels.fetch(serverConfig[interaction.guild.id][selectedSetting])
+							console.log(channel)
+							channel.send({
+								files: [{
+									attachment: "./data/bejammin commands.png",
+									name: "bejammin commands.png",
+									description: "music commands"
+								}]
+							})
+						} catch (err) {
+							console.error(err)
 						}
                     } else {
 						console.log(collected.first())

@@ -13,6 +13,12 @@ module.exports = (client, guild) => {
 				console.error(`An Error has occured! ${err}`)
 			}
 		})
-		channel.send({content:"A help message"})
+		channel.send({
+			files: [{
+				attachment: "./data/bejammin commands.png",
+				name: "bejammin commands.png",
+				description: "music commands"
+			}]
+		})
 	})    
 } 
