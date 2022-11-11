@@ -29,7 +29,7 @@ module.exports = {
 				currentStreamTime: queue.streamTime,
 				timeSongFinish: new Date(date.getTime() + firstTrack.durationMS - queue.streamTime).getTime()
 			}
-			instance.post('https://chinny.site/api/post/updateQueue', {
+			instance.post(`${process.env.SERVER_BASE_URL}/api/post/updateQueue`, {
 				action: 'send_queue',
 				token: process.env.SERVER_QUEUE_TOKEN,
 				id: guildID,
@@ -106,7 +106,7 @@ module.exports = {
 				new ButtonBuilder()
 					.setLabel("Web Version")
 					.setStyle(ButtonStyle.Link)
-					.setURL(`https://chinny.site/music-queues/${guildID}`)
+					.setURL(`${process.env.SERVER_BASE_URL}/music-queues/${guildID}`)
 			])
             discordEmbed.setDescription(`Author: ${firstTrack.author} \n ${progressionBar}`)
             
@@ -142,6 +142,7 @@ module.exports = {
 						if (queue.tracks.length == 0) {
 							queue.stop()
 							client.functions.get('log').execute(guildID, `No more songs, leaving!`)
+							client.functions.get('deleteQueue').execute(client, guildID)
 							c.reply('No more songs, leaving!!')
 						} else {
 							queue.skip()

@@ -12,7 +12,7 @@ module.exports = {
 				rejectUnauthorized: false
 			})
 		});
-		instance.post('https://chinny.site/api/post/updateQueue', {
+		instance.post(`${process.env.SERVER_BASE_URL}/api/post/updateQueue`, {
 				action: 'delete',
 				token: process.env.SERVER_QUEUE_TOKEN,
 				id: guildID,

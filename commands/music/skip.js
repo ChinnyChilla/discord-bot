@@ -25,6 +25,7 @@ module.exports = {
         if (amount > queue.tracks.length || queue.tracks.length == 0) {
             queue.stop()
             client.functions.get('log').execute(interaction.guildId, `No more songs, leaving!`)
+			client.functions.get('deleteQueue').execute(client, interaction.guildId)
             return interaction.editReply('No more songs, leaving!!')
         }
         
