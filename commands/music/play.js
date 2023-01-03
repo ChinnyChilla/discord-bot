@@ -19,8 +19,9 @@ module.exports = {
     ],
     
     async execute(client, interaction) {
+		const sendAsEphermal = true;
         if (!interaction.member.voice.channel) {
-            return interaction.editReply("Please join a voice channel")
+            return interaction.reply({content: "Please join a voice channel", ephemeral: sendAsEphermal})
         }
         const requestedSong = interaction.options.getString('song')
         const shuffle = interaction.options.getBoolean('shuffle')
@@ -36,15 +37,16 @@ module.exports = {
             })
             
         if (interaction.channel.id != queue.metadata.channel.id) {
-            return interaction.editReply(`For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
+            return interaction.reply({content: `For this server, the music commands only work in <#${queue.metadata.channel.id}>`, ephemeral: sendAsEphermal})
         }
         
         const song = await client.player.search(requestedSong, {
             requestedBy: interaction.member
-        })	
+        })
+		console.log(song);
         if (!song.tracks[0]) {
             client.functions.get('deleteQueue').execute(client, interaction.guild.id)
-            return interaction.editReply("Could not find song!")
+            return interaction.reply({content: "Could not find song!", ephermal: sendAsEphermal})
         }
         var index = 0
 
@@ -66,7 +68,7 @@ module.exports = {
             try {
                     if (!queue.connection) {await queue.connect(interaction.member.voice.channel)}
                 } catch {
-                    interaction.editReply("Failed to join your voice channel!")
+                    interaction.reply({content: "Failed to join your voice channel!", ephermal: sendAsEphermal})
                 }
 
             client.functions.get('log').execute(interaction.guildId, `Player added song(s)`)
@@ -74,19 +76,21 @@ module.exports = {
         }
         if (!requestedSong.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/)) {
             if (client.usersInMessageReactions.includes(interaction.member.id)) {
-                return interaction.editReply("Please wait until your previous interaction is over")
+                return interaction.reply({content: "Please wait until your previous interaction is over", ephermal: sendAsEphermal})
             }
+			const numberOfSongs = Math.min(5, song.tracks.length);
             const embed = new EmbedBuilder()
             .setTitle("Please select a video")
-            .setDescription('Type in a number 1-5 to select your video')
-            for(i=0;i<5;i++) {
+            .setDescription(`Type in a number 1-${numberOfSongs} to select your video`);
+            for(i=0;i<numberOfSongs;i++) {
                 var track = song.tracks[i]
                 embed.addFields(
                 {name: `${i + 1}: ${track.title}`, value: `Author: ${track.author}`, inline: true},
                 {name: track.duration, value: `[${track.source}](${track.url})`, inline: true},
                 {name: '\u200B', value: "\u200B", inline: true},
             )}
-            interaction.editReply({embeds: [embed]})
+			embed.addFields({name: `Type anything else to quit`, value:"\u200b", inline:false})
+            interaction.reply({embeds: [embed], ephemeral: sendAsEphermal})
             const filter = (message) => message.author.id == interaction.member.id
             const collector = interaction.channel.createMessageCollector({filter, max:1, time:15000})
             client.usersInMessageReactions.push(interaction.member.id)
@@ -104,16 +108,16 @@ module.exports = {
                     play()
                     interaction.editReply({content: `Selected video ${collected.first().content}`, embeds: []})
                     return
-                } 
-                return interaction.editReply({content: "Message wasn't a number between 1-5", embeds: []})
+                }
+                return interaction.editReply({content: `Message wasn't a number between 1-${numberOfSongs}`, embeds: []})
             })
         } else {
             if (song.playlist) {
-                interaction.editReply(`Playlist ${song.playlist.title} added!`)
+                interaction.reply({content: `Playlist ${song.playlist.title} added!`, ephermal: sendAsEphermal})
                 await queue.addTracks(song.playlist.tracks)
                 play()
             } else {
-                interaction.editReply(`Track ${song.tracks[index].title} added!`)
+                interaction.reply({content: `Track ${song.tracks[index].title} added!`, ephermal: sendAsEphermal});
                 await queue.addTrack(song.tracks[index])
                 play()
             }

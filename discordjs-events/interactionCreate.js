@@ -18,7 +18,11 @@ module.exports = async (client, interaction) => {
     if (command.name == 'settings' && !interaction.inGuild()) {
         notInGuild();
     }
-    await interaction.deferReply()
+	if (command.name == 'imagegen') {
+		console.log("Found image gen")
+		command.execute(client, interaction)
+		return
+	}
     setTimeout(() => interaction.deleteReply().catch(err => {
         if (err.httpStatus == 404) {
             console.log("Reply already deleted")
@@ -27,7 +31,7 @@ module.exports = async (client, interaction) => {
     client.functions.get('log').execute(interaction.guildId, `${interaction.member.user.tag} requested command ${command.name}`)
     if (client.musicChannelServers.includes(interaction.guild.id) && !client.musicChannels.includes(interaction.channel.id) && command.category == 'music') {
         const serverConfig = require(path.join(__dirname, "../data/serverConfig.json"))
-        return interaction.editReply(`This server has as dedicated music channel!\nPlease use <#${serverConfig[interaction.guild.id]['musicChannel']}> instead!`)
+        return interaction.reply({content:`This server has as dedicated music channel!\nPlease use <#${serverConfig[interaction.guild.id]['musicChannel']}> instead!`, ephemeral: true})
     }
     command.execute(client, interaction)
 }

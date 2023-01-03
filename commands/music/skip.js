@@ -11,7 +11,7 @@ module.exports = {
         }
     ],
     async execute(client, interaction) {
-        
+        interaction.deferReply()
         const amount = interaction.options.getInteger('amount') ?? 1
         
         const queue = client.player.getQueue(interaction.guild)
