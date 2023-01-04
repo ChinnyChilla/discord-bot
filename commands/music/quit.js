@@ -2,8 +2,8 @@ module.exports = {
     name: 'quit',
     description: 'Quits playing',
     category: 'music',
-    execute(client, interaction) {
-		interaction.deferReply();
+    async execute(client, interaction) {
+		await interaction.deferReply();
         const queue = client.player.getQueue(interaction.guild)
         if (!queue) {return interaction.editReply("There is currently no queue!")}
         if (interaction.channel.id != queue.metadata.channel.id) {

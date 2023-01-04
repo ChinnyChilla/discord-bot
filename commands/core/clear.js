@@ -18,7 +18,8 @@ module.exports = {
             required: true
         }
     ],
-    execute(client, interaction) {
+    async execute(client, interaction) {
+		await interaction.deferReply();
         if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
             return interaction.editReply("You do not have the required permissions to execute this!")
         }

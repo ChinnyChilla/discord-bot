@@ -37,7 +37,7 @@ module.exports = {
         }
     ],
     async execute(client, interaction) {
-		interaction.deferReply();
+		await interaction.deferReply();
         const likedSongs = require(reqPath)
         var userLikedSongs = likedSongs[interaction.member.id]
 

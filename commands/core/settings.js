@@ -31,7 +31,7 @@ module.exports = {
         }
     ],
     async execute(client, interaction) {
-		interaction.deferReply();
+		await interaction.deferReply();
         const reqPath = path.join(__dirname, '../../data/serverConfig.json')
         var subCommand = interaction.options.getSubcommand()
         const serverConfig = require(reqPath)
