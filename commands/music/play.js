@@ -43,7 +43,6 @@ module.exports = {
         const song = await client.player.search(requestedSong, {
             requestedBy: interaction.member
         })
-		console.log(song);
         if (!song.tracks[0]) {
             client.functions.get('deleteQueue').execute(client, interaction.guild.id)
             return interaction.reply({content: "Could not find song!", ephermal: sendAsEphermal})
