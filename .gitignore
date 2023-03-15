@@ -2,6 +2,7 @@ node_modules
 .vscode
 config.json
 *.log
+*.txt
 data/likedSongs.json
 .env
 data/serverConfig.json

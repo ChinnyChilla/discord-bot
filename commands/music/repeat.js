@@ -1,4 +1,5 @@
 const {ApplicationCommandOptionType} = require('discord.js')
+const {sendMessage} = require('../../functions/sendMessage')
 module.exports = {
     name: 'repeat',
     description: 'Repeats current track or entire queue',
@@ -37,22 +38,22 @@ module.exports = {
 		const sendAsEphermal= true;
         const mode = interaction.options.getInteger('mode')
         const queue = client.player.getQueue(interaction.guild)
-        if (!queue) {return interaction.reply({content: "There is currently no queue!", ephermal: sendAsEphermal})}
+        if (!queue) {return sendMessage(client, interaction, "There is currently no queue!", {ephemeral: sendAsEphermal})}
         if (interaction.channel.id != queue.metadata.channel.id) {
-            return interaction.reply({content: `For this server, the music commands only work in <#${queue.metadata.channel.id}>`, ephermal:sendAsEphermal})
+            return sendMessage(client, interaction, `For this server, the music commands only work in <#${queue.metadata.channel.id}>`, {ephemeral:sendAsEphermal})
         }
         if (mode == 1) {
             queue.setRepeatMode(1)
-            interaction.reply({content: 'Repeating Song!', ephermal: true})
+            sendMessage(client, interaction,  'Repeating Song!',{ ephemeral: true})
         } else if (mode == 2){
             queue.setRepeatMode(2)
-            interaction.reply({content: 'Repeating Queue!', ephermal: true})
+            sendMessage(client, interaction,  'Repeating Queue!',{ ephemeral: true})
         } else if (mode == 3) {
             queue.setRepeatMode(3)
-            interaction.reply({content: "Autoplay Enabled!", ephermal: true})
+            sendMessage(client, interaction,  "Autoplay Enabled!",{ ephemeral: true})
         } else {
             queue.setRepeatMode(0)
-            interaction.reply({content: 'Stopped repeating!', ephermal: true})
+            sendMessage(client, interaction,  'Stopped repeating!',{ ephemeral: true})
         }client.functions.get('log').execute(interaction.guildId, `Player repeatMode set to ${queue.repeatMode}`)
         client.functions.get('updateQueue').execute(client, queue)
     }

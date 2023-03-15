@@ -14,15 +14,19 @@ module.exports = {
         const currentTime = date.format(new Date(), 'MMM DD hh:mm:ss A')
         fs.readFile(reqPath, 'utf8', (err, data) => {
             if (!data) {return}
-            if (data.split('\n').length > 500) {
-                fs.truncate(reqPath, 0, function() {console.log(`Removed files due to 500 line limit (${guildID})`)})
-            }
-        })
-        fs.appendFile(reqPath, "\n" + currentTime + " " + content, function(err) {
+            if (data.split('\n').length > 10000) {
+                fs.truncateSync(reqPath, 0, function() {console.log(`Removed files due to 10000 line limit (${guildID})`)})
+				fs.appendFileSync(reqPath, "\n" + currentTime + " " + "Deleted previous records due to 10000 limit", function(err) {
             if (err) {
                 console.error("ERROR WRITING TO LOG FILE " + err)
             }
         })
-		console.log(`Logs ${guildID}: ` + content)
+            }
+        })
+        fs.appendFileSync(reqPath, "\n" + currentTime + " " + content, function(err) {
+            if (err) {
+                console.error("ERROR WRITING TO LOG FILE " + err)
+            }
+        })
     }
 }
