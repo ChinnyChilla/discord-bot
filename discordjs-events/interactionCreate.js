@@ -1,10 +1,11 @@
 const path = require('path')
+const { sendMessage } = require('../functions/sendMessage')
 module.exports = async (client, interaction) => {
     if (!interaction.isCommand()) {return}
     const command = client.commands.find(command => command.name == interaction.commandName)
     if (!command) {return}
     function notInGuild() {
-        interaction.reply("This command is only available to servers!")
+        sendMessage(client, interaction, "This command is only available to servers!")
         setTimeout(() => interaction.deleteReply().catch(err => {
             if (err.httpStatus == 404) {
                 console.log("Reply already deleted")
@@ -18,20 +19,16 @@ module.exports = async (client, interaction) => {
     if (command.name == 'settings' && !interaction.inGuild()) {
         notInGuild();
     }
-	if (command.name == 'imagegen') {
-		console.log("Found image gen")
-		command.execute(client, interaction)
-		return
-	}
-    setTimeout(() => interaction.deleteReply().catch(err => {
-        if (err.httpStatus == 404) {
-            console.log("Reply already deleted")
-        }
-    }), 30000)
+	// Maybe ill add it later
+	// if (command.name == 'imagegen') {
+	// 	console.log("Found image gen")
+	// 	command.execute(client, interaction)
+	// 	return
+	// }
     client.functions.get('log').execute(interaction.guildId, `${interaction.member.user.tag} requested command ${command.name}`)
     if (client.musicChannelServers.includes(interaction.guild.id) && !client.musicChannels.includes(interaction.channel.id) && command.category == 'music') {
         const serverConfig = require(path.join(__dirname, "../data/serverConfig.json"))
-        return interaction.reply({content:`This server has as dedicated music channel!\nPlease use <#${serverConfig[interaction.guild.id]['musicChannel']}> instead!`, ephemeral: true})
+        return sendMessage(client, interaction, `This server has as dedicated music channel!\nPlease use <#${serverConfig[interaction.guild.id]['musicChannel']}> instead!`, {ephemeral: true})
     }
     command.execute(client, interaction)
 }
