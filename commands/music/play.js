@@ -67,7 +67,7 @@ module.exports = {
             try {
                     if (!queue.connection) {await queue.connect(interaction.member.voice.channel)}
                 } catch {
-                    interaction.reply({content: "Failed to join your voice channel!", ephermal: sendAsEphermal})
+                    interaction.reply({content: "Failed to join your voice channel!", ephemeral: sendAsEphermal})
                 }
 
             client.functions.get('log').execute(interaction.guildId, `Player added song(s)`)
@@ -75,7 +75,7 @@ module.exports = {
         }
         if (!requestedSong.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/)) {
             if (client.usersInMessageReactions.includes(interaction.member.id)) {
-                return interaction.reply({content: "Please wait until your previous interaction is over", ephermal: sendAsEphermal})
+                return interaction.reply({content: "Please wait until your previous interaction is over", ephemeral: sendAsEphermal})
             }
 			const numberOfSongs = Math.min(5, song.tracks.length);
             const embed = new EmbedBuilder()
@@ -112,11 +112,12 @@ module.exports = {
             })
         } else {
             if (song.playlist) {
-                interaction.reply({content: `Playlist ${song.playlist.title} added!`, ephermal: sendAsEphermal})
+				console.log("im here")
+                interaction.reply({content: `Playlist ${song.playlist.title} added!`, ephemeral: sendAsEphermal})
                 await queue.addTracks(song.playlist.tracks)
                 play()
             } else {
-                interaction.reply({content: `Track ${song.tracks[index].title} added!`, ephermal: sendAsEphermal});
+                interaction.reply({content: `Track ${song.tracks[index].title} added!`, ephemeral: sendAsEphermal});
                 await queue.addTrack(song.tracks[index])
                 play()
             }
