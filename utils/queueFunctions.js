@@ -23,7 +23,7 @@ async function sendQueue(queue) {
 			guildName: queue.guild.name,
 			firstTrack: queue.currentTrack,
 			currentStreamTime: queue.estimatedPlaybackTime,
-			timeSongFinish: new Date(date.getTime() + queue.currentTrack.durationMS - queue.estimatedPlaybackTime).getTime()
+			timeSongFinish: new Date(date.getTime() + queue.currentTrack.durationMS - queue.node.estimatedPlaybackTime).getTime()
 		}
 		instance.post(`${process.env.SERVER_BASE_URL}/api/post/updateQueue`, {
 			action: 'send_queue',
@@ -201,7 +201,7 @@ async function updateQueue(queue) {
 		guildName: queue.guild.name,
 		firstTrack: queue.currentTrack,
 		currentStreamTime: queue.estimatedPlaybackTime,
-		timeSongFinish: new Date(date.getTime() + queue.currentTrack.durationMS - queue.estimatedPlaybackTime).getTime()
+		timeSongFinish: new Date(date.getTime() + queue.currentTrack.durationMS - queue.node.estimatedPlaybackTime).getTime()
 
 	}
 	instance.post(`${process.env.SERVER_BASE_URL}/api/post/updateQueue`, {
