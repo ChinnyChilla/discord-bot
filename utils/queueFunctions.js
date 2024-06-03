@@ -35,6 +35,10 @@ async function sendQueue(queue) {
 	const queueMessage = queueInfo.message
 
 	const tracks = queue.tracks.toArray();
+	if (!queueInfo.queue.currentTrack) {
+		deleteQueue(queue)
+		return
+	}
 
 	const { EmbedBuilder } = require('discord.js')
 	const discordEmbed = new EmbedBuilder()
@@ -183,6 +187,10 @@ async function updateQueue(queue) {
 	if (!queueInfo) { return }
 	const discordEmbed = queueInfo.embed
 	if (!discordEmbed) { return }
+	if (!queueInfo.queue.currentTrack) {
+		deleteQueue(queue)
+		return
+	}
 	const tracks = queueInfo.queue.tracks.toArray();
 	if (!tracks) { return }
 	discordEmbed.spliceFields(0, 20)
