@@ -18,12 +18,12 @@ async function sendQueue(queue) {
 			tracks: queue.tracks.toArray(),
 			previousTracks: queue.history.tracks.toArray(),
 			playing: queue.playing,
-			channelName: queue.connection?.channel?.name,
+			channelName: queueInfo.channel.name,
 			paused: queue.node.isPaused(),
 			guildName: queue.guild.name,
 			firstTrack: queue.currentTrack,
-			currentStreamTime: queue.streamTime,
-			timeSongFinish: new Date(date.getTime() + queue.currentTrack.durationMS - queue.streamTime).getTime()
+			currentStreamTime: queue.estimatedPlaybackTime,
+			timeSongFinish: new Date(date.getTime() + queue.currentTrack.durationMS - queue.estimatedPlaybackTime).getTime()
 		}
 		instance.post(`${process.env.SERVER_BASE_URL}/api/post/updateQueue`, {
 			action: 'send_queue',
@@ -196,12 +196,12 @@ async function updateQueue(queue) {
 		tracks: queue.tracks.toArray(),
 		previousTracks: queue.history.tracks,
 		playing: queue.playing,
-		channelName: queue.connection?.channel?.name,
+		channelName: queueInfo.channel.name,
 		paused: queue.node.isPaused(),
 		guildName: queue.guild.name,
 		firstTrack: queue.currentTrack,
-		currentStreamTime: queue.streamTime,
-		timeSongFinish: new Date(date.getTime() + queue.currentTrack.durationMS - queue.streamTime).getTime()
+		currentStreamTime: queue.estimatedPlaybackTime,
+		timeSongFinish: new Date(date.getTime() + queue.currentTrack.durationMS - queue.estimatedPlaybackTime).getTime()
 
 	}
 	instance.post(`${process.env.SERVER_BASE_URL}/api/post/updateQueue`, {
