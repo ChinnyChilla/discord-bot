@@ -16,3 +16,6 @@ player.events.on('audioTracksAdd', async (queue, track) => {
 player.events.on('disconnect', async (queue) => {
 	queueUtil.deleteQueue(queue);
 });
+player.events.on('emptyChannel', async (queue) => {
+	queueUtil.deleteQueue(queue);
+})
