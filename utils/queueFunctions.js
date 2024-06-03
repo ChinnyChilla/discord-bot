@@ -14,6 +14,10 @@ async function sendQueue(queue) {
 	const date = new Date()
 	setTimeout(() => {
 		queue = queueInfo.queue
+		if (!queueInfo.queue.currentTrack) {
+			deleteQueue(queue)
+			return
+		}
 		const queueToSend = {
 			tracks: queue.tracks.toArray(),
 			previousTracks: queue.history.tracks.toArray(),
@@ -35,10 +39,6 @@ async function sendQueue(queue) {
 	const queueMessage = queueInfo.message
 
 	const tracks = queue.tracks.toArray();
-	if (!queueInfo.queue.currentTrack) {
-		deleteQueue(queue)
-		return
-	}
 
 	const { EmbedBuilder } = require('discord.js')
 	const discordEmbed = new EmbedBuilder()
