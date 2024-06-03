@@ -1,6 +1,9 @@
 const {ApplicationCommandOptionType, EmbedBuilder} = require('discord.js')
-const queueInfo = require("../../functions/createQueueInfoClass.js")
+const { Player, QueryType } = require('discord-player')
+
 const {sendMessage} = require('../../functions/sendMessage')
+const musicUtils = require('../../utils/musicFunctions.js')
+const queueUtils = require('../../utils/queueFunctions.js')
 module.exports = {
     name: 'play',
     description: 'Plays a song',
@@ -12,11 +15,6 @@ module.exports = {
             description: "Song URL/Title or Playlist URL",
             required: true,
         },
-        {
-            type: ApplicationCommandOptionType.Boolean,
-            name: 'shuffle',
-            description: "Shuffle the queue when you add it."
-        }
     ],
     
     async execute(client, interaction) {
@@ -25,55 +23,23 @@ module.exports = {
             return sendMessage(client, interaction, "Please join a voice channel", {ephemeral: true})
         }
         const requestedSong = interaction.options.getString('song')
-        const shuffle = interaction.options.getBoolean('shuffle')
-        var firstTime = false
-        if (!client.player.getQueue(interaction.guild)) {firstTime = true}
-        var queue = client.player.createQueue(interaction.guild, {ytdlOptions: {
-            filter: 'audioonly', 
-            quality: 'highest',
-            highWaterMark: 1 << 25,
-            dlChunkSize: 0,
-            },
-            metadata: interaction
-            })
+		const player = Player.singleton();
+
+		const queue = player.nodes.get(interaction.guild.id);
             
-        if (interaction.channel.id != queue.metadata.channel.id) {
+        if (queue && (interaction.channel.id != queue.metadata.channel.id)) {
             return sendMessage(client, interaction, `For this server, the music commands only work in <#${queue.metadata.channel.id}>`, {ephemeral: true})
         }
         
-        const song = await client.player.search(requestedSong, {
-            requestedBy: interaction.member
+        const song = await player.search(requestedSong, {
+            requestedBy: interaction.member,
+			searchEngine: QueryType.AUTO
         })
         if (!song.tracks[0]) {
-            client.functions.get('deleteQueue').execute(client, interaction.guild.id)
+            queueUtils.deleteQueue(player.nodes.get(interaction.guild.id))
             return sendMessage(client, interaction, "Could not find song!", {ephermal: true})
         }
         var index = 0
-
-        async function play() {
-            if (!client.queueInfo.get(interaction.guild.id)) {
-                const queueMessage = await interaction.channel.send(`Bound to <#${interaction.channel.id}>`)
-                var queueInfotemp = new queueInfo(queueMessage, queue)
-				await client.queueInfo.set(interaction.guild.id, queueInfotemp)
-            }
-            if (shuffle) {
-                if (firstTime) {
-                    await queue.addTrack(queue.tracks[0])
-                    await queue.shuffle()
-                    await queue.remove(0)
-                } else {
-                    await queue.shuffle()
-                }
-            }
-            try {
-                    if (!queue.connection) {await queue.connect(interaction.member.voice.channel)}
-                } catch {
-                    sendMessage(client, interaction, "Failed to join your voice channel!", {ephemeral: true})
-                }
-
-            client.functions.get('log').execute(interaction.guildId, `Player added song(s)`)
-            if (!queue.playing) {await queue.play()}
-        }
         if (!requestedSong.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/)) {
             if (client.usersInMessageReactions.includes(interaction.member.id)) {
                 return sendMessage(client, interaction, "Please wait until your previous interaction is over", {ephemeral: true})
@@ -104,8 +70,7 @@ module.exports = {
                 if (collected.first().content.match(/([1-5])/)) {
 					number = parseInt(collected.first().content)
 					if (!(0 < number < 6)) {return interaction.editReply("Number too big or small")}
-                    await queue.addTrack(song.tracks[number - 1])
-                    play()
+                    musicUtils.addTracks(interaction, [song.tracks[number - 1]])
                     sendMessage(client, interaction, `Selected video ${collected.first().content}`,{ embeds: []})
                     return
                 }
@@ -113,14 +78,11 @@ module.exports = {
             })
         } else {
             if (song.playlist) {
-				console.log("im here")
                 sendMessage(client, interaction, `Playlist ${song.playlist.title} added!`, {ephemeral: true})
-                await queue.addTracks(song.playlist.tracks)
-                play()
+                await musicUtils.addTracks(interaction, song.playlist.tracks)
             } else {
                 sendMessage(client, interaction, `Track ${song.tracks[index].title} added!`, {ephemeral: true});
-                await queue.addTrack(song.tracks[index])
-                play()
+                await musicUtils.addTracks(client, interaction, [song.tracks[index]])
             }
         }
     }

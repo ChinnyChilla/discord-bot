@@ -14,5 +14,5 @@ module.exports.sendMessage = async function(client, interaction, messageContent,
 		return
 	}
 	await interaction.reply({content: messageContent, embeds: embeds, ephemeral: isEphemeral, files: attachments})
-	
+
 }

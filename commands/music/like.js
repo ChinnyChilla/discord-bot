@@ -1,8 +1,10 @@
 const path = require('path');
 const fs = require('fs');
 const reqPath = path.join(__dirname, '../../data/likedSongs.json');
-const queueInfo = require("../../functions/createQueueInfoClass.js")
 const {ApplicationCommandOptionType} = require('discord.js')
+const { Player } = require('discord-player');
+const musicUtil = require('../../utils/musicFunctions.js')
+
 module.exports = {
     name: 'like',
     description: 'Everything with your liked playlist',
@@ -38,6 +40,7 @@ module.exports = {
     ],
     async execute(client, interaction) {
 		await interaction.deferReply();
+		const player = Player.singleton();
         const likedSongs = require(reqPath)
         var userLikedSongs = likedSongs[interaction.member.id]
 
@@ -47,7 +50,7 @@ module.exports = {
             return interaction.editReply("Please use one of the other subcommands!")
         }
         if (subCommand == 'song') {
-            const song = await client.player.search(interaction.options.getString('song'), {})
+            const song = await player.search(interaction.options.getString('song'), {})
             if (!song.tracks[0]) {return interaction.editReply("Could not find song!")}
             if (!userLikedSongs) {
                 userLikedSongs = new Array();
@@ -85,17 +88,8 @@ module.exports = {
                 return interaction.editReply("Please join a voice channel")
             }
             var firstTime = false
-            if (!client.player.getQueue(interaction.guild)) {firstTime = true}
-            var queue = client.player.createQueue(interaction.guild, {ytdlOptions: {
-                filter: 'audioonly', 
-                quality: 'highest',
-                highWaterMark: 1 << 25,
-                dlChunkSize: 0,
-                },
-                metadata: interaction
-                })
-                
-            if (interaction.channel.id != queue.metadata.channel.id) {
+            const queue = player.nodes.get(interaction.guild.id);
+            if (queue && (interaction.channel.id != queue.metadata.channel.id)) {
                 return interaction.editReply(`For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
             }
             const fs = require('fs');
@@ -105,16 +99,11 @@ module.exports = {
             if (!data[interaction.member.id] || data[interaction.member.id].length == 0) {return interaction.editReply("Please first like some songs!")}
 
             const songs = data[interaction.member.id]
-            if (!client.queueInfo.get(interaction.guild.id)) {
-                const queueMessage = await interaction.channel.send(`Bound to <#${interaction.channel.id}>`)
-                const queueInfo = new queueInfo(queueMessage, queue)
-				client.queueInfo.set(interaction.guild.id, queueInfo)
-            }
 
             var promises = new Array();
             songs.forEach(async song => {
                 promises.push(new Promise((resolve, reject) => {
-                    client.player.search(song, {
+                    player.search(song, {
                         requestedBy: interaction.member
                     }).then(searchedSongs => {
                         resolve(searchedSongs.tracks[0])
@@ -125,16 +114,7 @@ module.exports = {
                 return new Promise((resolve, reject) => {
                     var listofTracks = new Array();
                     Promise.all(promises).then(async (tracks) => {
-                        await queue.addTracks(tracks)
-                        if (interaction.options.getBoolean('shuffle')) {
-                            if (firstTime) {
-                                await queue.addTrack(queue.tracks[0])
-                                await queue.shuffle()
-                                await queue.remove(0)
-                            } else {
-                                queue.shuffle()
-                            }
-                        }
+                        await musicUtil.addTracks(interaction, tracks);
                         resolve()
                     })
                 })
@@ -142,13 +122,6 @@ module.exports = {
             }
             checkPromises().then(async result => {
                 interaction.editReply("Playing all your liked songs!")
-                try {
-                    if (!queue.connection) {await queue.connect(interaction.member.voice.channel)}
-                } catch {
-                    interaction.editReply("Failed to join your voice channel!")
-                }
-                client.functions.get('log').execute(interaction.guildId, `Playing liked songs`)
-                if (!queue.playing) {await queue.play()}
             })
         } else if (subCommand == 'list') {
             interaction.editReply("WIP")

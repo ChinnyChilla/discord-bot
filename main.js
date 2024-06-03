@@ -1,8 +1,6 @@
-const { REST } = require('@discordjs/rest')
-const { Routes } = require('discord-api-types/v9')
 require('dotenv').config()
-const { Collection, Client, GatewayIntentBits, Partials } = require('discord.js');
-const rest = new REST({version: '9'}).setToken(process.env.DISCORD_TOKEN)
+const { Collection, Client, GatewayIntentBits, REST, Routes, Partials } = require('discord.js');
+const rest = new REST({version: '10'}).setToken(process.env.DISCORD_TOKEN)
 const client = new Client({ intents: [
 	GatewayIntentBits.Guilds,
 	GatewayIntentBits.GuildMessages,
@@ -23,12 +21,12 @@ if (!fs.existsSync('./data')) {
     fs.writeFileSync('./data/likedSongs.json', '{}')
     fs.writeFileSync('./data/serverConfig.json', '{}')
 }
-const { Player } = require('discord-player')
+const { Player } = require('discord-player');
+const player = new Player(client);
+player.extractors.loadDefault();
 
 var testCommands = new Array();
 client.commands = new Array();
-client.player = new Player(client);
-client.queueInfo = new Collection();
 client.functions = new Collection();
 client.defaultServerConfig = {
     musicChannel: "0" // 0 is no channel else channelID
@@ -36,6 +34,7 @@ client.defaultServerConfig = {
 client.usersInMessageReactions = new Array();
 client.musicChannels = new Array();
 client.musicChannelServers = new Array();
+client.imageQueue = {queue: [], isRunning: false}
 
 console.log("Loading Events")
 fs.readdirSync('./discordjs-events').forEach(file => {
@@ -52,14 +51,16 @@ fs.readdirSync('./discordjs-events').forEach(file => {
     }
 })
 
-fs.readdirSync('./discord-player').forEach(file => {
-    if (file.endsWith('.js')) {
-        console.log("Loading discord-player file: " + file)
-        const name = file.substring(0, file.length - 3)
-        const event = require(`./discord-player/${file}`)
-        client.player.on(name, event.bind(null, client));
-    }
-})
+const eventFiles = fs.readdirSync("./events").filter(file => file.endsWith(".js")); //Searches all .js files
+for (const file of eventFiles) { //For each file, check if the event is .once or .on and execute it as specified within the event file itself
+	console.log(`Reading events from ${file}`)
+	const event = require(`./events/${file}`);
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args, commands));
+	} else {
+		client.on(event.name, (...args) => event.execute(...args, commands));
+	}
+}
 
 console.log("Events Loaded!")
 

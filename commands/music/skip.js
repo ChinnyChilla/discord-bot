@@ -1,5 +1,7 @@
 const {ApplicationCommandOptionType} = require('discord.js')
 const {sendMessage} = require('../../functions/sendMessage')
+const { Player } = require('discord-player');
+const utils = require('../../utils/queueFunctions.js')
 module.exports = {
     name: 'skip',
     description: 'Skips song(s)',
@@ -15,7 +17,8 @@ module.exports = {
         await interaction.deferReply()
         const amount = interaction.options.getInteger('amount') ?? 1
         
-        const queue = client.player.getQueue(interaction.guild)
+		const player = Player.singleton();
+		const queue = player.nodes.get(interaction.guild.id);
         if (!queue) {return sendMessage(client, interaction, "There is currently no queue!")}
         if (interaction.channel.id != queue.metadata.channel.id) {
             return sendMessage(client, interaction, `For this server, the music commands only work in <#${queue.metadata.channel.id}>`)
@@ -24,19 +27,23 @@ module.exports = {
         if (amount < 0) { return sendMessage(client, interaction, "Invalid number!")}
 
         if (amount > queue.tracks.length || queue.tracks.length == 0) {
-            queue.stop()
-            client.functions.get('log').execute(interaction.guildId, `No more songs, leaving!`)
-			client.functions.get('deleteQueue').execute(client, interaction.guildId)
-            return sendMessage(client, interaction, 'No more songs, leaving!!')
+            try {
+				queue.delete();
+				sendMessage(client, interaction, "No more songs, leaving!")
+			} catch (err) {
+				return sendMessage(client, interaction, "Failed to quit! (Skipped all songs)")
+			}
+			utils.deleteQueue(queue);
+			return
         }
         
-        for (i = 0; i < amount - 1; i++) {
-            await queue.remove(0)
-        }
-        queue.skip()
-
-        client.functions.get('log').execute(interaction.guildId, `Player skipped`)
+		if (amount > 1) {
+			queue.node.skipTo(amount);
+		} else {
+			queue.node.skip()
+		}
+        
         sendMessage(client, interaction, 'Skipping!')
-        client.functions.get('updateQueue').execute(client, queue) 
+        utils.updateQueue(queue);
     }
 }

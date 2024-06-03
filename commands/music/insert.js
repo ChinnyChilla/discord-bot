@@ -1,6 +1,7 @@
 const { QueryType } = require('discord-player')
 const {ApplicationCommandOptionType, EmbedBuilder} = require('discord.js')
 const {sendMessage} = require('../../functions/sendMessage')
+const { Player } = require('discord-player')
 module.exports = {
     name: 'insert',
     description: 'Insert the song',
@@ -20,7 +21,8 @@ module.exports = {
         }
     ],
     async execute(client, interaction) {
-        const queue = client.player.getQueue(interaction.guild)
+		const player = Player.singleton();
+        const queue = player.nodes.get(interaction.guild.id);
         if (!queue) {return sendMessage(client, interaction,  "There is currently no queue!", {ephemeral: true})}
         if (interaction.channel.id != queue.metadata.channel.id) {
             return sendMessage(client, interaction, `For this server, the music commands only work in <#${queue.metadata.channel.id}>`, {ephemeral: true})
@@ -29,16 +31,16 @@ module.exports = {
         const position = interaction.options.getInteger('position')
         if (position < 0) {return sendMessage(client, interaction, "Invalid position")}
 
-        const song = await client.player.search(requestedSong, {
+        const song = await player.search(requestedSong, {
             requestedBy: interaction.member,
 			searchEngine: QueryType.AUTO
         })
         if (!song.tracks[0]) {return sendMessage(client, interaction, "Could not find song!",{ ephemeral: true})}
         async function insertTrack(track) {
             if (position == 0) {
-                await queue.insert(track, 0)
-                const currentSong = queue.nowPlaying()
-                await queue.addTrack(currentSong)
+                await queue.insertTrack(track, 0)
+                const currentTrack = queue.currentTrack
+                await queue.addTrack(currentTrack)
                 queue.skip()
                 sendMessage(client, interaction,  `Playing ${track.title} immediately`, {embeds: [], ephemeral: true})
             } else {
@@ -73,14 +75,20 @@ module.exports = {
                 if (index > -1) {
                     client.usersInMessageReactions.splice(index, 1)
                 }
-                if (collected.size == 0) {return sendMessage(client, interaction,  "Timed out", {embeds: [], ephemeral: true})}
+                if (collected.size == 0) {
+					queueUtils.deleteQueue(queue);
+					sendMessage(client, interaction,  "Timed out", {embeds: [], ephemeral: true})
+					return;
+				}
 				collected.first().delete()
 				if (collected.first().content.match(/([1-5])/)) {
 					sendMessage(client, interaction,  `Selected video ${collected.first().content}`, {ephemeral: true});
 					await insertTrack(song.tracks[parseInt(collected.first().content) - 1])
 					return
 				}
-				return sendMessage(client, interaction, "Message wasn't a number between 1-5", {embeds: [], ephemeral: true})
+				queueUtils.deleteQueue(queue);
+				sendMessage(client, interaction, "Message wasn't a number between 1-5", {embeds: [], ephemeral: true})
+				return 
             })
         } else {
             await insertTrack(song.tracks[0])

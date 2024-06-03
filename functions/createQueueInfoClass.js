@@ -1,15 +1,16 @@
 module.exports = class queueInfo {
-	constructor(queueMessage, queue) {
+	constructor(queueMessage) {
 		this.message = queueMessage
-		this.queue = queue
+		this.guildID = queueMessage.guild.id
 	}
 	buttonCollector = undefined;
 	embed = undefined;
 	interval = undefined;
+	queue = undefined;
 
 	setQueue(queue) {
-		this.queue = queue
-	} 
+		this.queue = queue;
+	}
 	setButtonCollector(collector) {
 		this.buttonCollector = collector
 	}
