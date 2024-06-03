@@ -82,7 +82,7 @@ module.exports = {
                 await musicUtils.addTracks(interaction, song.playlist.tracks)
             } else {
                 sendMessage(client, interaction, `Track ${song.tracks[index].title} added!`, {ephemeral: true});
-                await musicUtils.addTracks(client, interaction, [song.tracks[index]])
+                await musicUtils.addTracks(interaction, [song.tracks[index]])
             }
         }
     }
