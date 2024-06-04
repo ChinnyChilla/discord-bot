@@ -41,7 +41,7 @@ module.exports = {
                 await queue.insertTrack(track, 0)
                 const currentTrack = queue.currentTrack
                 await queue.addTrack(currentTrack)
-                queue.skip()
+                queue.node.skip()
                 sendMessage(client, interaction,  `Playing ${track.title} immediately`, {embeds: [], ephemeral: true})
             } else {
                 queue.insert(track, position - 1)

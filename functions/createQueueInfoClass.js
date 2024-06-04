@@ -30,7 +30,7 @@ module.exports = class queueInfo {
 		this.message.delete().then(message => {
 			console.log("Deleting queue message")
             }).catch(err => {
-                if (err.httpStatus == 404) {
+                if (err.status == 404) {
                     console.log("Message already deleted")
                 } else {
                 console.log(err)}
