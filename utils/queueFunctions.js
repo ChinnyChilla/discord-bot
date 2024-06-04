@@ -161,13 +161,18 @@ async function sendQueue(queue) {
 			var progressionBar = ""
 			const discordEmbed = queueInfo.embed
 			if (queue.currentTrack) {
-				progressionBar = queue.node.createProgressBar({
-					timecodes: true,
-					length: 15,
-					indicator: "🟢",
-					line: "─"
-				})
-				discordEmbed.setDescription(`Author: ${queue.currentTrack.author} \n ${progressionBar}`)
+				try {
+					progressionBar = queue.node.createProgressBar({
+						timecodes: true,
+						length: 15,
+						indicator: "🟢",
+						line: "─"
+					})
+					discordEmbed.setDescription(`Author: ${queue.currentTrack.author} \n ${progressionBar}`)
+				} catch (err) {
+					console.log("failed to create progression bar" + err);
+				}
+				
 			}
 			
 
