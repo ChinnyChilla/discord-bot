@@ -81,13 +81,14 @@ async function sendQueue(queue) {
 		// Call it the first time so it doesn't have to wait
 		var progressionBar = ""
 		const discordEmbed = queueInfo.embed
-		if (queue.tracks) {
+		if (queue.currentTrack) {
 			progressionBar = queue.node.createProgressBar({
 				timecodes: true,
 				length: 15,
 				indicator: "🟢",
 				line: "─"
 			})
+			discordEmbed.setDescription(`Author: ${queue.currentTrack.author} \n ${progressionBar}`)
 		}
 		const row = new ActionRowBuilder()
 			.setComponents([
@@ -108,7 +109,7 @@ async function sendQueue(queue) {
 					.setStyle(ButtonStyle.Link)
 					.setURL(`${process.env.SERVER_BASE_URL}/music-queues/${guildID}`)
 			])
-		discordEmbed.setDescription(`Author: ${queue.currentTrack.author} \n ${progressionBar}`)
+		
 
 		try { queueMessage.edit({ embeds: [discordEmbed], components: [row] }).catch("Something went wrong when editing") }
 		catch {
@@ -159,15 +160,16 @@ async function sendQueue(queue) {
 		const interval = setInterval(() => {
 			var progressionBar = ""
 			const discordEmbed = queueInfo.embed
-			if (queue.tracks) {
+			if (queue.currentTrack) {
 				progressionBar = queue.node.createProgressBar({
 					timecodes: true,
 					length: 15,
 					indicator: "🟢",
 					line: "─"
 				})
+				discordEmbed.setDescription(`Author: ${queue.currentTrack.author} \n ${progressionBar}`)
 			}
-			discordEmbed.setDescription(`Author: ${queue.currentTrack.author} \n ${progressionBar}`)
+			
 
 			queueMessage.edit({ embeds: [discordEmbed] }).catch((err) => {
 				queueMessage.channel.send("Failed to edit message, leaving!")
@@ -247,13 +249,15 @@ async function updateQueue(queue) {
 		discordEmbed.addFields({ name: "Repeat mode:", value: repeatModes[queue.repeatMode - 1] })
 	}
 	queueInfo.setEmbed(discordEmbed)
-	var progressionBar = queue.node.createProgressBar({
-		timecodes: true,
-		length: 15,
-		indicator: "🟢",
-		line: "─"
-	})
-	discordEmbed.setDescription(`${progressionBar}`)
+	if (queue.currentTrack) {
+		var progressionBar = queue.node.createProgressBar({
+			timecodes: true,
+			length: 15,
+			indicator: "🟢",
+			line: "─"
+		})
+		discordEmbed.setDescription(`${progressionBar}`)
+	}
 	const queueMessage = queueInfo.message
 	console.log("editing queue message");
 	queueMessage.edit({ embeds: [discordEmbed] }).catch((err) => {
