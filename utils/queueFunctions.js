@@ -176,7 +176,7 @@ async function sendQueue(queue) {
 			}
 
 			queueMessage.edit({ embeds: [discordEmbed] }).catch((err) => {
-				console.log("Failed to send edit queueMessage!:" + err)
+				console.log("Failed to send edit queueMessage! (in interval): " + err)
 			})
 
 		}, 1000 * 10);
@@ -261,9 +261,8 @@ async function updateQueue(queue) {
 		discordEmbed.setDescription(`${progressionBar}`)
 	}
 	const queueMessage = queueInfo.message
-	console.log("editing queue message");
 	queueMessage.edit({ embeds: [discordEmbed] }).catch((err) => {
-		console.log("Failed to send edit queueMessage!:" + err)
+		console.log("Failed to send edit queueMessage! (in updateQueue):" + err)
 		return
 	})
 }
