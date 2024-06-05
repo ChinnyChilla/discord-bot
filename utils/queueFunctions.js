@@ -113,7 +113,7 @@ async function sendQueue(queue) {
 
 		try { queueMessage.edit({ embeds: [discordEmbed], components: [row] }).catch("Something went wrong when editing") }
 		catch {
-			queue.stop()
+			console.log("something wrong happened")
 		}
 
 		if (!queueInfo.buttonCollector) {
@@ -263,9 +263,8 @@ async function updateQueue(queue) {
 	const queueMessage = queueInfo.message
 	console.log("editing queue message");
 	queueMessage.edit({ embeds: [discordEmbed] }).catch((err) => {
-		queueMessage.channel.send("Failed to edit message, leaving!")
 		console.log("Failed to send edit queueMessage!:" + err)
-		return queue.stop()
+		return
 	})
 }
 
