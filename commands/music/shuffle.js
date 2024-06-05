@@ -1,13 +1,14 @@
 const {sendMessage} = require('../../functions/sendMessage')
 const { Player } = require('discord-player');
 const utils = require('../../utils/queueFunctions.js')
+const discordFuncs = require('../../utils/discordFunctions.js')
 module.exports = {
     name: 'shuffle',
     category: 'music',
     description: 'Shuffles the queue',
     args: '',
     async execute(client, interaction) {
-		await interaction.deferReply()
+		await discordFuncs.deferReply(interaction);
 		const player = Player.singleton();
 		const queue = player.nodes.get(interaction.guild.id);
         if (!queue) {return sendMessage(client, interaction, "There is currently no queue!")}

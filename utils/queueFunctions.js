@@ -174,15 +174,12 @@ async function sendQueue(queue) {
 				}
 				
 			}
-			
 
 			queueMessage.edit({ embeds: [discordEmbed] }).catch((err) => {
-				queueMessage.channel.send("Failed to edit message, leaving!")
 				console.log("Failed to send edit queueMessage!:" + err)
-				return queue.stop()
 			})
 
-		}, 1000 * 5);
+		}, 1000 * 10);
 		queueInfo.setInterval(interval)
 	}
 }

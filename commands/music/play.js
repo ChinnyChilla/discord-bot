@@ -4,6 +4,7 @@ const { Player, QueryType } = require('discord-player')
 const {sendMessage} = require('../../functions/sendMessage')
 const musicUtils = require('../../utils/musicFunctions.js')
 const queueUtils = require('../../utils/queueFunctions.js')
+const discordFuncs = require('../../utils/discordFunctions.js')
 module.exports = {
     name: 'play',
     description: 'Plays a song',
@@ -18,6 +19,8 @@ module.exports = {
     ],
     
     async execute(client, interaction) {
+
+		await discordFuncs.deferReply(interaction);
 		
         if (!interaction.member.voice.channel) {
             return sendMessage(client, interaction, "Please join a voice channel", {ephemeral: true})
