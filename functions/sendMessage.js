@@ -11,7 +11,7 @@ module.exports.sendMessage = async function(client, interaction, messageContent,
 	if (deletionTime != "inf") {
 		console.log("sending reply")
 		await interaction.reply({content: messageContent, embeds: embeds, ephemeral: isEphemeral, files: attachments, fetchReply: true}).then((message) => {
-		setTimeout(() => {console.log("deleted message"); message.delete()}, 10000)
+			setTimeout(() => { console.log("deleted message"); message.delete().catch(err => console.log("Message already deleted")) }, 10000)
 		})
 		return
 	}

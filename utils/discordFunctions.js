@@ -8,7 +8,7 @@ async function sendMessage(interaction, messageContent, options = {}) {
 	}
 	if (deletionTime != "inf") {
 		await interaction.reply({ content: messageContent, embeds: embeds, ephemeral: isEphemeral, files: attachments }).then(function (message) {
-			setTimeout(() => { message.delete() }, deletionTime)
+			setTimeout(() => { message.delete().catch(err => console.log("Message already deleted")) }, deletionTime)
 		})
 		return
 	}
@@ -20,7 +20,7 @@ async function deferReply(interaction, options= {}) {
 	var deletionTime = options.deletionTime ? options.deletionTime : 15000;
 	if (deletionTime != "inf") {
 		await interaction.deferReply({ fetchReply: true }).then((message) => {
-			setTimeout(() => { message.delete() }, deletionTime)
+			setTimeout(() => { message.delete().catch(err => console.log("Message already deleted")) }, deletionTime)
 		});
 		return;
 	}

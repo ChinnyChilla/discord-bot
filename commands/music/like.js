@@ -74,7 +74,7 @@ module.exports = {
                 if (!(index > -1)) {
                     userLikedSongs.push(firstSong.url)
                     interaction.editReply(`Added ${firstSong.title} to your liked playlist!`).then(message => {
-                        setTimeout(() => message.delete(), 10000)
+						setTimeout(() => message.delete().catch(err => console.log("Message already deleted")), 10000)
                     })
                 }
             }
