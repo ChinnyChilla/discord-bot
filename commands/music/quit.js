@@ -2,6 +2,7 @@ const {sendMessage} = require('../../functions/sendMessage')
 const utils = require('../../utils/musicFunctions')
 const { Player } = require('discord-player');
 const discordFuncs = require('../../utils/discordFunctions.js')
+const queueUtils = require('../../utils/queueFunctions.js')
 module.exports = {
     name: 'quit',
     description: 'Quits playing',
@@ -16,6 +17,7 @@ module.exports = {
         }
         try {
 			queue.delete();
+			queueFuncs.deleteQueue(queue);
 			sendMessage(client, interaction, "Quitted!");
 		} catch (e) {
 			sendMessage(client, interaction, "Failed to quit!");
