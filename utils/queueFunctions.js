@@ -282,7 +282,6 @@ async function deleteQueue(queue) {
 		queue: { 'deleted': true }
 	}).catch(err => console.log("Error updating delete: " + err))
 
-	if (!queueInfo) { return }
 	queueInfo.deleteQueueMessage()
 
 	if (queueInfo.interval) {

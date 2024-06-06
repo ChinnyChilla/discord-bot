@@ -15,6 +15,7 @@ module.exports = class queueInfo {
 		this.buttonCollector = collector
 	}
 	stopButtonCollector() {
+		if (!this.buttonCollector) {return};
 		this.buttonCollector.stop()
 	}
 	setEmbed(embed) {
@@ -24,6 +25,7 @@ module.exports = class queueInfo {
 		this.interval = interval
 	}
 	clearQueueInterval() {
+		if (!this.interval) {return};
 		clearInterval(this.interval)
 	}
 	deleteQueueMessage() {
