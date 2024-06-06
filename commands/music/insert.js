@@ -44,7 +44,7 @@ module.exports = {
                 queue.node.skip()
                 sendMessage(client, interaction,  `Playing ${track.title} immediately`, {embeds: [], ephemeral: true})
             } else {
-                queue.insert(track, position - 1)
+                queue.insertTrack(track, position - 1)
                 sendMessage(client, interaction,  `Inserted ${track.title} at position **${position}**`, {embeds: [], ephemeral: true})
             }
             client.functions.get('log').execute(interaction.guildId, `Player playing immediately`)
