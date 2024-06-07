@@ -36,7 +36,6 @@ module.exports = {
 			searchEngine: QueryType.AUTO
         })
         if (!song.tracks[0]) {
-            queueUtils.deleteQueue(player.nodes.get(interaction.guild.id))
             return sendMessage(client, interaction, "Could not find song!", {ephermal: true})
         }
         var index = 0
