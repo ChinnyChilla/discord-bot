@@ -4,7 +4,6 @@ const reqPath = path.join(__dirname, '../../data/likedSongs.json');
 const {ApplicationCommandOptionType} = require('discord.js')
 const { Player } = require('discord-player');
 const musicUtil = require('../../utils/musicFunctions.js')
-const discordFuncs = require('../../utils/discordFunctions.js')
 
 module.exports = {
     name: 'like',
@@ -40,7 +39,6 @@ module.exports = {
         }
     ],
     async execute(client, interaction) {
-		await discordFuncs.deferReply(interaction);
 		const player = Player.singleton();
         const likedSongs = require(reqPath)
         var userLikedSongs = likedSongs[interaction.member.id]

@@ -125,8 +125,8 @@ async function sendQueue(queue) {
 						c.reply('Already playing').catch((err) => console.log("Error in c.reply"))
 					} else {
 						queue.node.setPaused(false)
-						c.deferReply();
-						c.deleteReply();
+						c.deferReply().catch((err) => console.log("Cannot defer reply"));
+						c.deleteReply().catch((err) => console.log("cannot delete reply"));
 						updateQueue(queue);
 					}
 
@@ -136,8 +136,8 @@ async function sendQueue(queue) {
 						c.reply('Already paused').catch((err) => console.log("Error in c.reply"))
 					} else {
 						queue.node.setPaused(true)
-						c.deferReply();
-						c.deleteReply();
+						c.deferReply().catch((err) => console.log("Cannot defer reply"));
+						c.deleteReply().catch((err) => console.log("cannot delete reply"));
 						updateQueue(queue);
 					}
 				}

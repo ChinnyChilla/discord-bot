@@ -9,10 +9,10 @@ async function sendMessage(interaction, messageContent, options = {}) {
 	if (deletionTime != "inf") {
 		await interaction.reply({ content: messageContent, embeds: embeds, ephemeral: isEphemeral, files: attachments }).then(function (message) {
 			setTimeout(() => { message.delete().catch(err => console.log("Message already deleted")) }, deletionTime)
-		})
+		}).catch((err) => console.log("Cannot interaction reply"));
 		return
 	}
-	await interaction.reply({ content: messageContent, embeds: embeds, ephemeral: isEphemeral, files: attachments })
+	await interaction.reply({ content: messageContent, embeds: embeds, ephemeral: isEphemeral, files: attachments }).catch((err) => console.log("Cannot interaction reply"));
 
 }
 
@@ -24,7 +24,7 @@ async function deferReply(interaction, options= {}) {
 		});
 		return;
 	}
-	await interaction.deferReply();
+	await interaction.deferReply().catch((err) => console.log("Cannot defer reply"));
 	return;
 }
 
