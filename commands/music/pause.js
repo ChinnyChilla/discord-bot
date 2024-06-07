@@ -1,7 +1,6 @@
 const {sendMessage} = require('../../functions/sendMessage')
 const { Player } = require('discord-player');
 const utils = require('../../utils/queueFunctions.js')
-const discordFuncs = require('../../utils/discordFunctions.js')
 
 module.exports = {
     name: 'pause',
@@ -9,7 +8,6 @@ module.exports = {
     category: 'music',
     args: '',
     async execute(client, interaction) {
-		await discordFuncs.deferReply(interaction);
 		const player = Player.singleton();
         const queue = player.nodes.get(interaction.guild.id);
         if (!queue) {return sendMessage(client, interaction, "There is currently no queue!")}

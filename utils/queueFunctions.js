@@ -122,7 +122,7 @@ async function sendQueue(queue) {
 			collector.on('collect', async c => {
 				if (c.customId == "resume") {
 					if (!queue.node.isPaused()) {
-						c.reply('Already playing')
+						c.reply('Already playing').catch((err) => console.log("Error in c.reply"))
 					} else {
 						queue.node.setPaused(false)
 						c.deferReply();
@@ -133,7 +133,7 @@ async function sendQueue(queue) {
 				}
 				if (c.customId == "pause") {
 					if (queue.node.isPaused()) {
-						c.reply('Already paused')
+						c.reply('Already paused').catch((err) => console.log("Error in c.reply"))
 					} else {
 						queue.node.setPaused(true)
 						c.deferReply();
@@ -143,7 +143,7 @@ async function sendQueue(queue) {
 				}
 				if (c.customId == "skip") {
 					queue.node.skip();
-					c.reply("Skipped!")
+					c.reply("Skipped!").catch((err) => console.log("Error in c.reply"))
 					updateQueue(queue);
 				}
 

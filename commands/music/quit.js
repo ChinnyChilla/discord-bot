@@ -17,10 +17,11 @@ module.exports = {
         }
         try {
 			queue.delete();
-			queueFuncs.deleteQueue(queue);
+			queueUtils.deleteQueue(queue);
 			sendMessage(client, interaction, "Quitted!");
 		} catch (e) {
 			sendMessage(client, interaction, "Failed to quit!");
+			console.log(e);
 		}
     }
 }

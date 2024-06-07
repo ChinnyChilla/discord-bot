@@ -2,7 +2,6 @@ const {ApplicationCommandOptionType} = require('discord.js')
 const {sendMessage} = require('../../functions/sendMessage')
 const { Player } = require('discord-player');
 const utils = require('../../utils/queueFunctions.js')
-const discordFuncs = require('../../utils/discordFunctions.js')
 module.exports = {
     name: 'skip',
     description: 'Skips song(s)',
@@ -15,7 +14,6 @@ module.exports = {
         }
     ],
     async execute(client, interaction) {
-        await discordFuncs.deferReply(interaction);
         const amount = interaction.options.getInteger('amount') ?? 1
         
 		const player = Player.singleton();
