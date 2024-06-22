@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const reqPath = path.join(__dirname, '../../data/likedSongs.json');
 const {ApplicationCommandOptionType} = require('discord.js')
-const { Player } = require('discord-player');
+const { Player, useMainPlayer } = require('discord-player');
 const musicUtil = require('../../utils/musicFunctions.js')
 
 module.exports = {
@@ -39,7 +39,7 @@ module.exports = {
         }
     ],
     async execute(client, interaction) {
-		const player = Player.singleton();
+		const player = useMainPlayer();
         const likedSongs = require(reqPath)
         var userLikedSongs = likedSongs[interaction.member.id]
 

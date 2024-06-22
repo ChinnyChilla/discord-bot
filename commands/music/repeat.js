@@ -1,6 +1,6 @@
 const {ApplicationCommandOptionType} = require('discord.js')
 const {sendMessage} = require('../../functions/sendMessage')
-const { Player } = require('discord-player')
+const { Player, useMainPlayer } = require('discord-player')
 const utils = require('../../utils/queueFunctions.js')
 module.exports = {
     name: 'repeat',
@@ -39,7 +39,7 @@ module.exports = {
     execute(client, interaction) {
 		const sendAsEphermal= true;
         const mode = interaction.options.getInteger('mode')
-		const player = Player.singleton();
+		const player = useMainPlayer();
         const queue = player.nodes.get(interaction.guild.id);
         if (!queue) {return sendMessage(client, interaction, "There is currently no queue!", {ephemeral: sendAsEphermal})}
         if (interaction.channel.id != queue.metadata.channel.id) {

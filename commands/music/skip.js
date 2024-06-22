@@ -1,6 +1,6 @@
 const {ApplicationCommandOptionType} = require('discord.js')
 const {sendMessage} = require('../../functions/sendMessage')
-const { Player } = require('discord-player');
+const { Player, useMainPlayer } = require('discord-player');
 const utils = require('../../utils/queueFunctions.js')
 module.exports = {
     name: 'skip',
@@ -16,7 +16,7 @@ module.exports = {
     async execute(client, interaction) {
         const amount = interaction.options.getInteger('amount') ?? 1
         
-		const player = Player.singleton();
+		const player = useMainPlayer();
 		const queue = player.nodes.get(interaction.guild.id);
         if (!queue) {return sendMessage(client, interaction, "There is currently no queue!")}
         if (interaction.channel.id != queue.metadata.channel.id) {

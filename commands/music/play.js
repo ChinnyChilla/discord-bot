@@ -1,5 +1,5 @@
-const {ApplicationCommandOptionType, EmbedBuilder} = require('discord.js')
-const { Player, QueryType } = require('discord-player')
+const {ApplicationCommandOptionType, EmbedBuilder, Application} = require('discord.js')
+const { Player, QueryType, useMainPlayer } = require('discord-player')
 
 const {sendMessage} = require('../../functions/sendMessage')
 const musicUtils = require('../../utils/musicFunctions.js')
@@ -15,6 +15,29 @@ module.exports = {
             description: "Song URL/Title or Playlist URL",
             required: true,
         },
+		{
+			type: ApplicationCommandOptionType.String,
+			name: "source",
+			description: "Search engine to use",
+			choices: [
+				{
+					name: "YouTube",
+					value: QueryType.YOUTUBE_SEARCH,
+				},
+				{
+					name: "SoundCloud",
+					value: QueryType.SOUNDCLOUD_SEARCH,
+				},
+				{
+					name: "Spotify",
+					value: QueryType.SPOTIFY_SEARCH,
+				},
+				{
+					name: "Apple Music",
+					value: QueryType.APPLE_MUSIC_SEARCH,
+				}
+			]
+		}
     ],
     
     async execute(client, interaction) {
@@ -23,7 +46,8 @@ module.exports = {
             return sendMessage(client, interaction, "Please join a voice channel", {ephemeral: true})
         }
         const requestedSong = interaction.options.getString('song')
-		const player = Player.singleton();
+		const searchEngine = interaction.options.getString('source', false) ?? QueryType.AUTO;  
+		const player = useMainPlayer();
 
 		const queue = player.nodes.get(interaction.guild.id);
             
@@ -33,7 +57,7 @@ module.exports = {
         
         const song = await player.search(requestedSong, {
             requestedBy: interaction.member,
-			searchEngine: QueryType.AUTO
+			searchEngine: searchEngine
         })
         if (!song.tracks[0]) {
             return sendMessage(client, interaction, "Could not find song!", {ephermal: true})

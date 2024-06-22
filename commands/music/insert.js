@@ -1,7 +1,7 @@
 const { QueryType } = require('discord-player')
 const {ApplicationCommandOptionType, EmbedBuilder} = require('discord.js')
 const {sendMessage} = require('../../functions/sendMessage')
-const { Player } = require('discord-player')
+const { useMainPlayer } = require('discord-player')
 module.exports = {
     name: 'insert',
     description: 'Insert the song',
@@ -21,7 +21,7 @@ module.exports = {
         }
     ],
     async execute(client, interaction) {
-		const player = Player.singleton();
+		const player = useMainPlayer();
         const queue = player.nodes.get(interaction.guild.id);
         if (!queue) {return sendMessage(client, interaction,  "There is currently no queue!", {ephemeral: true})}
         if (interaction.channel.id != queue.metadata.channel.id) {

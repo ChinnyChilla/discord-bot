@@ -1,6 +1,6 @@
-const { Player } = require('discord-player');
+const { Player, useMainPlayer } = require('discord-player');
 const queueUtil = require("../utils/queueFunctions.js");
-const player = Player.singleton();
+const player = useMainPlayer();
 
 player.events.on('playerStart', async (queue, track) => {
 	queueUtil.sendQueue(queue);
