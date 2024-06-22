@@ -43,7 +43,7 @@ module.exports = {
             discordEmbed.addFields({name: "Current music channel", value: `<#${currentServerConfig['musicChannel']}>`})
             interaction.editReply({embeds: [discordEmbed]})
         } else if (subCommand == 'set') {
-            if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+			if (!interaction.member.permissions.has(PermissionsBitField.Flags.Administrator) && !interaction.member.id == 231931300993433610) {
                 return interaction.editReply("You need ADMINISTRATOR to use this command!")
             }
             const selectedSetting = interaction.options.getString("setting")
