@@ -16,11 +16,11 @@
   "dependencies": {
     "@discord-player/extractor": "4.4.7",
     "@discordjs/rest": "2.3.0",
-    "@distube/ytdl-core": "4.13.3",
+    "@distube/ytdl-core": "^4.13.4",
     "axios": "^1.7.2",
     "date-and-time": "^3.3.0",
     "discord-api-types": "0.37.83",
-    "discord-player": "6.6.8",
+    "discord-player": "^6.6.10",
     "discord.js": "14.15.2",
     "dotenv": "16.4.5",
     "ffmpeg-static": "5.2.0",
