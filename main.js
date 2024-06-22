@@ -23,7 +23,7 @@ if (!fs.existsSync('./data')) {
 }
 const { Player } = require('discord-player');
 const player = new Player(client);
-player.extractors.loadDefault();
+player.extractors.loadDefault((ext) => ext !== 'YouTubeExtractor');
 
 var testCommands = new Array();
 client.commands = new Array();
