@@ -304,6 +304,7 @@ async function deleteQueue(queue) {
 	if (queueInfo.buttonCollector) {
 		queueInfo.stopButtonCollector()
 	}
+	queueInfo.isLyricsMode = false;
 }
 
 async function switchToLyricsMode(queue) {
