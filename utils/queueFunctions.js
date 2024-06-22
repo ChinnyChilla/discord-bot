@@ -1,6 +1,8 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const axios = require('axios')
-const https = require('https')
+const https = require('https');
+const { useMainPlayer } = require('discord-player');
+const { EmbedBuilder } = require('discord.js')
 
 async function sendQueue(queue) {
 	queueInfo = queue.metadata.queueInfo;
@@ -16,6 +18,7 @@ async function sendQueue(queue) {
 		queue = queueInfo.queue
 		if (!queueInfo.queue.currentTrack) {
 			deleteQueue(queue)
+			console.log("returned line 22");
 			return
 		}
 		const queueToSend = {
@@ -40,7 +43,6 @@ async function sendQueue(queue) {
 
 	const tracks = queue.tracks.toArray();
 
-	const { EmbedBuilder } = require('discord.js')
 	const discordEmbed = new EmbedBuilder()
 		.setTitle(`Now Playing: ${queue.currentTrack.title}`)
 		.setURL(queue.currentTrack.url)
@@ -107,7 +109,11 @@ async function sendQueue(queue) {
 				new ButtonBuilder()
 					.setLabel("Web Version")
 					.setStyle(ButtonStyle.Link)
-					.setURL(`${process.env.SERVER_BASE_URL}/music-queues/${guildID}`)
+					.setURL(`${process.env.SERVER_BASE_URL}/music-queues/${guildID}`),
+				new ButtonBuilder()
+					.setCustomId("lyrics")
+					.setLabel("Lyrics Mode")
+					.setStyle(ButtonStyle.Secondary),
 			])
 		
 
@@ -145,6 +151,14 @@ async function sendQueue(queue) {
 					queue.node.skip();
 					c.reply("Skipped!").catch((err) => console.log("Error in c.reply"))
 					updateQueue(queue);
+				}
+				if (c.customId == "lyrics") {
+					const switchResult = await switchToLyricsMode(queue);
+					if (switchResult[0]) {
+						c.reply("Successfully switched to lyrics mode!");
+					} else {
+						c.reply(switchResult[1]);
+					}
 				}
 
 				setTimeout(() => {
@@ -280,7 +294,7 @@ async function deleteQueue(queue) {
 		token: process.env.SERVER_QUEUE_TOKEN,
 		id: guildID,
 		queue: { 'deleted': true }
-	}).catch(err => console.log("Error updating delete: " + err))
+	}).catch(err => console.log("Error updating queue with delete: " + err))
 
 	queueInfo.deleteQueueMessage()
 
@@ -290,6 +304,84 @@ async function deleteQueue(queue) {
 	if (queueInfo.buttonCollector) {
 		queueInfo.stopButtonCollector()
 	}
+}
+
+async function switchToLyricsMode(queue) {
+	const player = useMainPlayer();
+	const queueInfo = queue.metadata.queueInfo;
+	if (!queue.currentTrack) {
+		return [false, "Error in getting current song"];
+	}
+	const results = await player.lyrics.search({ q: queue.currentTrack.cleanTitle + " " + queue.currentTrack.author })
+	const lyrics = results[0];
+
+	if (!lyrics?.syncedLyrics) {
+		return [false, "Current song does not support synced lyrics"];
+	}
+
+	if (queueInfo.interval) {
+		queueInfo.clearQueueInterval()
+	}
+
+	const syncedLyrics = queue.syncedLyrics(lyrics);
+	syncedLyrics.onChange(async (lyrics, timestamp) => {
+		const discordEmbed = new EmbedBuilder()
+			.setTitle(`Now Playing: ${queue.currentTrack.title}`)
+			.setURL(queue.currentTrack.url)
+			//('0' + time).slice(-2) used to add another 0 if <10
+			.setTimestamp()
+			.setThumbnail(queue.currentTrack.thumbnail)
+		if (queue.currentTrack) {
+			progressionBar = queue.node.createProgressBar({
+				timecodes: true,
+				length: 15,
+				indicator: "🟢",
+				line: "─"
+			})
+			discordEmbed.setDescription(`Author: ${queue.currentTrack.author} \n ${progressionBar}`)
+		}
+		const previousLine = getPreviousLine(timestamp, syncedLyrics.lyrics);
+		const nextLine = getNextLine(timestamp, syncedLyrics.lyrics);
+		discordEmbed.addFields(
+			{name: '\u200B', value: `[${previousLine?.timestamp}] ${previousLine?.line}`},
+			{name: `[${timestamp}] ${lyrics}`, value: `[${nextLine?.timestamp}] ${nextLine?.line}`},
+		);
+		const queueMessage = queueInfo.message
+		queueMessage.edit({ embeds: [discordEmbed] }).catch((err) => {
+			console.log("Failed to send edit queueMessage! (in lyricsMode):" + err)
+			return
+		})
+	})
+	if (queueInfo?.isLyricsMode == false) {
+		syncedLyrics.subscribe();
+		queueInfo.isLyricsMode = true;
+	}
+	return [true];
+}
+function getPreviousLine(currentTimestamp, lyricsMap) {
+	let previousTimestamp = -1;
+	let previousLine = "";
+
+	for (let [timestamp, line] of lyricsMap) {
+		if (timestamp >= currentTimestamp) {
+			break;
+		}
+		previousTimestamp = timestamp;
+		previousLine = line;
+	}
+
+	return previousTimestamp !== -1 ? { timestamp: previousTimestamp, line: previousLine } : null;
+}
+
+// Function to get the next line with its timestamp
+function getNextLine(currentTimestamp, lyricsMap) {
+	for (let [timestamp, line] of lyricsMap) {
+		if (timestamp > currentTimestamp) {
+			return { timestamp: timestamp, line: line };
+		}
+	}
+
+	return null;
 }
 
 module.exports = {

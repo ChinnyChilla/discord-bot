@@ -10,9 +10,9 @@ module.exports.sendMessage = async function(client, interaction, messageContent,
 	if (deletionTime != "inf") {
 		await interaction.reply({content: messageContent, embeds: embeds, ephemeral: isEphemeral, files: attachments, fetchReply: true}).then((message) => {
 			setTimeout(() => {message.delete().catch(err => console.log("Message already deleted")) }, 10000)
-		}).catch((err) => console.log("Cannot interaction reply"));
+		}).catch((err) => {console.log("Cannot interaction reply"); console.log(err)});
 		return
 	}
-	await interaction.reply({ content: messageContent, embeds: embeds, ephemeral: isEphemeral, files: attachments }).catch((err) => console.log("Cannot interaction reply"));
+	await interaction.reply({ content: messageContent, embeds: embeds, ephemeral: isEphemeral, files: attachments }).catch((err) => { console.log("Cannot interaction reply"); console.log(err) });
 
 }

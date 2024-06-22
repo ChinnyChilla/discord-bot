@@ -7,6 +7,7 @@ module.exports = class queueInfo {
 	embed = undefined;
 	interval = undefined;
 	queue = undefined;
+	isLyricsMode = false;
 
 	setQueue(queue) {
 		this.queue = queue;
@@ -27,10 +28,10 @@ module.exports = class queueInfo {
 	clearQueueInterval() {
 		if (!this.interval) {return};
 		clearInterval(this.interval)
+		this.interval = null;
 	}
 	deleteQueueMessage() {
 		this.message.delete().then(message => {
-			console.log("Deleting queue message")
             }).catch(err => {
                 if (err.status == 404) {
                     console.log("Message already deleted")

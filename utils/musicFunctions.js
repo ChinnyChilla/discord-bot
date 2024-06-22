@@ -1,9 +1,9 @@
-const { Player } = require('discord-player');
+const { Player, useMainPlayer } = require('discord-player');
 const { sendMessage } = require('../utils/discordFunctions.js')
 const queueInfo = require("../functions/createQueueInfoClass.js")
 
 async function createQueue(interaction) {
-	const player = Player.singleton();
+	const player = useMainPlayer();
 
 	const queueMessage = await interaction.channel.send(`Bound to <#${interaction.channel.id}>`)
 	var newQueueInfo = new queueInfo(queueMessage)
@@ -25,7 +25,7 @@ async function createQueue(interaction) {
 
 
 async function getQueue(interaction) {
-	const player = Player.singleton();
+	const player = useMainPlayer();
 	var existsQueue = player.nodes.get(interaction.guild.id);
 
 	if (!existsQueue) {

@@ -3,6 +3,9 @@ const queueUtil = require("../utils/queueFunctions.js");
 const player = useMainPlayer();
 
 player.events.on('playerStart', async (queue, track) => {
+	if (queue?.metadata?.queueInfo) {
+		queue.metadata.queueInfo.isLyricsMode = false;
+	}
 	queueUtil.sendQueue(queue);
 });
 
