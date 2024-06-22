@@ -19,3 +19,7 @@ player.events.on('disconnect', async (queue) => {
 player.events.on('emptyChannel', async (queue) => {
 	queueUtil.deleteQueue(queue);
 })
+player.events.on('error'), async (queue, error) => {
+	console.error("Player encountered an error");
+	console.error(error);
+}
