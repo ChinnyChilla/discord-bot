@@ -4,6 +4,7 @@ const { Player, QueryType, useMainPlayer } = require('discord-player')
 const {sendMessage} = require('../../functions/sendMessage')
 const musicUtils = require('../../utils/musicFunctions.js')
 const queueUtils = require('../../utils/queueFunctions.js')
+const logger = require('../../utils/logger.js');
 module.exports = {
     name: 'play',
     description: 'Plays a song',
@@ -59,6 +60,8 @@ module.exports = {
             requestedBy: interaction.member,
 			searchEngine: searchEngine
         })
+		logger.guildLog(interaction.guild.id, "debug", `Searched ${requestedSong}`)
+		logger.guildLog(interaction.guild.id, "debug", song);
         if (!song.tracks[0]) {
             return sendMessage(client, interaction, "Could not find song!", {ephermal: true})
         }
