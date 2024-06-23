@@ -13,10 +13,12 @@ player.events.on('playerStart', async (queue, track) => {
 
 player.events.on('audioTrackAdd', async (queue, track) => {
 	logger.guildLog(queue.guild.id, "debug", "audioTrackAdd event")
+	logger.guildLog(queue.guild.id, "debug", track)
 	queueUtil.updateQueue(queue);
 });
 player.events.on('audioTracksAdd', async (queue, track) => {
 	logger.guildLog(queue.guild.id, "debug", "audioTracksAdd event")
+	logger.guildLog(queue.guild.id, "debug", track)
 	queueUtil.updateQueue(queue);
 });
 
