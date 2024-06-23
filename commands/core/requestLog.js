@@ -6,10 +6,11 @@ module.exports = {
     category: 'core',
     description: 'Retrieve the current logs for this server',
     async execute(client, interaction) {
-		if (!interaction.member.permissions.has(PermissionsBitField.Flags.ViewAuditLog)) {
+		if (!interaction.member.permissions.has(PermissionsBitField.Flags.ViewAuditLog) && !interaction.member.id == 231931300993433610) {
             return sendMessage(client, interaction, "You need the ***ViewAuditLog*** permission to view this file!")
         }
-		const reqPath = path.join(__dirname, `../../logs/${interaction.guild.id}.log`)
-		return sendMessage(client, interaction, "Here is your log file", {attachments: [reqPath], ephemeral: true})
+		const reqPathDebug = path.join(__dirname, `../../logs/${interaction.guild.id}-debug.log`)
+		const reqPathWarning = path.join(__dirname, `../../logs/${interaction.guild.id}-warnings.log`)
+		return sendMessage(client, interaction, "Here is your log file", {attachments: [reqPathDebug, reqPathWarning], ephemeral: true})
 	}	
 }

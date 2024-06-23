@@ -15,7 +15,7 @@ module.exports.sendMessage = async function(client, interaction, messageContent,
 		await interaction.reply({content: messageContent, embeds: embeds, ephemeral: isEphemeral, files: attachments, fetchReply: true}).then((message) => {
 			setTimeout(() => {message.delete().catch(err => {
 				if (err.status == 404) {
-					logger.guildLog(interaction.guild.id, "warn", "MEssage already deleted");
+					logger.guildLog(interaction.guild.id, "warn", "Message already deleted (in sendMessage.js)");
 				} else {
 					logger.guildLog(interaction.guild.id, "error", [err, "Failed to delete message"])
 				}
