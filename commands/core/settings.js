@@ -1,6 +1,7 @@
 const { MessageActionRow, PermissionsBitField, Message, MessageButton, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js')
 const path = require('path')
 const fs = require('fs')
+const logger = require('../../utils/logger');
 module.exports = {
     name: 'settings',
     category: 'core',
@@ -58,7 +59,7 @@ module.exports = {
                         client.usersInMessageReactions.splice(index, 1)
                     }
                     if (collected.size == 0) {return interaction.editReply({content: "Timed out"})}
-                    collected.first().delete().catch(err => console.log("Message already deleted"))
+                    collected.first().delete().catch(err => logger.guildLog(interaction.guild.id, "error", [err, "Could not delete collection"]))
 					if (collected.first().content == '0') {
                             const index = client.musicChannelServers.indexOf(interaction.guild.id)
                             if (index >-1) {
@@ -69,23 +70,24 @@ module.exports = {
                     if (collected.first().content.match(/<#\d+>/)) {
 						const previousId = serverConfig[interaction.guild.id]['musicChannel']
                         serverConfig[interaction.guild.id][selectedSetting] = collected.first().content.slice(2, -1)
-                        client.functions.get('log').execute(interaction.guild.id, `Set musicChannel to ${collected.first().content}`)
+                        // client.functions.get('log').execute(interaction.guild.id, `Set musicChannel to ${collected.first().content}`)
 						
                         fs.writeFileSync(reqPath, JSON.stringify(serverConfig), function(err) {
                             if (err) {
-                                console.error(`An Error has occured! ${err}`)
-                            } else {console.log("Write successful")}
+                                logger.guildLog(interaction.guild.id, "error", [err, "Failed to write to settings file"])
+                            } else {
+								logger.guildLog(interaction.guild.id, "warn", "Successfully wrote to settings file");
+							}
                         })
 						if (previousId !== 0) {
 							const prevIndex = client.musicChannels.indexOf(previousId)
 							if (prevIndex >-1) {
                                 client.musicChannels.splice(prevIndex, 1)
-								client.functions.get('log').execute(interaction.guild.id, `Successfully removed previous musicChannel ${previousId}`)
+								// client.functions.get('log').execute(interaction.guild.id, `Successfully removed previous musicChannel ${previousId}`)
                             }
 						}
 						try {
 							const channel = await client.channels.fetch(serverConfig[interaction.guild.id][selectedSetting])
-							console.log(channel)
 							channel.send({
 								files: [{
 									attachment: "./data/bejammin commands.png",
@@ -94,10 +96,9 @@ module.exports = {
 								}]
 							})
 						} catch (err) {
-							console.error(err)
+							logger.guildLog(interaction.guild.id, "error", [err, "Failed to send picture to channel"])
 						}
                     } else {
-						console.log(collected.first())
                         return interaction.editReply("Invalid channel!")
                     }
                     interaction.editReply(`Set ${collected.first().content} to be the music channel`)

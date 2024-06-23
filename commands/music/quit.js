@@ -3,6 +3,7 @@ const utils = require('../../utils/musicFunctions')
 const { Player, useMainPlayer } = require('discord-player');
 const discordFuncs = require('../../utils/discordFunctions.js')
 const queueUtils = require('../../utils/queueFunctions.js')
+const logger = require('../../utils/logger.js');
 module.exports = {
     name: 'quit',
     description: 'Quits playing',
@@ -21,7 +22,7 @@ module.exports = {
 			sendMessage(client, interaction, "Quitted!");
 		} catch (e) {
 			sendMessage(client, interaction, "Failed to quit!");
-			console.log(e);
+			logger.guildLog(interaction.guild.id, "error", [e, "Failed to quit channel"]);
 		}
     }
 }

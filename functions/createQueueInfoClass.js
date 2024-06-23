@@ -1,3 +1,4 @@
+const logger = require('../utils/logger');
 module.exports = class queueInfo {
 	constructor(queueMessage) {
 		this.message = queueMessage
@@ -34,9 +35,10 @@ module.exports = class queueInfo {
 		this.message.delete().then(message => {
             }).catch(err => {
                 if (err.status == 404) {
-                    console.log("Message already deleted")
+                    logger.guildLog(message.guild.id, "warn", "Message already deleted")
                 } else {
-                console.log(err)}
+					logger.guildLog(message.guild.id, "error", [err, "Could not delete message"])
+               	}
             })
 	}
 }

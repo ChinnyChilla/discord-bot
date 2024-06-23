@@ -1,5 +1,6 @@
 require('dotenv').config()
 const { Collection, Client, GatewayIntentBits, REST, Routes, Partials } = require('discord.js');
+const logger = require('./utils/logger');
 const rest = new REST({version: '10'}).setToken(process.env.DISCORD_TOKEN)
 const client = new Client({ intents: [
 	GatewayIntentBits.Guilds,
@@ -36,10 +37,10 @@ client.musicChannels = new Array();
 client.musicChannelServers = new Array();
 client.imageQueue = {queue: [], isRunning: false}
 
-console.log("Loading Events")
+logger.systemLog("info", "Loading Events")
 fs.readdirSync('./discordjs-events').forEach(file => {
     if (file.endsWith('.js')) {
-        console.log("Loading discord.js file: " + file)
+        logger.systemLog("info", "Loading discord.js file: " + file)
         const name = file.substring(0, file.length - 3)
         const event = require(`./discordjs-events/${file}`)
         if (name == 'ready') {
@@ -53,7 +54,7 @@ fs.readdirSync('./discordjs-events').forEach(file => {
 
 const eventFiles = fs.readdirSync("./events").filter(file => file.endsWith(".js")); //Searches all .js files
 for (const file of eventFiles) { //For each file, check if the event is .once or .on and execute it as specified within the event file itself
-	console.log(`Reading events from ${file}`)
+	logger.systemLog("info" ,`Reading events from ${file}`)
 	const event = require(`./events/${file}`);
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args, commands));
@@ -62,16 +63,16 @@ for (const file of eventFiles) { //For each file, check if the event is .once or
 	}
 }
 
-console.log("Events Loaded!")
+logger.systemLog("info", "Events Loaded!")
 
-console.log("Started refreshing application (/) commands.");
+logger.systemLog("info", "Started refreshing application (/) commands.");
 
 async function refreshCommands() {
     fs.readdirSync('./commands').forEach(dir => {
         const files = fs.readdirSync(`./commands/${dir}`);
         files.forEach(file => {
             if (file.endsWith(".js")) {
-                console.log("Loading command: " + file)
+                logger.systemLog("info", "Loading command: " + file)
                 var command = require(`./commands/${dir}/${file}`)
                 if (command.testOnly) {
                     testCommands.push(command)
@@ -85,29 +86,28 @@ async function refreshCommands() {
         if (process.env.TEST_SERVER_GUILD_ID){
             await rest.put(Routes.applicationGuildCommands(process.env.DISCORD_CLIENT_ID, process.env.TEST_SERVER_GUILD_ID),
             { body: client.commands.concat(testCommands) });
-            console.log("Reloaded application (/) commands in test server")
+            logger.systemLog("info", "Reloaded application (/) commands in test server")
             client.commands = client.commands.concat(testCommands)
         } else {
             await rest.put(Routes.applicationCommands(process.env.DISCORD_CLIENT_ID), 
             { body: client.commands });
-            console.log("Successfully reloaded application (/) commands.");
+            logger.systemLog("info", "Successfully reloaded application (/) commands.");
         }
 
     } catch (err) {
-        console.log("REFRESHING SLASH COMMANDS FAILED")
-        console.error(err);
+        logger.systemLog("error", [err, "Failed to reload application commands"])
     };
 };
 refreshCommands()
 
-console.log("Loading Functions");
+logger.systemLog("info", "Loading Functions");
 fs.readdirSync('./functions').forEach(file => {
     if (file.endsWith('.js')) {
-        console.log("Loading function: " + file);
+        logger.systemLog("info", "Loading function: " + file);
         var func = require(`./functions/${file}`);
         client.functions.set(file.substring(0, file.length - 3), func);
     };
 });
-console.log("Functions Loaded!")
+logger.systemLog("info", "Functions Loaded!")
 
 client.login(process.env.DISCORD_TOKEN)

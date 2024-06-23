@@ -1,5 +1,6 @@
 const path = require('path')
 const { sendMessage } = require('../functions/sendMessage')
+const logger = require('../utils/logger');
 module.exports = async (client, interaction) => {
     if (!interaction.isCommand()) {return}
     const command = client.commands.find(command => command.name == interaction.commandName)
@@ -8,7 +9,7 @@ module.exports = async (client, interaction) => {
         sendMessage(client, interaction, "This command is only available to servers!")
         setTimeout(() => interaction.deleteReply().catch(err => {
             if (err.httpStatus == 404) {
-                console.log("Reply already deleted")
+                logger.guildLog(interaction.guild.id, "warn", "Reply already deleted")
             }
         }), 30000)
         return
@@ -25,10 +26,11 @@ module.exports = async (client, interaction) => {
 	// 	command.execute(client, interaction)
 	// 	return
 	// }
-    client.functions.get('log').execute(interaction.guildId, `${interaction.member.user.tag} requested command ${command.name}`)
+    // client.functions.get('log').execute(interaction.guildId, `${interaction.member.user.tag} requested command ${command.name}`)
     if (client.musicChannelServers.includes(interaction.guild.id) && !client.musicChannels.includes(interaction.channel.id) && command.category == 'music') {
         const serverConfig = require(path.join(__dirname, "../data/serverConfig.json"))
         return sendMessage(client, interaction, `This server has as dedicated music channel!\nPlease use <#${serverConfig[interaction.guild.id]['musicChannel']}> instead!`, {ephemeral: true})
     }
+	logger.guildLog(interaction.guild.id, "debug", `Executing command ${command.name}`);
     command.execute(client, interaction)
 }

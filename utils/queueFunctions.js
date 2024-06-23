@@ -3,11 +3,14 @@ const axios = require('axios')
 const https = require('https');
 const { useMainPlayer } = require('discord-player');
 const { EmbedBuilder } = require('discord.js')
+const logger = require('./logger');
 
 async function sendQueue(queue) {
 	queueInfo = queue.metadata.queueInfo;
 	queueInfo.setQueue(queue);
 	const guildID = queueInfo.guildID;
+	logger.guildLog(queueInfo.guildID, "debug", "Started sendQueue function")
+
 	const instance = axios.create({
 		httpsAgent: new https.Agent({
 			rejectUnauthorized: false
@@ -17,8 +20,8 @@ async function sendQueue(queue) {
 	setTimeout(() => {
 		queue = queueInfo.queue
 		if (!queueInfo.queue.currentTrack) {
+			logger.guildLog(queueInfo.guildID, "warn", "Could not find currentTrack, deleting queue");
 			deleteQueue(queue)
-			console.log("returned line 22");
 			return
 		}
 		const queueToSend = {
@@ -37,10 +40,12 @@ async function sendQueue(queue) {
 			token: process.env.SERVER_QUEUE_TOKEN,
 			id: guildID,
 			queue: queueToSend
-		}).catch(err => console.log("Error sending queue: " + err))
+		}).catch(err => {
+			logger.guildLog(queueInfo.guildID, "error", [err, "Failed to send POST request to server"]);
+		})
 	}, 1000)
-	const queueMessage = queueInfo.message
 
+	const queueMessage = queueInfo.message
 	const tracks = queue.tracks.toArray();
 
 	const discordEmbed = new EmbedBuilder()
@@ -80,6 +85,7 @@ async function sendQueue(queue) {
 	queueInfo.setEmbed(discordEmbed)
 	const isInterval = queueInfo.interval
 	if (!isInterval) {
+		logger.guildLog(queueInfo.guildID, "debug", "No interval found, attempting to create one");
 		// Call it the first time so it doesn't have to wait
 		var progressionBar = ""
 		const discordEmbed = queueInfo.embed
@@ -117,42 +123,53 @@ async function sendQueue(queue) {
 			])
 		
 
-		try { queueMessage.edit({ embeds: [discordEmbed], components: [row] }).catch("Something went wrong when editing") }
-		catch {
-			console.log("something wrong happened")
+		try { 
+			queueMessage.edit({ embeds: [discordEmbed], components: [row] }).catch((err) => {
+				logger.guildLog(queueInfo.guildID, "error", [err, "Failed to update queueMessage"])
+			})
+		}
+		catch (err) {
+			logger.guildLog(queueInfo.guildID, "error", [err, "Failed to edit queueMessage"])
 		}
 
 		if (!queueInfo.buttonCollector) {
+			logger.guildLog(queueInfo.guildID, "debug", "No buttonCollector found, attempting to create one")
 			const filter = i => !i.bot
 			const collector = queueMessage.channel.createMessageComponentCollector({ filter });
 			collector.on('collect', async c => {
+				logger.guildLog(queueInfo.guildID, "debug", "Colelcted a button press");
+				logger.guildLog(queueInfo.guildID, "debug", c)
 				if (c.customId == "resume") {
 					if (!queue.node.isPaused()) {
-						c.reply('Already playing').catch((err) => console.log("Error in c.reply"))
+						c.reply('Already playing').catch((err) => logger.guildLog(queueInfo.guildID, "error", [err, "Error in c.reply"]))
 					} else {
 						queue.node.setPaused(false)
-						c.deferReply().catch((err) => console.log("Cannot defer reply"));
-						c.deleteReply().catch((err) => console.log("cannot delete reply"));
+						c.deferReply().catch((err) => logger.guildLog(queueInfo.guildID, "error", [err, "Cannot defer reply"]));
+						c.deleteReply().catch((err) => logger.guildLog(queueInfo.guildID, "error", [err, "cannot delete reply"]));
 						updateQueue(queue);
 					}
 
 				}
 				if (c.customId == "pause") {
 					if (queue.node.isPaused()) {
-						c.reply('Already paused').catch((err) => console.log("Error in c.reply"))
+						c.reply('Already paused').catch((err) => logger.guildLog(queueInfo.guildID, "error", [err, "Error in c.reply"]))
 					} else {
 						queue.node.setPaused(true)
-						c.deferReply().catch((err) => console.log("Cannot defer reply"));
-						c.deleteReply().catch((err) => console.log("cannot delete reply"));
+						c.deferReply().catch((err) => logger.guildLog(queueInfo.guildID, "error", [err, "Cannot defer reply"]));
+						c.deleteReply().catch((err) => logger.guildLog(queueInfo.guildID, "error", [err, "cannot delete reply"]));
 						updateQueue(queue);
 					}
 				}
 				if (c.customId == "skip") {
 					queue.node.skip();
-					c.reply("Skipped!").catch((err) => console.log("Error in c.reply"))
+					c.reply("Skipped!").catch((err) => logger.guildLog(queueInfo.guildID, "error", [err, "Error in c.reply"]));
 					updateQueue(queue);
 				}
 				if (c.customId == "lyrics") {
+					if (queueInfo.isLyricsMode) {
+						c.reply("You are already in lyrics mode!")
+						return;
+					}
 					const switchResult = await switchToLyricsMode(queue);
 					if (switchResult[0]) {
 						c.reply("Successfully switched to lyrics mode!");
@@ -164,11 +181,14 @@ async function sendQueue(queue) {
 				setTimeout(() => {
 					c.deleteReply().catch(err => {
 						if (err.httpStatus == 404) {
-							console.log("Reply already deleted")
+							logger.guildLog(queueInfo.guildID, "warn", "Reply already deleted")
+						} else {
+							logger.guildLog(queueInfo.guildID, "error", [err, "Error in deleting reply"])
 						}
 					})
 				}, 5000)
 			})
+			logger.guildLog(queueInfo.guildID, "debug", "Successfully created ButtonCollector")
 			queueInfo.setButtonCollector(collector)
 		}
 		const interval = setInterval(() => {
@@ -184,13 +204,13 @@ async function sendQueue(queue) {
 					})
 					discordEmbed.setDescription(`Author: ${queue.currentTrack.author} \n ${progressionBar}`)
 				} catch (err) {
-					console.log("failed to create progression bar" + err);
+					logger.guildLog(queue.guild.id, "error", [err, "Failed to create progression bar"]);
 				}
 				
 			}
 
 			queueMessage.edit({ embeds: [discordEmbed] }).catch((err) => {
-				console.log("Failed to send edit queueMessage! (in interval): " + err)
+				logger.guildLog(queue.guild.id, "error", [err, "Failed to send edit queueMessage (in interval)"])
 			})
 
 		}, 1000 * 10);
@@ -235,7 +255,7 @@ async function updateQueue(queue) {
 		token: process.env.SERVER_QUEUE_TOKEN,
 		id: guildID,
 		queue: queueToSend
-	}).catch(err => console.log("Error sending queue: " + err))
+	}).catch(err => logger.guildLog(guildID, "error", [err, "Error sending queue"]))
 	for (let i = 0; i < 5; i++) {
 		if (!tracks[i]) { break }
 		var track = tracks[i]
@@ -276,7 +296,7 @@ async function updateQueue(queue) {
 	}
 	const queueMessage = queueInfo.message
 	queueMessage.edit({ embeds: [discordEmbed] }).catch((err) => {
-		console.log("Failed to send edit queueMessage! (in updateQueue):" + err)
+		logger.guildLog(guildID, "error", [err, "Failed to send edit queueMessage! (in updateQueue):"])
 		return
 	})
 }
@@ -294,7 +314,7 @@ async function deleteQueue(queue) {
 		token: process.env.SERVER_QUEUE_TOKEN,
 		id: guildID,
 		queue: { 'deleted': true }
-	}).catch(err => console.log("Error updating queue with delete: " + err))
+	}).catch(err => logger.guildLog(guildID, "error", [err, "Error updating queue with delete: "]))
 
 	queueInfo.deleteQueueMessage()
 
@@ -311,6 +331,7 @@ async function switchToLyricsMode(queue) {
 	const player = useMainPlayer();
 	const queueInfo = queue.metadata.queueInfo;
 	if (!queue.currentTrack) {
+		logger.guildLog(queueInfo.guildID, "warn", "No current track found");
 		return [false, "Error in getting current song"];
 	}
 	const results = await player.lyrics.search({ q: queue.currentTrack.cleanTitle + " " + queue.currentTrack.author })
@@ -349,13 +370,13 @@ async function switchToLyricsMode(queue) {
 		);
 		const queueMessage = queueInfo.message
 		queueMessage.edit({ embeds: [discordEmbed] }).catch((err) => {
-			console.log("Failed to send edit queueMessage! (in lyricsMode):" + err)
+			logger.guildLog(queueInfo.guildID, "error", [err, "Failed to send edit queueMessage! (in lyricsMode):"])
 			return
 		})
 	})
 	if (queueInfo?.isLyricsMode == false) {
-		syncedLyrics.subscribe();
 		queueInfo.isLyricsMode = true;
+		syncedLyrics.subscribe();
 	}
 	return [true];
 }

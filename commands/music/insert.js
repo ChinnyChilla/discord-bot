@@ -2,6 +2,7 @@ const { QueryType } = require('discord-player')
 const {ApplicationCommandOptionType, EmbedBuilder} = require('discord.js')
 const {sendMessage} = require('../../functions/sendMessage')
 const { useMainPlayer } = require('discord-player')
+const logger = require('../../utils/logger')
 module.exports = {
     name: 'insert',
     description: 'Insert the song',
@@ -21,6 +22,7 @@ module.exports = {
         }
     ],
     async execute(client, interaction) {
+		logger.guildLog(interaction.guild.id, "debug", "Executing insert command")
 		const player = useMainPlayer();
         const queue = player.nodes.get(interaction.guild.id);
         if (!queue) {return sendMessage(client, interaction,  "There is currently no queue!", {ephemeral: true})}
@@ -29,6 +31,7 @@ module.exports = {
         }
         const requestedSong = interaction.options.getString('song')
         const position = interaction.options.getInteger('position')
+		logger.guildLog(interaction.guild.id, "debug", `Retrieved information requestedSong: ${requestedSong} | position: ${position}`);
         if (position < 0) {return sendMessage(client, interaction, "Invalid position")}
 
         const song = await player.search(requestedSong, {
@@ -47,9 +50,8 @@ module.exports = {
                 queue.insertTrack(track, position - 1)
                 sendMessage(client, interaction,  `Inserted ${track.title} at position **${position}**`, {embeds: [], ephemeral: true})
             }
-            client.functions.get('log').execute(interaction.guildId, `Player playing immediately`)
         }
-
+		
         if (!requestedSong.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/)) {
             if (client.usersInMessageReactions.includes(interaction.member.id)) {
                 return sendMessage(client, interaction, "Please wait until your previous interaction is over", {ephemeral: true})

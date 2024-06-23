@@ -16,7 +16,7 @@ module.exports = {
         }
         queue.node.setPaused(true)
         sendMessage(client, interaction, "Pausing!")
-        client.functions.get('log').execute(interaction.guildId, `Player paused`)
+        // client.functions.get('log').execute(interaction.guildId, `Player paused`)
         utils.updateQueue(queue);
     }
 }

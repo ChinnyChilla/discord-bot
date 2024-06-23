@@ -1,4 +1,5 @@
 const  {PermissionsBitField, ApplicationCommandOptionType, ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js')
+const logger = require('../../utils/logger');
 module.exports = {
     name: 'clear',
     category: 'core',
@@ -53,12 +54,15 @@ module.exports = {
         collector.on('end', (collection) => {
             if ((collection.first()?.customId) === 'yes') {
                 channel.bulkDelete(amount, true).then(messages => {
-                    client.functions.get('log').execute(interaction.guild.id, `Cleared ${messages.size} messages from ${channel.name}`)
+                    // client.functions.get('log').execute(interaction.guild.id, `Cleared ${messages.size} messages from ${channel.name}`)
                     channel.send(`Successfully deleted ${messages.size} messages`).then(message => {
                         setTimeout(() => {message.delete().catch(err => {
                             if (err.httpStatus == 404) {
-                                console.log("Message already deleted")
-                            }})
+                                logger.guildLog(interaction.guild.id, "warn", "Message already deleted")
+                            } else {
+								logger.guildLog(queueInfo.guildID, "error", [err, "Failed to delete message"])
+							}
+						})
                         }, 8000)
                     })
                 })

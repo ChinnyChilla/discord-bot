@@ -4,6 +4,7 @@ const reqPath = path.join(__dirname, '../../data/likedSongs.json');
 const {ApplicationCommandOptionType} = require('discord.js')
 const { Player, useMainPlayer } = require('discord-player');
 const musicUtil = require('../../utils/musicFunctions.js')
+const logger = require('../../utils/logger.js');
 
 module.exports = {
     name: 'like',
@@ -72,14 +73,14 @@ module.exports = {
                 if (!(index > -1)) {
                     userLikedSongs.push(firstSong.url)
                     interaction.editReply(`Added ${firstSong.title} to your liked playlist!`).then(message => {
-						setTimeout(() => message.delete().catch(err => console.log("Message already deleted")), 10000)
+						setTimeout(() => message.delete().catch(err => logger.guildLog(interaction.guild.id, "error", [err, "Error deleting message"])), 10000)
                     })
                 }
             }
             likedSongs[interaction.member.id] = userLikedSongs
             fs.writeFile(reqPath, JSON.stringify(likedSongs), function(err) {
                 if (err) {
-                    console.error(`An Error has occured! ${err}`)
+                    logger.guildLog(interaction.guild.id, "error", [err, "Could not write to like file"])
                 }
             })            
         } else if (subCommand == 'play') {
