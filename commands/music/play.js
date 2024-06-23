@@ -61,7 +61,7 @@ module.exports = {
 			searchEngine: searchEngine
         })
 		logger.guildLog(interaction.guild.id, "debug", `Searched ${requestedSong}`)
-		logger.guildLog(interaction.guild.id, "debug", song);
+		logger.guildLog(interaction.guild.id, "debug", song.tracks);
         if (!song.tracks[0]) {
             return sendMessage(client, interaction, "Could not find song!", {ephermal: true})
         }
