@@ -21,7 +21,7 @@ module.exports = {
     ],
     async execute(client, interaction) {
 		await interaction.deferReply();
-		if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages) || (interaction.member.id == process.env.ADMIN_ID)) {
+		if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages) && (interaction.member.id != client.admin_id)) {
             return interaction.editReply("You do not have the required permissions to execute this!")
         }
         const channel = interaction.options.getChannel('channel')

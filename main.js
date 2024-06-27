@@ -38,6 +38,7 @@ client.defaultServerConfig = {
 }
 client.usersInMessageReactions = new Array();
 client.musicChannels = new Array();
+client.admin_id = process.env.ADMIN_ID;
 client.musicChannelServers = new Array();
 client.imageQueue = {queue: [], isRunning: false}
 
