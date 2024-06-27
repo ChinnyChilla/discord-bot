@@ -39,6 +39,7 @@ player.events.on('error', async (queue, error) => {
 });
 player.events.on('playerError', async (error, track) => {
 	logger.systemLog("error", [error, "Player encountered an playerError"])
+	console.error(error);
 	logger.systemLog("info", "Track has an error, skipping");
 	if (track.queue) {
 		track.queue.node.skip();
