@@ -37,11 +37,8 @@ player.events.on('error', async (queue, error) => {
 	queue.delete();
 	await queueUtil.deleteQueue(queue);
 });
-player.events.on('playerError', async (error, track) => {
-	logger.systemLog("error", [error, "Player encountered an playerError"])
-	console.error(error);
-	logger.systemLog("info", "Track has an error, skipping");
-	if (track.queue) {
-		track.queue.node.skip();
-	}
+player.events.on('playerError', async (queue, error) => {
+	logger.guildLog(queue.guild.id, "error", [error, "Player encountered an playerError"])
+	logger.guildLog(queue.guild.id, "info", "Track has an error, skipping");
+	queue.node.skip();
 })
