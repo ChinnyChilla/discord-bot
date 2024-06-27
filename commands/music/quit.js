@@ -1,6 +1,5 @@
 const {sendMessage} = require('../../functions/sendMessage')
-const utils = require('../../utils/musicFunctions')
-const { Player, useMainPlayer } = require('discord-player');
+const { useMainPlayer } = require('discord-player');
 const discordFuncs = require('../../utils/discordFunctions.js')
 const queueUtils = require('../../utils/queueFunctions.js')
 const logger = require('../../utils/logger.js');

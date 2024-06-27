@@ -1,5 +1,5 @@
 const {sendMessage} = require('../../functions/sendMessage')
-const { Player, useMainPlayer } = require('discord-player');
+const { useMainPlayer } = require('discord-player');
 const utils = require('../../utils/queueFunctions.js')
 
 module.exports = {
@@ -16,7 +16,6 @@ module.exports = {
         }
         queue.node.setPaused(true)
         sendMessage(client, interaction, "Pausing!")
-        // client.functions.get('log').execute(interaction.guildId, `Player paused`)
         utils.updateQueue(queue);
     }
 }

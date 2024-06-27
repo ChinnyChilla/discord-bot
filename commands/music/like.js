@@ -1,8 +1,7 @@
 const path = require('path');
-const fs = require('fs');
 const reqPath = path.join(__dirname, '../../data/likedSongs.json');
 const {ApplicationCommandOptionType} = require('discord.js')
-const { Player, useMainPlayer } = require('discord-player');
+const { useMainPlayer } = require('discord-player');
 const musicUtil = require('../../utils/musicFunctions.js')
 const logger = require('../../utils/logger.js');
 

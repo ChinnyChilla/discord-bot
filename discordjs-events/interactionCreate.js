@@ -3,6 +3,7 @@ const { sendMessage } = require('../functions/sendMessage')
 const logger = require('../utils/logger');
 module.exports = async (client, interaction) => {
     if (!interaction.isCommand()) {return}
+	logger.guildLog(interaction.guild.id, "info", `Recieved interaction from ${interaction.member.name}`)
     const command = client.commands.find(command => command.name == interaction.commandName)
     if (!command) {return}
     function notInGuild() {
@@ -31,6 +32,6 @@ module.exports = async (client, interaction) => {
         const serverConfig = require(path.join(__dirname, "../data/serverConfig.json"))
         return sendMessage(client, interaction, `This server has as dedicated music channel!\nPlease use <#${serverConfig[interaction.guild.id]['musicChannel']}> instead!`, {ephemeral: true})
     }
-	logger.guildLog(interaction.guild.id, "debug", `Executing command ${command.name}`);
+	logger.guildLog(interaction.guild.id, "info", `Executing command ${command.name}`);
     command.execute(client, interaction)
 }

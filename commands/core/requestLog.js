@@ -1,4 +1,4 @@
-const  {PermissionsBitField, Attachment} = require('discord.js')
+const  {PermissionsBitField} = require('discord.js')
 const { sendMessage } = require('../../functions/sendMessage')
 const path = require('path')
 module.exports = {

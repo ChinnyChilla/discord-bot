@@ -1,9 +1,8 @@
-const {ApplicationCommandOptionType, EmbedBuilder, Application} = require('discord.js')
-const { Player, QueryType, useMainPlayer } = require('discord-player')
+const {ApplicationCommandOptionType, EmbedBuilder} = require('discord.js')
+const { QueryType, useMainPlayer } = require('discord-player')
 
 const {sendMessage} = require('../../functions/sendMessage')
 const musicUtils = require('../../utils/musicFunctions.js')
-const queueUtils = require('../../utils/queueFunctions.js')
 const logger = require('../../utils/logger.js');
 module.exports = {
     name: 'play',
@@ -61,7 +60,7 @@ module.exports = {
 			searchEngine: searchEngine
         })
 		logger.guildLog(interaction.guild.id, "debug", `Searched ${requestedSong}`)
-		logger.guildLog(interaction.guild.id, "debug", song.tracks);
+		logger.guildLog(interaction.guild.id, "trace", song.tracks);
         if (!song.tracks[0]) {
             return sendMessage(client, interaction, "Could not find song!", {ephermal: true})
         }

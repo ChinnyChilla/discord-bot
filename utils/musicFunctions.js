@@ -1,4 +1,4 @@
-const { Player, useMainPlayer } = require('discord-player');
+const { useMainPlayer } = require('discord-player');
 const { sendMessage } = require('../utils/discordFunctions.js')
 const queueInfo = require("../functions/createQueueInfoClass.js")
 const logger = require('./logger');

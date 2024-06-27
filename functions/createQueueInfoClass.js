@@ -35,10 +35,11 @@ module.exports = class queueInfo {
 		this.message.delete().then(message => {
             }).catch(err => {
                 if (err.status == 404) {
-                    logger.guildLog(message.guild.id, "warn", "Message already deleted")
+                    logger.guildLog(this.message.guild.id, "warn", "Message already deleted (in createQueueInfo.js)")
                 } else {
-					logger.guildLog(message.guild.id, "error", [err, "Could not delete message"])
+					logger.guildLog(this.message.guild.id, "error", [err, "Could not delete original queuemessage"])
                	}
             })
+		this.message = undefined;
 	}
 }

@@ -4,8 +4,10 @@ const https = require('https');
 const { useMainPlayer } = require('discord-player');
 const { EmbedBuilder } = require('discord.js')
 const logger = require('./logger');
+const { lyricsExtractor } = require('@discord-player/extractor')
 
 async function sendQueue(queue) {
+	const authorFinder = lyricsExtractor();
 	queueInfo = queue.metadata.queueInfo;
 	queueInfo.setQueue(queue);
 	const guildID = queueInfo.guildID;
@@ -48,11 +50,27 @@ async function sendQueue(queue) {
 	const queueMessage = queueInfo.message
 	const tracks = queue.tracks.toArray();
 
+	const authorResults = await authorFinder.search(queue.currentTrack.cleanTitle + " by " + queue.currentTrack.author);
+
+	var authorInfo;
+
+	if (authorResults) {
+		authorInfo = {
+			name: authorResults.artist.name,
+			iconURL: authorResults.artist.image,
+			url: authorResults.artist.url,
+		}
+	} else {
+		authorInfo = {
+			name: queue.currentTrack.author,
+		}
+	}
+
 	const discordEmbed = new EmbedBuilder()
-		.setTitle(`Now Playing: ${queue.currentTrack.title}`)
+		.setTitle(queue.currentTrack.title)
 		.setURL(queue.currentTrack.url)
 		//('0' + time).slice(-2) used to add another 0 if <10
-		.setTimestamp()
+		.setAuthor(authorInfo)
 		.setThumbnail(queue.currentTrack.thumbnail)
 		.addFields({ name: '\u200B', value: `Requested By ${queue.currentTrack.requestedBy.tag}` })
 
@@ -96,7 +114,7 @@ async function sendQueue(queue) {
 				indicator: "🟢",
 				line: "─"
 			})
-			discordEmbed.setDescription(`Author: ${queue.currentTrack.author} \n ${progressionBar}`)
+			discordEmbed.setDescription(progressionBar)
 		}
 		const row = new ActionRowBuilder()
 			.setComponents([
@@ -138,7 +156,7 @@ async function sendQueue(queue) {
 			const collector = queueMessage.channel.createMessageComponentCollector({ filter });
 			collector.on('collect', async c => {
 				logger.guildLog(queueInfo.guildID, "debug", "Colelcted a button press");
-				logger.guildLog(queueInfo.guildID, "debug", c)
+				logger.guildLog(queueInfo.guildID, "trace", c)
 				if (c.customId == "resume") {
 					if (!queue.node.isPaused()) {
 						c.reply('Already playing').catch((err) => logger.guildLog(queueInfo.guildID, "error", [err, "Error in c.reply"]))
@@ -202,7 +220,7 @@ async function sendQueue(queue) {
 						indicator: "🟢",
 						line: "─"
 					})
-					discordEmbed.setDescription(`Author: ${queue.currentTrack.author} \n ${progressionBar}`)
+					discordEmbed.setDescription(progressionBar)
 				} catch (err) {
 					logger.guildLog(queue.guild.id, "error", [err, "Failed to create progression bar"]);
 				}
@@ -327,6 +345,24 @@ async function deleteQueue(queue) {
 	queueInfo.isLyricsMode = false;
 }
 
+function formatMilliseconds(ms) {
+	if (!ms) {
+		return "00:00";
+	}
+	// Calculate total seconds
+	let totalSeconds = Math.floor(ms / 1000);
+
+	// Calculate minutes and remaining seconds
+	let minutes = Math.floor(totalSeconds / 60);
+	let seconds = totalSeconds % 60;
+
+	// Format minutes and seconds as two-digit strings
+	let formattedMinutes = minutes.toString().padStart(2, '0');
+	let formattedSeconds = seconds.toString().padStart(2, '0');
+
+	// Combine minutes and seconds in MM:SS format
+	return `${formattedMinutes}:${formattedSeconds}`;
+}
 async function switchToLyricsMode(queue) {
 	const player = useMainPlayer();
 	const queueInfo = queue.metadata.queueInfo;
@@ -345,14 +381,25 @@ async function switchToLyricsMode(queue) {
 		queueInfo.clearQueueInterval()
 	}
 
+
+	const authorFinder = lyricsExtractor();
+	const result = await authorFinder.search(queue.currentTrack.cleanTitle + " " + queue.currentTrack.author)
 	const syncedLyrics = queue.syncedLyrics(lyrics);
 	syncedLyrics.onChange(async (lyrics, timestamp) => {
 		const discordEmbed = new EmbedBuilder()
-			.setTitle(`Now Playing: ${queue.currentTrack.title}`)
+			.setTitle(queue.currentTrack.title)
 			.setURL(queue.currentTrack.url)
 			//('0' + time).slice(-2) used to add another 0 if <10
-			.setTimestamp()
-			.setThumbnail(queue.currentTrack.thumbnail)
+			.setThumbnail(queue.currentTrack.thumbnail);
+		
+			if (result) {
+				discordEmbed.setAuthor({
+					name: result.artist.name,
+					iconURL: result.artist.image,
+					url: result.artist.url,
+				})
+			}
+			
 		if (queue.currentTrack) {
 			progressionBar = queue.node.createProgressBar({
 				timecodes: true,
@@ -360,13 +407,13 @@ async function switchToLyricsMode(queue) {
 				indicator: "🟢",
 				line: "─"
 			})
-			discordEmbed.setDescription(`Author: ${queue.currentTrack.author} \n ${progressionBar}`)
+			discordEmbed.setDescription(progressionBar)
 		}
 		const previousLine = getPreviousLine(timestamp, syncedLyrics.lyrics);
 		const nextLine = getNextLine(timestamp, syncedLyrics.lyrics);
 		discordEmbed.addFields(
 			{name: '\u200B', value: `[${previousLine?.timestamp}] ${previousLine?.line}`},
-			{name: `[${timestamp}] ${lyrics}`, value: `[${nextLine?.timestamp}] ${nextLine?.line}`},
+			{name: `[${formatMilliseconds(timestamp)}] ${lyrics}`, value: `[${nextLine?.timestamp}] ${nextLine?.line}`},
 		);
 		const queueMessage = queueInfo.message
 		queueMessage.edit({ embeds: [discordEmbed] }).catch((err) => {
@@ -380,6 +427,7 @@ async function switchToLyricsMode(queue) {
 	}
 	return [true];
 }
+
 function getPreviousLine(currentTimestamp, lyricsMap) {
 	let previousTimestamp = -1;
 	let previousLine = "";
@@ -392,14 +440,14 @@ function getPreviousLine(currentTimestamp, lyricsMap) {
 		previousLine = line;
 	}
 
-	return previousTimestamp !== -1 ? { timestamp: previousTimestamp, line: previousLine } : null;
+	return previousTimestamp !== -1 ? { timestamp: formatMilliseconds(previousTimestamp), line: previousLine } : null;
 }
 
 // Function to get the next line with its timestamp
 function getNextLine(currentTimestamp, lyricsMap) {
 	for (let [timestamp, line] of lyricsMap) {
 		if (timestamp > currentTimestamp) {
-			return { timestamp: timestamp, line: line };
+			return { timestamp: formatMilliseconds(timestamp), line: line };
 		}
 	}
 

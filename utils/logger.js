@@ -13,7 +13,7 @@ var streams = [
 ]
 
 const systemLogger = pino({
-	level: 'debug',
+	level: 'trace',
 	customLevels: {
 		status: 81,
 	},
@@ -21,14 +21,15 @@ const systemLogger = pino({
 
 async function getGuildLogger(guildID) {
 	if (!gulidLoggers.get(guildID)) {
-		systemLog("debug", `guildLogger not found for ${guildID}, creating one`)
+		systemLog("info", `guildLogger not found for ${guildID}, creating one`)
 		var streams = [
-			{level: 'debug', stream: fs.createWriteStream(path.join(__dirname, `../logs/${guildID}-debug.log`))},
-			{level: 'warn', stream: fs.createWriteStream(path.join(__dirname, `../logs/${guildID}-warnings.log`))},
+			{level: 'trace', stream: fs.createWriteStream(path.join(__dirname, `../logs/${guildID}-trace.log`))},
+			{level: 'info', stream: fs.createWriteStream(path.join(__dirname, `../logs/${guildID}-info.log`))},
+			{level: 'error', stream: fs.createWriteStream(path.join(__dirname, `../logs/${guildID}-errors.log`))},
 			{level: 'fatal', stream: pretty()},
 		]
 		const guildLogger = pino({
-			level: 'debug'
+			level: 'trace'
 		}, pino.multistream(streams));
 		gulidLoggers.set(guildID, guildLogger);
 		systemLog("debug", `Created a guildLogger for ${guildID}`)
@@ -63,7 +64,8 @@ function log(logger, level, content) {
 			logger.warn(content);
 			break;
 		case "ERROR":
-			logger.error(content[0], content[1]);
+			logger.trace(content[0]);
+			logger.error(content[1]);
 			break;
 		case "FATAL":
 			logger.fatal(content[0], content[1]);

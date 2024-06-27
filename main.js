@@ -1,5 +1,7 @@
 require('dotenv').config()
 const { Collection, Client, GatewayIntentBits, REST, Routes, Partials } = require('discord.js');
+const DeezerExtractor = require("discord-player-deezer").default;
+const TidalExtractor  = require("discord-player-tidal").default;
 const logger = require('./utils/logger');
 const rest = new REST({version: '10'}).setToken(process.env.DISCORD_TOKEN)
 const client = new Client({ intents: [
@@ -24,7 +26,9 @@ if (!fs.existsSync('./data')) {
 }
 const { Player } = require('discord-player');
 const player = new Player(client);
-player.extractors.loadDefault();
+player.extractors.register(DeezerExtractor);
+player.extractors.register(TidalExtractor);
+player.extractors.loadDefault((ext) => ext !== 'YouTubeExtractor');
 
 var testCommands = new Array();
 client.commands = new Array();

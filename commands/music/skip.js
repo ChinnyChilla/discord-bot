@@ -1,6 +1,6 @@
 const {ApplicationCommandOptionType} = require('discord.js')
 const {sendMessage} = require('../../functions/sendMessage')
-const { Player, useMainPlayer } = require('discord-player');
+const { useMainPlayer } = require('discord-player');
 const utils = require('../../utils/queueFunctions.js')
 module.exports = {
     name: 'skip',
