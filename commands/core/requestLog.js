@@ -6,7 +6,7 @@ module.exports = {
     category: 'core',
     description: 'Retrieve the current logs for this server',
     async execute(client, interaction) {
-		if (!interaction.member.permissions.has(PermissionsBitField.Flags.ViewAuditLog) && !interaction.member.id == 231931300993433610) {
+		if (!interaction.member.permissions.has(PermissionsBitField.Flags.ViewAuditLog) || !interaction.member.id == process.env.ADMIN_ID) {
             return sendMessage(client, interaction, "You need the ***ViewAuditLog*** permission to view this file!")
         }
 		const reqPathDebug = path.join(__dirname, `../../logs/${interaction.guild.id}-debug.log`)
