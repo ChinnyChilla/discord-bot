@@ -50,17 +50,24 @@ async function sendQueue(queue) {
 	const queueMessage = queueInfo.message
 	const tracks = queue.tracks.toArray();
 
-	const authorResults = await authorFinder.search(queue.currentTrack.cleanTitle + " by " + queue.currentTrack.author);
-
 	var authorInfo;
 
-	if (authorResults) {
-		authorInfo = {
-			name: authorResults.artist.name,
-			iconURL: authorResults.artist.image,
-			url: authorResults.artist.url,
+	try {
+		const authorResults = await authorFinder.search(queue.currentTrack.cleanTitle + " by " + queue.currentTrack.author);
+
+		if (authorResults) {
+			authorInfo = {
+				name: authorResults.artist.name,
+				iconURL: authorResults.artist.image,
+				url: authorResults.artist.url,
+			}
+		} else {
+			authorInfo = {
+				name: queue.currentTrack.author,
+			}
 		}
-	} else {
+	} catch (err) {
+		logger.guildLog(queueInfo.guildID, "warn", "Failed to get author information")
 		authorInfo = {
 			name: queue.currentTrack.author,
 		}
@@ -370,7 +377,13 @@ async function switchToLyricsMode(queue) {
 		logger.guildLog(queueInfo.guildID, "warn", "No current track found");
 		return [false, "Error in getting current song"];
 	}
-	const results = await player.lyrics.search({ q: queue.currentTrack.cleanTitle + " " + queue.currentTrack.author })
+	var results;
+	try {
+		results = await player.lyrics.search({ q: queue.currentTrack.cleanTitle + " " + queue.currentTrack.author })
+	} catch (e) {
+		return [false, "Error in getting current song"]
+	}
+	
 	const lyrics = results[0];
 
 	if (!lyrics?.syncedLyrics) {
