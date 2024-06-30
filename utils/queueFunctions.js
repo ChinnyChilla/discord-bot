@@ -61,6 +61,11 @@ async function sendQueue(queue) {
 				iconURL: authorResults.artist.image,
 				url: authorResults.artist.url,
 			}
+			if (!validateAuthorName(queue.currentTrack.author, authorInfo)) {
+				authorInfo = {
+					name: queue.currentTrack.author,
+				}
+			}
 		} else {
 			authorInfo = {
 				name: queue.currentTrack.author,
@@ -482,6 +487,17 @@ function getNextLine(currentTimestamp, lyricsMap) {
 	}
 
 	return null;
+}
+
+function validateAuthorName(author, artistInfo) {
+	const authorLower = author.toLowerCase()
+	const artistLower = artistInfo.name.toLowerCase();
+
+	return (
+		authorLower.includes(artistLower) ||
+		artistLower.includes(authorLower) ||
+		artistLower.includes(authorLower.split(', ')[0])
+	)
 }
 
 module.exports = {
