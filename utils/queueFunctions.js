@@ -404,12 +404,7 @@ async function switchToLyricsMode(queue) {
 	if (!lyrics?.syncedLyrics) {
 		return [false, "Current song does not support synced lyrics"];
 	}
-
-	if (queueInfo.interval) {
-		queueInfo.clearQueueInterval()
-	}
-
-
+	
 	const authorFinder = lyricsExtractor();
 	var result;
 	var syncedLyrics;
@@ -418,6 +413,9 @@ async function switchToLyricsMode(queue) {
 		syncedLyrics = queue.syncedLyrics(lyrics);
 	} catch (e) {
 		return [false, "Error in retrieving lyrics for this song"]
+	}
+	if (queueInfo.interval) {
+		queueInfo.clearQueueInterval()
 	}
 	
 	syncedLyrics.onChange(async (lyrics, timestamp) => {
