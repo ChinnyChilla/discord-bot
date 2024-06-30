@@ -417,7 +417,7 @@ async function switchToLyricsMode(queue) {
 		result = await authorFinder.search(queue.currentTrack.cleanTitle + " " + queue.currentTrack.author)
 		syncedLyrics = queue.syncedLyrics(lyrics);
 	} catch (e) {
-		return [false, "Error in getting current song"]
+		return [false, "Error in retrieving lyrics for this song"]
 	}
 	
 	syncedLyrics.onChange(async (lyrics, timestamp) => {
