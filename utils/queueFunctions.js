@@ -115,12 +115,17 @@ async function sendQueue(queue) {
 		var progressionBar = ""
 		const discordEmbed = queueInfo.embed
 		if (queue.currentTrack) {
-			progressionBar = queue.node.createProgressBar({
-				timecodes: true,
-				length: 15,
-				indicator: "🟢",
-				line: "─"
-			})
+			try {
+				progressionBar = queue.node.createProgressBar({
+					timecodes: true,
+					length: 15,
+					indicator: "🟢",
+					line: "─"
+				})
+				discordEmbed.setDescription(progressionBar)
+			} catch (err) {
+				logger.guildLog(queue.guild.id, "error", [err, "Failed to create progression bar"]);
+			}
 			discordEmbed.setDescription(progressionBar)
 		}
 		const row = new ActionRowBuilder()
@@ -310,14 +315,19 @@ async function updateQueue(queue) {
 		discordEmbed.addFields({ name: "Repeat mode:", value: repeatModes[queue.repeatMode - 1] })
 	}
 	queueInfo.setEmbed(discordEmbed)
+	var progressionBar = ""
 	if (queue.currentTrack) {
-		var progressionBar = queue.node.createProgressBar({
-			timecodes: true,
-			length: 15,
-			indicator: "🟢",
-			line: "─"
-		})
-		discordEmbed.setDescription(`${progressionBar}`)
+		try {
+			progressionBar = queue.node.createProgressBar({
+				timecodes: true,
+				length: 15,
+				indicator: "🟢",
+				line: "─"
+			})
+			discordEmbed.setDescription(progressionBar)
+		} catch (err) {
+			logger.guildLog(queue.guild.id, "error", [err, "Failed to create progression bar"]);
+		}
 	}
 	const queueMessage = queueInfo.message
 	queueMessage.edit({ embeds: [discordEmbed] }).catch((err) => {
@@ -414,12 +424,19 @@ async function switchToLyricsMode(queue) {
 			}
 			
 		if (queue.currentTrack) {
-			progressionBar = queue.node.createProgressBar({
-				timecodes: true,
-				length: 15,
-				indicator: "🟢",
-				line: "─"
-			})
+			var progressionBar = ""
+			try {
+				progressionBar = queue.node.createProgressBar({
+					timecodes: true,
+					length: 15,
+					indicator: "🟢",
+					line: "─"
+				})
+				discordEmbed.setDescription(progressionBar)
+			} catch (err) {
+				logger.guildLog(queue.guild.id, "error", [err, "Failed to create progression bar"]);
+			}
+			
 			discordEmbed.setDescription(progressionBar)
 		}
 		const previousLine = getPreviousLine(timestamp, syncedLyrics.lyrics);
