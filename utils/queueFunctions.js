@@ -411,8 +411,15 @@ async function switchToLyricsMode(queue) {
 
 
 	const authorFinder = lyricsExtractor();
-	const result = await authorFinder.search(queue.currentTrack.cleanTitle + " " + queue.currentTrack.author)
-	const syncedLyrics = queue.syncedLyrics(lyrics);
+	var result;
+	var syncedLyrics;
+	try {
+		result = await authorFinder.search(queue.currentTrack.cleanTitle + " " + queue.currentTrack.author)
+		syncedLyrics = queue.syncedLyrics(lyrics);
+	} catch (e) {
+		return [false, "Error in getting current song"]
+	}
+	
 	syncedLyrics.onChange(async (lyrics, timestamp) => {
 		const discordEmbed = new EmbedBuilder()
 			.setTitle(queue.currentTrack.title)
