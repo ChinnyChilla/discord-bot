@@ -46,7 +46,7 @@ module.exports = {
             return sendMessage(client, interaction, "Please join a voice channel", {ephemeral: true})
         }
         const requestedSong = interaction.options.getString('song')
-		const searchEngine = interaction.options.getString('source', false) ?? QueryType.SPOTIFY_SEARCH;  
+		const searchEngine = interaction.options.getString('source', false) ?? QueryType.AUTO;  
 		const player = useMainPlayer();
 
 		const queue = player.nodes.get(interaction.guild.id);
