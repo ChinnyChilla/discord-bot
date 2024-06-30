@@ -32,6 +32,7 @@ module.exports = class queueInfo {
 		this.interval = null;
 	}
 	deleteQueueMessage() {
+		if (!this.message) {return};
 		this.message.delete().then(message => {
             }).catch(err => {
                 if (err.status == 404) {
