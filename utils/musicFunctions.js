@@ -59,6 +59,7 @@ async function play(interaction) {
 	}
 	
 	if (!queue.isPlaying()) {
+		logger.guildLog(interaction.guild.id, "info", "Attempting to start play");
 		await queue.node.play(queue.tracks[0]);
 	}
 }

@@ -117,7 +117,7 @@ async function sendQueue(queue) {
 	if (!isInterval) {
 		logger.guildLog(queueInfo.guildID, "debug", "No interval found, attempting to create one");
 		// Call it the first time so it doesn't have to wait
-		var progressionBar = ""
+		var progressionBar = "t"
 		const discordEmbed = queueInfo.embed
 		if (queue.currentTrack) {
 			try {
@@ -129,6 +129,7 @@ async function sendQueue(queue) {
 				})
 				discordEmbed.setDescription(progressionBar)
 			} catch (err) {
+				console.log(err)
 				logger.guildLog(queue.guild.id, "error", [err, "Failed to create progression bar"]);
 			}
 			discordEmbed.setDescription(progressionBar)
@@ -227,7 +228,7 @@ async function sendQueue(queue) {
 			queueInfo.setButtonCollector(collector)
 		}
 		const interval = setInterval(() => {
-			var progressionBar = ""
+			var progressionBar = "t"
 			const discordEmbed = queueInfo.embed
 			if (queue.currentTrack) {
 				try {
@@ -320,7 +321,7 @@ async function updateQueue(queue) {
 		discordEmbed.addFields({ name: "Repeat mode:", value: repeatModes[queue.repeatMode - 1] })
 	}
 	queueInfo.setEmbed(discordEmbed)
-	var progressionBar = ""
+	var progressionBar = "t"
 	if (queue.currentTrack) {
 		try {
 			progressionBar = queue.node.createProgressBar({
@@ -434,7 +435,7 @@ async function switchToLyricsMode(queue) {
 			}
 			
 		if (queue.currentTrack) {
-			var progressionBar = ""
+			var progressionBar = "t"
 			try {
 				progressionBar = queue.node.createProgressBar({
 					timecodes: true,

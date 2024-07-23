@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@discord-player/extractor": "4.4.7",
+    "@discord-player/extractor": "^4.4.7",
     "@discordjs/rest": "2.3.0",
     "@evan/opus": "^1.0.3",
     "axios": "^1.7.2",

@@ -26,9 +26,10 @@ if (!fs.existsSync('./data')) {
 }
 const { Player } = require('discord-player');
 const player = new Player(client);
-player.extractors.register(DeezerExtractor);
-player.extractors.register(TidalExtractor);
-player.extractors.loadDefault();
+// player.extractors.register(DeezerExtractor);
+// player.extractors.register(TidalExtractor);
+// player.extractors.loadDefault();
+player.extractors.loadDefault((ext) => ext !== 'YouTubeExtractor')
 
 var testCommands = new Array();
 client.commands = new Array();
